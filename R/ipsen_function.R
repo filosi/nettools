@@ -40,11 +40,11 @@ optimal_gamma <- function(n){
 ## NB to develop
 
 ## HIM Distance for directed graphs
-undir  <- function(A){
-  n  <- dim(A)
-  zero  <- matrix(0,nrow=n,ncol=n)
-  return(rbind(cbind(zero,t(A)),cbind(A,zero)))
-}
+## undir  <- function(A){
+##   n  <- dim(A)
+##   zero  <- matrix(0,nrow=n,ncol=n)
+##   return(rbind(cbind(zero,t(A)),cbind(A,zero)))
+## }
 
 d2w_dir <- function(G,H,gamma){
   return(d2w(undir(G),undir(H),gamma))

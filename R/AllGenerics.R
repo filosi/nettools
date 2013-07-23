@@ -7,8 +7,13 @@ setGeneric("mat2adj",mat2adj.default)
 g2adj.default <- function(x,...){
   Adj <- apply(x,2,as.numeric)
   diag(Adj) <- 0
-  if (!all(Adj - t(Adj)) == 0)
-    stop("Not a symmetric matrix!")
+  if (!all(Adj - t(Adj)) == 0){
+    warning("Graph is directed!")
+    n <- ncol(Adj)
+    zero <- matrix(0, nrow=n, ncol=n)
+    tmp <- rbind(cbind(zero,t(Adj)),cbind(A,zero))
+    Adj <- tmp
+  }
   return(Adj)
 }
 setGeneric("g2adj",g2adj.default)
