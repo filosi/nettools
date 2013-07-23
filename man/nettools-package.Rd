@@ -1,0 +1,76 @@
+\name{nettools-package}
+\alias{nettools-package}
+\alias{nettools}
+\alias{NetTools}
+\alias{netTools}
+\docType{package}
+\title{
+  Tools for network analysis
+}
+\description{
+  A lot of methods are now available to compute the relation between two
+  variables.
+  This package will provide a unique function which call different
+  methods for computing an adjacency matrix from a data matrix normally
+  Additionally, the package provide a function which allow the user to
+  compute the distance between two network.
+}
+\details{
+  Summary:
+  \tabular{ll}{
+    Package: \tab nettools\cr
+    Type: \tab Package\cr
+    Version: \tab 1.0\cr
+    Date: \tab 2012-11-26\cr
+    Depends: \tab R (>= 2.14.1), minet, WGNCA, minerva\cr
+    Suggests: igraph
+    License: \tab GPL-3\cr
+  }
+
+}
+\author{
+  Michele Filosi [aut, cre],
+  Roberto Visintainer [aut, cre],
+  Samantha Riccadonna [aut, cre],
+  Giuseppe Jurman [aut, cre],
+  Davide Albanese [ctb],
+  Cesare Furlanello [ctb]
+
+  Maintainer: Michele Filosi <filosi@fbk.eu>
+}
+\references{
+    P. Langfelder, S. Horvath (2008) \emph{WGCNA: an R package for
+    weighted correlation network analysis. BMC Bioinformatics 2008,
+    9:559}\cr
+
+
+  P. E. Meyer, F. Lafitte, G. Bontempi (2008).
+  \emph{MINET: An open source R/Bioconductor Package for Mutual Information
+    based Network Inference. BMC Bioinformatics}.
+  \url{http://www.biomedcentral.com/1471-2105/9/461}\cr
+
+
+  D. Albanese, M.Filosi, R. Visintainer, S. Riccadonna, G. Jurman,
+  C. Furlanello (2012). \emph{minerva and minepy: a C engine for the
+    MINE suite and its R, Python and MATLAB wrappers, Bioinformatics 2012}.
+  \url{http://mpba.fbk.eu/cmine}\cr
+
+
+  D. Reshef, Y. Reshef, H. Finucane, S. Grossman, G. McVean, P.
+  Turnbaugh, E. Lander, M. Mitzenmacher, P. Sabeti. (2011)
+  \emph{Detecting novel associations in large datasets}.  Science 334,
+  6062\cr
+
+  \url{http://www.exploredata.net}\cr
+
+  (SOM: Supplementary Online Material at
+  \url{http://www.sciencemag.org/content/suppl/2011/12/14/334.6062.1518.DC1})
+}
+\keyword{ package }
+\seealso{
+  Further information on the functions could be found in \pkg{WGCNA},
+  \pkg{minerva} and \pkg{minet}.
+}
+%% \examples{
+%% ~~ simple examples of the most important functions ~~
+%% }

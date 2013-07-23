@@ -1,0 +1,27 @@
+## Import useful function from packages
+## WGCNA: bicor, TOM, WGCNA
+importFrom("WGCNA",unsignedAdjacency,bicor,TOMsimilarityFromExpr)
+
+## Minet:minet
+importFrom("minet",minet)
+
+## Rootsolve
+import(rootSolve)
+
+## DTW
+importFrom("dtw",dtw)
+
+## igraph
+importFrom("igraph",get.adjacency)
+
+## parallel
+import(parallel)
+
+## Exporting all generic methods for Adjacency
+exportPattern("mat2adj")
+S3method(mat2adj,default)
+S3method(mat2adj,data.frame)
+
+## Export methods for distances
+## export(netdist,g2adj,Lap,ipsen,spec,lorentz,K,rho,hamming,him)
+export(netdist,g2adj,Lap,spec,lorentz,K,rho)

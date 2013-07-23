@@ -1,0 +1,15 @@
+Package: nettools
+Type: Package
+Title: Function for creating adjacency matrix and network distances
+Version: 1.2
+Date: 2013-01-31
+Authors@R: c(person("Michele",
+        "Filosi",role=c("aut","cre"),email="filosi@fbk.eu"))
+Maintainer: Michele Filosi <filosi@fbk.eu>
+Depends: R (>= 2.14.1) , methods, minet , WGCNA , minerva, rootSolve, parallel, dtw
+Suggests: igraph
+Description: Collect the functions for network analysis.
+	     Creating adjacency matrix and compute distances between networks
+License: GPL-3
+Packaged: 2012-11-27 21:24:00 UTC; michele
+Author: Michele Filosi [aut, cre]
