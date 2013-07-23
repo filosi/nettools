@@ -11,17 +11,22 @@ netdist <- function(g, h, method="HIM", gamma=NULL){
     ## Create the class
     g1 <- g2adj(g)
     g2 <- g2adj(h)
-
-    ## Create the list of adjacency matrix
-    myadj <- list(method=METHODS[method],G1=g1,G2=g2,N=ncol(g1))
+    
+    ## Check for dimension and directionality of g and h
+    if ((g1$N == g2$N) & (g1$tag == g2$tag)){
+      ## Create the list of adjacency matrix
+      myadj <- list(method=METHODS[method],G1=g1$adj,G2=g2$adj,N=g1$N,tag=g1$tag)
+    } else {
+      stop("Not conformable graph g and h")
+    }
 
     ## Check method for distances
     if (myadj$method=="HIM"){
-      mylap <- list(L1=Lap(g1),L2=Lap(g2),N=ncol(g1))
+      mylap <- list(L1=Lap(g1$adj),L2=Lap(g2$adj),N=ncol(g1$adj), tag=g1$tag)
       dd <- him(list(myadj,mylap))
     }
     if (myadj$method=="ipsen"){
-      mylap <- list(L1=Lap(g1),L2=Lap(g2),N=ncol(g1))
+      mylap <- list(L1=Lap(g1$adj),L2=Lap(g2$adj),N=ncol(g1$adj), tag=g1$tag)
       dd <- ipsen(mylap,gamma=gamma)
     }
     if (myadj$method=="hamming"){
@@ -29,6 +34,27 @@ netdist <- function(g, h, method="HIM", gamma=NULL){
     }
     return(dd)
   }
+
+
+## check symmetry
+cksymm <- function(x, ...){
+  ## Check if the x matrix is symmetric (undirected graph)
+  ## Otherwise it returns a list with a matrix like:
+  ## |zeros    t(A)|
+  ## |  A     zeros|
+  ##
+  Adj <- x
+  n <- ncol(Adj)
+  tag <- "undir"
+  if (!all(Adj - t(Adj)) == 0){
+    warning("Graph is directed!")
+    zero <- matrix(0, nrow=n, ncol=n)
+    tmp <- rbind(cbind(zero,t(Adj)),cbind(A,zero))
+    Adj <- tmp
+    tag <- "dir"
+  }
+  return(list(adj = Adj, tag = tag, N=n))
+}
 
 ## Create the adjacency matrix structure
 g2adj <- function(x,...) UseMethod("g2adj")
@@ -42,7 +68,8 @@ g2adj.igraph <- function(x,...,type="both"){
   }
   Adj <- get.adjacency(x,type=type,attr=WW,sparse=TRUE)
   diag(Adj) <- 0
-  return(Adj)
+  ll <- cksymm(Adj)
+  return(ll)
 }
 setMethod("g2adj","igraph",g2adj.igraph)
 
@@ -65,6 +92,9 @@ ipsen.list <- function(object,...,gamma=NULL){
     optgamma <- optimal_gamma(object$N)
   else
     optgamma <- gamma
+
+  ## Check if network is directed or not
+  
   if(object$N>1000){
     cl <- makeCluster(getOption("cl.cores",2))
     clusterEvalQ(cl,require("nettools",quietly=TRUE))
@@ -93,8 +123,11 @@ setMethod("ipsen","list",ipsen.list)
 hamming <- function(object,...) UseMethod("hamming")
 hamming.list <- function(object,...){
   ## for weighted networks, weights must be in [0,1]
-  n <- object$N
-  return(sum(abs(object$G1-object$G2))/(n*(n-1))  )
+  if (object$tag == "undir"){
+    return(ham.undir(object, ...))
+  } else{
+    return(ham.dir(object, ...))
+  }
 }
 setMethod("hamming","list",hamming.list)
 
