@@ -45,7 +45,13 @@ g1 <- graph.adjacency(aadj)#,weighted=TRUE)
 g2 <- graph.adjacency(badj)#,weighted=TRUE)
 
 
+g1 <- barabasi.game(100,0.8)
+g2 <- barabasi.game(100,0.2)
+
+a1 <- get.adjacency(g1,type="both",sparse=TRUE)
+a2 <- get.adjacency(g2,type="both",sparse=TRUE)
+
 ## HIM distance
-netdist(g1,badj,method="HIM")
+netdist(g1,g2,method="HIM")
 
 
