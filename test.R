@@ -2,6 +2,8 @@
 ## Testing nettools usage
 ##--------------------------------------------------
 
+library(nettools)
+
 ## Create toy dataset
 a <- matrix(rnorm(1000),ncol=100)
 b <- matrix(rnorm(1000),ncol=100)
@@ -16,8 +18,7 @@ badj <- mat2adj(b)
 ## Him distance
 netdist(aadj,badj,method="HIM")
 ##
-##          H         IM        HIM 
-## 0.21368872 0.02445431 0.15208695 
+
 
 ## Hamming distance
 netdist(aadj,badj,method="ham")
