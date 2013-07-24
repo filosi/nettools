@@ -65,7 +65,8 @@ mat2adj(x,\dots)
   estimation of the null hypothesis through permutations.
 }
 
-\value{A P by P symmetric adjacency matrix with the diagonal set to 0.}
+\value{A P by P symmetric adjacency matrix with the diagonal set to
+  0. The values are in range [0 - 1]}
 
 \seealso{
   \code{\link{WGCNA}}, \code{\link{minerva}}, \code{\link{minet}}, \code{\link{cor}}
