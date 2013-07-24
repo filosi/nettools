@@ -46,10 +46,10 @@ cksymm <- function(x, ...){
   Adj <- x
   n <- ncol(Adj)
   tag <- "undir"
-  if (!all(Adj - t(Adj)) == 0){
+  if (!all(Adj - t(Adj) == 0)){
     warning("Graph is directed!")
     zero <- matrix(0, nrow=n, ncol=n)
-    tmp <- rbind(cbind(zero,t(Adj)),cbind(A,zero))
+    tmp <- rBind(cBind(zero,t(Adj)),cBind(Adj,zero))
     Adj <- tmp
     tag <- "dir"
   }
