@@ -32,7 +32,6 @@ optimal_gamma <- function(n){
   return(uniroot(ipsen_minus_one,c(0.01,1),n=n,maxiter=100000,tol=.Machine$double.eps)$root)
 }
 
-
 ##--------------------------------------------------
 ## DIRECTED GRAPH DISTANCE
 ##--------------------------------------------------
@@ -46,15 +45,15 @@ optimal_gamma <- function(n){
 ##   return(rbind(cbind(zero,t(A)),cbind(A,zero)))
 ## }
 
-d2w_dir <- function(G,H,gamma){
-  return(d2w(undir(G),undir(H),gamma))
-}
+## d2w_dir <- function(G,H,gamma){
+##   return(d2w(undir(G),undir(H),gamma))
+## }
 
-hamming_as_edit_dir <- function(G,H){
-  ## for weighted networks, weights must be in [0,1]
-  n=dim(G)[1]
-  return(sum(abs(undir(G)-undir(H)))/(2*n*(n-1)))
-}
+## hamming_as_edit_dir <- function(G,H){
+##   ## for weighted networks, weights must be in [0,1]
+##   n=dim(G)[1]
+##   return(sum(abs(undir(G)-undir(H)))/(2*n*(n-1)))
+## }
 
 MM <- function(T,g){
   return(1/2*(g^2*atan(sqrt(T)/g) + T*atan(sqrt(T)/g) + sqrt(T)*g)/(g^5 +T*g^3) + 1/4*pi/g^3)
