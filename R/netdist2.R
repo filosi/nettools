@@ -17,16 +17,16 @@ netdist <- function(g, h, method="HIM", gamma=NULL){
       ## Create the list of adjacency matrix
       myadj <- list(method=METHODS[method],G1=g1$adj,G2=g2$adj,N=g1$N,tag=g1$tag)
     } else {
-      stop("Not conformable graph g and h")
+      stop("Not conformable graph g and h", call.=FALSE)
     }
 
     ## Check method for distances
     if (myadj$method=="HIM"){
-      mylap <- list(L1=Lap(g1$adj),L2=Lap(g2$adj),N=ncol(g1$adj), tag=g1$tag)
-      dd <- him(list(myadj,mylap))
+      mylap <- list(L1=Lap(g1$adj),L2=Lap(g2$adj),N=g1$N, tag=g1$tag)
+      dd <- him(list(ADJ=myadj,LAP=mylap))
     }
     if (myadj$method=="ipsen"){
-      mylap <- list(L1=Lap(g1$adj),L2=Lap(g2$adj),N=ncol(g1$adj), tag=g1$tag)
+      mylap <- list(L1=Lap(g1$adj),L2=Lap(g2$adj),N=g1$N, tag=g1$tag)
       dd <- ipsen(mylap,gamma=gamma)
     }
     if (myadj$method=="hamming"){
@@ -37,7 +37,7 @@ netdist <- function(g, h, method="HIM", gamma=NULL){
 
 
 ## check symmetry
-cksymm <- function(x, ...){
+cksymm <- function(x){
   ## Check if the x matrix is symmetric (undirected graph)
   ## Otherwise it returns a list with a matrix like:
   ## |zeros    t(A)|
@@ -46,8 +46,10 @@ cksymm <- function(x, ...){
   Adj <- x
   n <- ncol(Adj)
   tag <- "undir"
-  if (!all(Adj - t(Adj) == 0)){
-    warning("Graph is directed!")
+
+  ## If the graph is directed create a new matrix (function undir)
+  if (!all((Adj - t(Adj)) == 0)){
+    ## warning("Graph is directed!", call.=FALSE)
     zero <- matrix(0, nrow=n, ncol=n)
     tmp <- rBind(cBind(zero,t(Adj)),cBind(Adj,zero))
     Adj <- tmp
@@ -57,13 +59,14 @@ cksymm <- function(x, ...){
 }
 
 ## Create the adjacency matrix structure
+##----------------------------------------
 g2adj <- function(x,...) UseMethod("g2adj")
 
 g2adj.igraph <- function(x,...,type="both"){
   if (!is.null(get.edge.attribute(x,"weight"))){
     WW <- "weight"
   } else {
-    warning("No weight attribute to the graph object\nCompute binary adjacency matrix")
+    warning("No weight attribute to the graph object\nCompute binary adjacency matrix", call.=FALSE)
     WW <- NULL
   }
   Adj <- get.adjacency(x,type=type,attr=WW,sparse=TRUE)
@@ -73,7 +76,9 @@ g2adj.igraph <- function(x,...,type="both"){
 }
 setMethod("g2adj","igraph",g2adj.igraph)
 
+
 ## Generical Laplacian
+##----------------------------------------
 Lap <- function(x,...) UseMethod("Lap")
 Lap.default <- function(x,...){
   D <- apply(x,2,sum)
@@ -86,15 +91,20 @@ setMethod("Lap","matrix",Lap.default)
 setMethod("Lap","Matrix",Lap.default)
 
 ## Ipsen distance
+##----------------------------------------
 ipsen <- function(object,...) UseMethod("ipsen")
 ipsen.list <- function(object,...,gamma=NULL){
-  if (is.null(gamma))
-    optgamma <- optimal_gamma(object$N)
-  else
+  if (is.null(gamma)){
+    if (object$tag == "undir"){
+      optgamma <- optimal_gamma(object$N)
+    } else {
+      optgamma <- optimal_gamma_dir(object$N)
+    }
+  } else {
     optgamma <- gamma
-
-  ## Check if network is directed or not
+  }
   
+  ## Check if network is directed or not
   if(object$N>1000){
     cl <- makeCluster(getOption("cl.cores",2))
     clusterEvalQ(cl,require("nettools",quietly=TRUE))
@@ -105,7 +115,7 @@ ipsen.list <- function(object,...,gamma=NULL){
     })
     stopCluster(cl)
   } else {
-    ll <- lapply(list(object[[1]],object[[2]]),function(x,mygamma=optgamma,...){
+    ll <- lapply(list(object$L1,object$L2),function(x,mygamma=optgamma,...){
                 myomega <- sqrt(abs(round(spec(x),5)))
                 myk <- K(mygamma,myomega)
                 return(list(myomega,myk))
@@ -120,6 +130,7 @@ ipsen.list <- function(object,...,gamma=NULL){
 setMethod("ipsen","list",ipsen.list)
 
 ## Hamming distance
+##----------------------------------------
 hamming <- function(object,...) UseMethod("hamming")
 hamming.list <- function(object,...){
   ## for weighted networks, weights must be in [0,1]
@@ -131,14 +142,13 @@ hamming.list <- function(object,...){
 }
 setMethod("hamming","list",hamming.list)
 
-
 ## Him distance
+##----------------------------------------
 him <- function(object,...) UseMethod("him")
 him.list <- function(object,...){
-  ipd <- ipsen(object[[2]],gamma=NA)
-  had <- hamming(object[[1]])
+  ipd <- ipsen(object$LAP,gamma=NULL)
+  had <- hamming(object$ADJ)
   gloc <- sqrt(had**2/2+ipd**2/2)
   return(c("H"=had,"IM"=ipd,"HIM"=gloc))
 }
 setMethod("him","list",him.list)
-

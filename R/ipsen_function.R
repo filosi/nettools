@@ -32,28 +32,21 @@ optimal_gamma <- function(n){
   return(uniroot(ipsen_minus_one,c(0.01,1),n=n,maxiter=100000,tol=.Machine$double.eps)$root)
 }
 
+
 ##--------------------------------------------------
 ## DIRECTED GRAPH DISTANCE
 ##--------------------------------------------------
 
-## NB to develop
+ipsen_minus_one_dir  <- function(g,n){
+  return(ZZ(g)^2*MM(0,g)+WW(n,g)^2*MM(n-2,g)+WW(n,g)^2*MM(n,g)+WWp(n,g)^2*MM(2*n-2,g)
+         -2*ZZ(g)*WW(n,g)*LL(0,n-2,g)-2*ZZ(g)*WW(n,g)*LL(0,n,g)-2*ZZ(g)*WWp(n,g)*LL(0,2*n-2,g)
+         +2*WW(n,g)*WW(n,g)*LL(n-2,n,g) +2*WW(n,g)*WWp(n,g)*LL(n-2,2*n-2,g) +2*WW(n,g)*WWp(n,g)*LL(n,2*n-2,g)-1)
+}
 
-## HIM Distance for directed graphs
-## undir  <- function(A){
-##   n  <- dim(A)
-##   zero  <- matrix(0,nrow=n,ncol=n)
-##   return(rbind(cbind(zero,t(A)),cbind(A,zero)))
-## }
+optimal_gamma_dir <- function(n){
+  return(uniroot(ipsen_minus_one_dir,c(0.01,1),n=n,maxiter=100000,tol=.Machine$double.eps)$root)
+}
 
-## d2w_dir <- function(G,H,gamma){
-##   return(d2w(undir(G),undir(H),gamma))
-## }
-
-## hamming_as_edit_dir <- function(G,H){
-##   ## for weighted networks, weights must be in [0,1]
-##   n=dim(G)[1]
-##   return(sum(abs(undir(G)-undir(H)))/(2*n*(n-1)))
-## }
 
 MM <- function(T,g){
   return(1/2*(g^2*atan(sqrt(T)/g) + T*atan(sqrt(T)/g) + sqrt(T)*g)/(g^5 +T*g^3) + 1/4*pi/g^3)
@@ -76,15 +69,34 @@ WWp  <- function(N,g){
   return(WW(N,g)/(N-1))
 }
 
-ipsen_minus_one_dir  <- function(g,n){
-  return(ZZ(g)^2*MM(0,g)+WW(n,g)^2*MM(n-2,g)+WW(n,g)^2*MM(n,g)+WWp(n,g)^2*MM(2*n-2,g)
-         -2*ZZ(g)*WW(n,g)*LL(0,n-2,g)-2*ZZ(g)*WW(n,g)*LL(0,n,g)-2*ZZ(g)*WWp(n,g)*LL(0,2*n-2,g)
-         +2*WW(n,g)*WW(n,g)*LL(n-2,n,g) +2*WW(n,g)*WWp(n,g)*LL(n-2,2*n-2,g) +2*WW(n,g)*WWp(n,g)*LL(n,2*n-2,g)-1)
-}
 
-optimal_gamma_dir <- function(n){
-  return(uniroot(ipsen_minus_one_dir,c(0.01,1),n=n,maxiter=100000,tol=.Machine$double.eps)$root)
-}
+
+
+
+
+
+
+
+
+## NB to develop
+
+## HIM Distance for directed graphs
+## undir  <- function(A){
+##   n  <- dim(A)
+##   zero  <- matrix(0,nrow=n,ncol=n)
+##   return(rbind(cbind(zero,t(A)),cbind(A,zero)))
+## }
+
+## d2w_dir <- function(G,H,gamma){
+##   return(d2w(undir(G),undir(H),gamma))
+## }
+
+## hamming_as_edit_dir <- function(G,H){
+##   ## for weighted networks, weights must be in [0,1]
+##   n=dim(G)[1]
+##   return(sum(abs(undir(G)-undir(H)))/(2*n*(n-1)))
+## }
+
 
 him_dir <- function(G,H){
   n<-dim(G)[1]

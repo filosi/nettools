@@ -5,7 +5,7 @@ mat2adj.default <- function(x,...){
 setGeneric("mat2adj",mat2adj.default)
 
 g2adj.default <- function(x,...){
-  Adj <- apply(x,2,as.numeric)
+  Adj <- as.matrix(apply(x,2,as.numeric))
   diag(Adj) <- 0
   ll <- cksymm(Adj)
   return(ll)

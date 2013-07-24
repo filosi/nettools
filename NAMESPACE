@@ -14,6 +14,9 @@ importFrom("dtw",dtw)
 ## igraph
 importFrom("igraph",get.adjacency)
 
+## Matrix
+import(Matrix)
+
 ## parallel
 import(parallel)
 
