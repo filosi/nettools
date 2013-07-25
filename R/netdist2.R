@@ -36,8 +36,18 @@ netdist <- function(g, h, method="HIM", gamma=NULL){
   }
 
 
-## check symmetry
-cksymm <- function(x){
+
+## Check if a matrix is symmetric
+cksymm <- function(x,...){
+  if (all((x - t(x)) == 0))
+    return(TRUE)
+  else
+    return(FALSE)
+}
+
+
+## Prepare the matrix for computing distance if the graph is directed
+trasnfmat <- function(x){
   ## Check if the x matrix is symmetric (undirected graph)
   ## Otherwise it returns a list with a matrix like:
   ## |zeros    t(A)|
@@ -46,10 +56,9 @@ cksymm <- function(x){
   Adj <- x
   n <- ncol(Adj)
   tag <- "undir"
-
+  
   ## If the graph is directed create a new matrix (function undir)
-  if (!all((Adj - t(Adj)) == 0)){
-    ## warning("Graph is directed!", call.=FALSE)
+  if (!cksymm(x)){
     zero <- matrix(0, nrow=n, ncol=n)
     tmp <- rBind(cBind(zero,t(Adj)),cBind(Adj,zero))
     Adj <- tmp
@@ -71,7 +80,7 @@ g2adj.igraph <- function(x,...,type="both"){
   }
   Adj <- get.adjacency(x,type=type,attr=WW,sparse=TRUE)
   diag(Adj) <- 0
-  ll <- cksymm(Adj)
+  ll <- transfmat(Adj)
   return(ll)
 }
 setMethod("g2adj","igraph",g2adj.igraph)
