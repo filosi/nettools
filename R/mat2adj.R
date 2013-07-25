@@ -10,7 +10,7 @@ mat2adj.data.frame <- function(x,...){
 }
 setMethod("mat2adj","data.frame",mat2adj.data.frame)
 
-mat2adj.matrix <- function(x,method='cor',FDR=1e-3,P=6,measure='MIC',alpha=0.6,C=15,DP=1,...){
+mat2adj.matrix <- function(x,method='cor',FDR=1e-3,P=6,measure=NULL,alpha=0.6,C=15,DP=1,...){
 
     METHODS <- c('cor','WGCNA','WGCNAFDR','bicor',
                  'bicorFDR','TOM','ARACNE','CLR',
@@ -22,13 +22,24 @@ mat2adj.matrix <- function(x,method='cor',FDR=1e-3,P=6,measure='MIC',alpha=0.6,C
     if(method == -1)
         stop("ambiguous distance method")
     if(method == 3L)
-        if (P > 1){
-            P <- 1
-            warning("Using WGCNAFDR method with P > 1, not yet implemented,\n P will be ignored")
-        }
+      if (P > 1){
+        P <- 1
+        warning("Using WGCNAFDR method with P > 1, not yet implemented,\n P will be ignored")
+      }
     ## If mine suite is require, choose the metric
-    if(method >= 9L && method <= 10L)
-        measure <- pmatch(measure,MEASURE)
+    if (!is.null(measure) && (method < 9L || method > 10L)) {
+      method <- 9L
+      warning(paste("No method selected for measure",measure,"; MINE will be used"), call.=FALSE)
+    }
+    
+    if (method >= 9L && method <= 10L) {
+      measure <- pmatch(measure,MEASURE)
+      if (length(measure) == 0){
+        measure <- 1L
+        warning(paste("No measure selected for method",METHODS[method],"; MIC will be used"), call. = FALSE)
+      }
+    }
+    
     myfun <- paste('Adj',METHODS[method],sep='')
     tmp <- do.call(myfun,list(x=x,FDR=FDR,P=P,measure=MEASURE[measure],alpha=alpha,C=C,DP=DP,...))
     return(tmp)
