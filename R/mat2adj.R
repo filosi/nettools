@@ -15,7 +15,7 @@ mat2adj.matrix <- function(x,method='cor',FDR=1e-3,P=6,measure=NULL,alpha=0.6,C=
     METHODS <- c('cor','WGCNA','WGCNAFDR','bicor',
                  'bicorFDR','TOM','ARACNE','CLR',
                  'MINE','MINEFDR','DTWMIC')
-    MEASURE <- c('MIC','MAS','MCN','MEV','MIC-R2')
+    MEASURE <- c('MIC','MAS','MCN','MEV','MICR2')
     method <- pmatch(method, METHODS)
     if(is.na(method))
         stop("invalid distance method")

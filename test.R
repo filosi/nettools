@@ -10,7 +10,7 @@ b <- matrix(rnorm(1000),ncol=100)
 
 ## Compute adjacency matrix!
 ## For different methods check the mat2adj help page!
-aadj <- mat2adj(a)
+aadj <- mat2adj(a,method="MINE",measure="MICR2")
 badj <- mat2adj(b)
 
 ## Compute the him distance between the 2 matrix
