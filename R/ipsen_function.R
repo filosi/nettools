@@ -98,13 +98,13 @@ WWp  <- function(N,g){
 ## }
 
 
-him_dir <- function(G,H){
-  n<-dim(G)[1]
-  ipsen <- d2w_dir(G,H,optimal_gamma_dir(n))
-  edit <- hamming_as_edit_dir(G,H)
-  glocal_dist <- sqrt(edit**2/2+ipsen**2/2)
-  return(c("H"=edit,"IM"=ipsen,"HIM"=glocal_dist))
-}
+## him_dir <- function(G,H){
+##   n<-dim(G)[1]
+##   ipsen <- d2w_dir(G,H,optimal_gamma_dir(n))
+##   edit <- hamming_as_edit_dir(G,H)
+##   glocal_dist <- sqrt(edit**2/2+ipsen**2/2)
+##   return(c("H"=edit,"IM"=ipsen,"HIM"=glocal_dist))
+## }
 
 
 
