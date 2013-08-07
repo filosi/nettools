@@ -5,25 +5,23 @@
 \alias{netTools}
 \docType{package}
 \title{
-  Tools for network analysis
+  A collection of tools for network analysis
 }
 \description{
-  A lot of methods are now available to compute the relation between two
-  variables.
-  This package will provide a unique function which call different
-  methods for computing an adjacency matrix from a data matrix normally
-  Additionally, the package provide a function which allow the user to
-  compute the distance between two network.
+  This package provide a collection of methods for variable association
+  inference in order to predict the network structure underlying the data.
+  A collection of quantitative methods for network comparison is
+  provided within the package.
 }
+
 \details{
   Summary:
   \tabular{ll}{
     Package: \tab nettools\cr
     Type: \tab Package\cr
     Version: \tab 1.0\cr
-    Date: \tab 2012-11-26\cr
-    Depends: \tab R (>= 2.14.1), minet, WGNCA, minerva\cr
-    Suggests: igraph
+    Date: \tab \cr
+    Depends: \tab R (>= 2.14.1), minet, WGNCA, minerva, igraph, Matrix\cr
     License: \tab GPL-3\cr
   }
 
@@ -34,16 +32,14 @@
   Samantha Riccadonna [aut, cre],
   Giuseppe Jurman [aut, cre],
   Davide Albanese [ctb],
-  Cesare Furlanello [ctb]
-
+  Cesare Furlanello [ctb]\cr
   Maintainer: Michele Filosi <filosi@fbk.eu>
 }
 \references{
     P. Langfelder, S. Horvath (2008) \emph{WGCNA: an R package for
     weighted correlation network analysis. BMC Bioinformatics 2008,
     9:559}\cr
-
-
+  
   P. E. Meyer, F. Lafitte, G. Bontempi (2008).
   \emph{MINET: An open source R/Bioconductor Package for Mutual Information
     based Network Inference. BMC Bioinformatics}.

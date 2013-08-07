@@ -3,6 +3,7 @@
 \alias{mat2adj}
 \alias{mat2adj.default}
 \alias{mat2adj.data.frame}
+\alias{mat2adj.matrix}
 \title{Data Matrix to Adjacency Matrix}
 \usage{
 mat2adj(x,\dots)
@@ -10,6 +11,8 @@ mat2adj(x,\dots)
 \method{mat2adj}{default}(x,method='cor', FDR=1e-3, P=6, measure='MIC', alpha=0.6, C=15,DP=1, \dots)
 
 \method{mat2adj}{data.frame}(x,method='cor', FDR=1e-3, P=6, measure='MIC', alpha=0.6, C=15,DP=1, \dots)
+
+\method{mat2adj}{matrix}(x,method='cor', FDR=1e-3, P=6, measure='MIC', alpha=0.6, C=15,DP=1, \dots)
 }
 
 \arguments{
@@ -27,7 +30,7 @@ mat2adj(x,\dots)
     methods \code{WGCNAFDR}, \code{MINEFDR} and \code{bicorFDR}}
   \item{measure}{\code{MIC} (default), a valid string indicating
     the measure of the MINE suite to compute. One of \code{MIC},
-    \code{MCN}, \code{MEV}, \code{MAS} or \code{MIC-R2}.}
+    \code{MCN}, \code{MEV}, \code{MAS} or \code{MICR2}.}
   \item{alpha}{0.6 (default), the \code{alpha} argument to be
     passed to the function \code{mine}. See also
     \code{\link[minerva]{mine}}}
@@ -43,20 +46,23 @@ mat2adj(x,\dots)
 \description{\code{mat2adj} is a high level function which collects
   different network inference methods. The function takes in input a data
   matrix N by P, with N samples on the rows and P variables on the
-  columns. An adjacency matrix P by P will be computed using N samples to
-  infer the interactions.
+  columns. The adjacency matrix P by P will be computed with the
+  specified method, using N samples to infer the interactions between
+  the variables.
 }
 
 \details{\code{mat2adj} function is a high-level function which includes
   different methods for inferring the relation between variables in a
-  dataset.
-  If the input is a \code{data.frame} the columns will be casted into
-  numerical values.
-  Given a N by P numerical matrix as input, the
-  relation between each PxP pairs of variables is inferred.
-  The default method \code{cor} computes the interaction using the
-  'Pearson' correlation coefficient. Different correlation methods, such
-  as \code{Spearman} could be passed to the function using \dots.
+  dataset.  If the input is a \code{data.frame} the columns will be
+  converted into numerical values.  Given a N by P numerical matrix as
+  input, the relation between each PxP pairs of variables is inferred.
+  The available methods are the following:
+  \describe{
+    \item{\code{cor}}{(default) computes the interaction using the
+      'Pearson' correlation coefficient. Different correlation methods, such
+  as \code{Spearman} could be passed to the function using \dots.}
+    
+  }
   
   \code{ARACNE}
   \code{CLR}
@@ -116,7 +122,9 @@ mat2adj(x,\dots)
   supplementary material (SOM) of the original paper.}
   
 \value{A P by P symmetric adjacency matrix with the diagonal set to
-  0. The values range in [0 - 1]}
+  0. Self loop and direction of the edges are not taking into
+  account. The values range in [0, 1].
+}
 
 \seealso{
   \code{\link{WGCNA}}, \code{\link{minerva}}, \code{\link{minet}}, \code{\link{cor}}
