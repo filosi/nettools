@@ -27,4 +27,5 @@ S3method(mat2adj,data.frame)
 
 ## Export methods for distances
 ## export(netdist,g2adj,Lap,ipsen,spec,lorentz,K,rho,hamming,him)
-export(netdist,g2adj,Lap,spec,lorentz,K,rho)
+exportPattern("g2adj")
+export(netdist,Lap,spec,lorentz,K,rho)

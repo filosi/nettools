@@ -114,7 +114,7 @@ ipsen.list <- function(object,...,gamma=NULL){
   }
   
   ## Check if network is directed or not
-  if(object$N>1000){
+  if(object$N>1000 && detectCores() >= 2){
     cl <- makeCluster(getOption("cl.cores",2))
     clusterEvalQ(cl,require("nettools",quietly=TRUE))
     ll <- clusterApply(cl,1:2,function(x,mygamma=optgamma,mylist=object,...){
