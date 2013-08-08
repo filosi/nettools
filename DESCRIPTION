@@ -6,7 +6,7 @@ Date: 2013-01-31
 Authors@R: c(person("Michele",
         "Filosi",role=c("aut","cre"),email="filosi@fbk.eu"))
 Maintainer: Michele Filosi <filosi@fbk.eu>
-Depends: R (>= 2.14.1) , methods, minet , WGCNA , minerva, rootSolve, parallel, dtw
+Depends: R (>= 2.14.1) , methods, minet , WGCNA , minerva, rootSolve, parallel, dtw, Matrix
 Suggests: igraph
 Description: Collect the functions for network analysis.
 	     Creating adjacency matrix and compute distances between networks

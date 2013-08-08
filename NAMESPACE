@@ -12,7 +12,7 @@ import(rootSolve)
 importFrom("dtw",dtw)
 
 ## igraph
-importFrom("igraph",get.adjacency)
+## importFrom("igraph",get.adjacency)
 
 ## Matrix
 import(Matrix)
@@ -27,5 +27,5 @@ S3method(mat2adj,data.frame)
 
 ## Export methods for distances
 ## export(netdist,g2adj,Lap,ipsen,spec,lorentz,K,rho,hamming,him)
-exportPattern("g2adj")
+## exportPattern("g2adj")
 export(netdist,Lap,spec,lorentz,K,rho)
