@@ -72,27 +72,6 @@ Michele Filosi
 ##-- ==>  Define data, use random,
 ##--	or do  help(data=index)  for the standard data sets.
 
-## The function is currently defined as
-function (g, h, method = "HIM", gamma = 0.08) 
-{
-    METHODS <- c("HIM", "ipsen", "hamming")
-    method <- pmatch(method, METHODS)
-    if (is.na(method)) 
-        stop("invalid distance method")
-    if (method == -1) 
-        stop("ambiguous distance method")
-    g1 <- g2adj(g)
-    g2 <- g2adj(h)
-    myadj <- new("adj2", G1 = g1, G2 = g2, N1 = ncol(g1), N2 = ncol(g2), 
-        L1 = Lap(g1), L2 = Lap(g2), method = METHODS[method])
-    if (myadj@method == "HIM") 
-        dd <- him(myadj)
-    if (myadj@method == "ipsen") 
-        dd <- ipsen(myadj, gamma = gamma)
-    if (myadj@method == "hamming") 
-        dd <- hamming(myadj)
-    return(dd)
-  }
 }
 % Add one or more standard keywords, see file 'KEYWORDS' in the
 % R documentation directory.
