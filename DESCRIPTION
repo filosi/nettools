@@ -1,7 +1,7 @@
 Package: nettools
 Type: Package
 Title: Function for creating adjacency matrix and network distances
-Version: 1.2
+Version: 0.8
 Date: 2013-01-31
 Authors@R: c(person("Michele",
         "Filosi",role=c("aut","cre"),email="filosi@fbk.eu"))
