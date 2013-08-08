@@ -11,9 +11,6 @@ import(rootSolve)
 ## DTW
 importFrom("dtw",dtw)
 
-## igraph
-## importFrom("igraph",get.adjacency)
-
 ## Matrix
 import(Matrix)
 
