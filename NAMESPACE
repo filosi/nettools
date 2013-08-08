@@ -18,11 +18,15 @@ import(Matrix)
 import(parallel)
 
 ## Exporting all generic methods for Adjacency
-exportPattern("mat2adj")
+## exportPattern("mat2adj")
+exportMethods(mat2adj)
 S3method(mat2adj,default)
 S3method(mat2adj,data.frame)
 
 ## Export methods for distances
-## export(netdist,g2adj,Lap,ipsen,spec,lorentz,K,rho,hamming,him)
-## exportPattern("g2adj")
-export(netdist,Lap,spec,lorentz,K,rho)
+export(netdist)
+
+## Export function for laplacian computation
+## exportPattern("Lap")
+exportMethods(Lap)
+S3method(Lap,default)

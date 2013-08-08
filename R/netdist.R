@@ -89,13 +89,13 @@ setMethod("g2adj","igraph",g2adj.igraph)
 ## Generical Laplacian
 ##----------------------------------------
 Lap <- function(x,...) UseMethod("Lap")
-Lap.default <- function(x,...){
-  D <- apply(x,2,sum)
-  L <- -x
-  diag(L) <- D
-  return(L)
-  #return((D * diag(dim(x)[1])) - x)
-}
+## Lap.default <- function(x,...){
+##   D <- apply(x,2,sum)
+##   L <- -x
+##   diag(L) <- D
+##   return(L)
+##   #return((D * diag(dim(x)[1])) - x)
+## }
 setMethod("Lap","matrix",Lap.default)
 setMethod("Lap","Matrix",Lap.default)
 
@@ -116,7 +116,10 @@ ipsen.list <- function(object,...,gamma=NULL){
   ## Check if network is directed or not
   if(object$N>1000 && detectCores() >= 2){
     cl <- makeCluster(getOption("cl.cores",2))
-    clusterEvalQ(cl,require("nettools",quietly=TRUE))
+    clusterEvalQ(cl,{K <- nettools:::K
+                     rho <- nettools:::rho
+                     lorentz <- nettools:::lorentz
+                   })
     ll <- clusterApply(cl,1:2,function(x,mygamma=optgamma,mylist=object,...){
       myomega <- sqrt(abs(round(spec(object[[x]]),5)))
       myk <- K(mygamma,myomega)
