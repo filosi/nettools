@@ -8,11 +8,11 @@
 \usage{
 mat2adj(x,\dots)
 
-\method{mat2adj}{default}(x,method='cor', FDR=1e-3, P=6, measure='MIC', alpha=0.6, C=15,DP=1, \dots)
+\method{mat2adj}{default}(x, \dots)
 
-\method{mat2adj}{data.frame}(x,method='cor', FDR=1e-3, P=6, measure='MIC', alpha=0.6, C=15,DP=1, \dots)
+\method{mat2adj}{data.frame}(x, \dots)
 
-\method{mat2adj}{matrix}(x,method='cor', FDR=1e-3, P=6, measure='MIC', alpha=0.6, C=15,DP=1, \dots)
+\method{mat2adj}{matrix}(x,method='cor', FDR=1e-3, P=6, measure=NULL, alpha=0.6, C=15,DP=1, \dots)
 }
 
 \arguments{
