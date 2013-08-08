@@ -2,11 +2,13 @@
 \alias{netdist}
 \alias{HIM}
 \alias{ipsen}
+\alias{Ipsen}
 \alias{hamming}
+\alias{Hamming}
 %- Also NEED an '\alias' for EACH other topic documented here.
-\title{Distance between network}
+\title{Distances between network}
 \description{
-  The function compute the distance between two adjacency matrix given as
+  The function computes the distance between two adjacency matrix given as
   matrix or igraph objects
 }
 
@@ -30,17 +32,19 @@ netdist(g, h, method = "HIM", gamma = NULL)
   }
 }
 \details{
-  Different methods for network distance can be callde using
+  Different methods for network distance can be called using
   \code{netdist} function.
   The input can be either adjacency symmetric matrix or undirected graph
   object from \pkg{igraph} package.
-  If the 'weight' attribute is given within the \pkg{graph} object it
-  will be use ad edge weight, otherwise binary representation of the
+  If the 'weight' attribute is given within the \code{graph} object it
+  will be used as edge weight, otherwise binary representation of the
   network will be considered.
   %%  ~~ If necessary, more details than the description above ~~
 }
-\value{For method \code{"HIM"} a named vector with 3 values is returned. Respectively, "hamming", "Ipsen-Michailov" and "him" distance. The parameter \code{"gamma"} is set to "NA".
-For method \code{"ipsen"} the "Ipsen-Michailov" distance is returned.
+\value{For method \code{"HIM"} a named vector with 3 values is returned. 
+Respectively, "hamming", "Ipsen-Mikhailov" and "him" distance. 
+The parameter \code{"gamma"} is set to "NA".
+For method \code{"ipsen"} the "Ipsen-Mikhailov" distance is returned.
 For method \code{"hamming"} the "Hamming" distance is returned.
 %%  ~Describe the value returned
 %%  If it is a LIST, use
