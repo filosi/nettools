@@ -11,6 +11,9 @@ import(rootSolve)
 ## DTW
 importFrom("dtw",dtw)
 
+## minerva
+importFrom("minerva",mine)
+
 ## Matrix
 import(Matrix)
 
