@@ -38,16 +38,16 @@ netdist <- function(g, h, method="HIM", gamma=NULL){
 
 
 ## Check if a matrix is symmetric
-cksymm <- function(x,...){
-  if (all((x - t(x)) == 0))
-    return(TRUE)
-  else
-    return(FALSE)
-}
+## cksymm <- function(x,...){
+##   if (all((x - t(x)) == 0))
+##     return(TRUE)
+##   else
+##     return(FALSE)
+## }
 
 
 ## Prepare the matrix for computing distance if the graph is directed
-trasnfmat <- function(x){
+transfmat <- function(x){
   ## Check if the x matrix is symmetric (undirected graph)
   ## Otherwise it returns a list with a matrix like:
   ## |zeros    t(A)|
@@ -58,9 +58,9 @@ trasnfmat <- function(x){
   tag <- "undir"
   
   ## If the graph is directed create a new matrix (function undir)
-  if (!cksymm(x)){
+  if (!isSymmetric(x,check.attributes=FALSE, check.names=FALSE)){
     zero <- matrix(0, nrow=n, ncol=n)
-    tmp <- rBind(cBind(zero,t(Adj)),cBind(Adj,zero))
+    tmp <- Matrix::rBind(Matrix::cBind(zero,t(Adj)),Matrix::cBind(Adj,zero))
     Adj <- tmp
     tag <- "dir"
   }
