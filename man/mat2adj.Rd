@@ -40,7 +40,7 @@ mat2adj(x,\dots)
   \item{\dots}{Additional argument to be pass to the downstream
     functions. Normally the argument passed through \dots are processed
     by the functions which compute the inference. Not all parameters are
-    used by all functions. (TEST DA LEVARE)
+    used by all functions.
   }
 }
 \description{\code{mat2adj} is a high level function which collects
