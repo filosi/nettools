@@ -89,13 +89,13 @@ setMethod("g2adj","igraph",g2adj.igraph)
 ## Generical Laplacian
 ##----------------------------------------
 Lap <- function(x,...) UseMethod("Lap")
-## Lap.default <- function(x,...){
-##   D <- apply(x,2,sum)
-##   L <- -x
-##   diag(L) <- D
-##   return(L)
-##   #return((D * diag(dim(x)[1])) - x)
-## }
+Lap.default <- function(x,...){
+  D <- apply(x,2,sum)
+  L <- -x
+  diag(L) <- D
+  return(L)
+  #return((D * diag(dim(x)[1])) - x)
+}
 setMethod("Lap","matrix",Lap.default)
 setMethod("Lap","Matrix",Lap.default)
 
