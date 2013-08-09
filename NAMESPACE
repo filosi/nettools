@@ -28,8 +28,3 @@ S3method(mat2adj,data.frame)
 
 ## Export methods for distances
 export(netdist)
-
-## Export function for laplacian computation
-## exportPattern("Lap")
-exportMethods(Lap)
-S3method(Lap,default)
