@@ -11,8 +11,8 @@ import(rootSolve)
 ## DTW
 importFrom("dtw",dtw)
 
-## igraph
-importFrom("igraph",get.adjacency)
+## minerva
+importFrom("minerva",mine)
 
 ## Matrix
 import(Matrix)
@@ -21,11 +21,10 @@ import(Matrix)
 import(parallel)
 
 ## Exporting all generic methods for Adjacency
-exportPattern("mat2adj")
+## exportPattern("mat2adj")
+exportMethods(mat2adj)
 S3method(mat2adj,default)
 S3method(mat2adj,data.frame)
 
 ## Export methods for distances
-## export(netdist,g2adj,Lap,ipsen,spec,lorentz,K,rho,hamming,him)
-exportPattern("g2adj")
-export(netdist,Lap,spec,lorentz,K,rho)
+export(netdist)
