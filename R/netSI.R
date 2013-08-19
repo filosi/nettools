@@ -1,5 +1,5 @@
-netdist <- function(g,indicator="S", dist='HIM', adj='cor', adj.method=NULL,
-                    method, k, h, FDR=1e-3, n.cores=1, ...){
+netSI <- function(d,indicator="S", dist='HIM', adj='cor', adj.method=NULL,
+                    method="montecarlo", k=3, h=20, FDR=1e-3, n.cores=1, ...){
 
     METHODS <- c('montecarlo','LOO','kCV')
     method <- pmatch(method, METHODS)
@@ -14,7 +14,7 @@ netdist <- function(g,indicator="S", dist='HIM', adj='cor', adj.method=NULL,
     
     if(is.na(indicator))
       stop("invalid indicator")
-    if(method == -1)
+    if(indicator == -1)
       stop("ambiguous indicator")
     
     #to be set by the user???
@@ -24,9 +24,10 @@ netdist <- function(g,indicator="S", dist='HIM', adj='cor', adj.method=NULL,
     ADJcv <- list()
     ddim <- dim(d)[1]
     
+    ##verificare la definizione di k
     ## Montecarlo
     if (method==1)
-      take <- lapply(1:h,function(x){tmp <- sample(seq(ddim),floor(ddim*(1-(1/k)))) ##verificare la definizione di k
+      take <- lapply(1:h,function(x){tmp <- sample(seq(ddim),floor(ddim*(1-(1/k)))) 
                                      return(tmp)})
     
     ## Leave One Out
@@ -48,12 +49,33 @@ netdist <- function(g,indicator="S", dist='HIM', adj='cor', adj.method=NULL,
           s <- split(tmpcv,cut(seq(ddim),k))
           names(s) <- NULL
           take <- c(take,lapply(s,function(x,idx){tmp <- idx[!is.element(idx,x)]
-                                                  cat("H =",H,"\n",tmp,fill=TRUE,file=filelogs,append=TRUE)
+                                                  #cat("H =",H,"\n",tmp,fill=TRUE,file=filelogs,append=TRUE)
                                                   return(tmp)},idx=tmpcv))
         }
       }
     }
     
-    return(take)
     
+    ## Computation!!
+    for (H in 1:length(take)){
+      ti <- take[[H]]
+      v0tmp <- which(apply(d[ti,],2,sd)<1e-5)
+      if (length(v0tmp)>=1){
+        var0.feat[names(v0tmp)] <- var0.feat[names(v0tmp)] + 1
+        #warning(paste("Pre dim ", dim(d),"\n"),.call=FALSE)
+        d <- d[,-v0tmp]
+      }
+      if (cvlab=="montecarlo" || cvlab=="loo"){
+        ## Put ifelse in the cat command for printing of Variable with 0 variance
+        flag <- ifelse(length(v0tmp)==0,v0tmplab <- "",v0tmplab <- paste("Var =",v0tmp,sep=" "))
+        #cat("At resampling ",H, " algs ", a, " Classes ",cl,v0tmplab,file=filelogs,append=TRUE,fill=TRUE)
+        if (cvlab=="montecarlo")
+          cat(ti,fill=TRUE,file=filelogs,append=TRUE)
+      } else {
+        flag <- ifelse(length(v0tmp)==0,v0tmplab <- "",v0tmplab <- paste("Var =",v0tmp,sep=" "))
+        cat("At resampling ",(H%/%k)+1," algs ", a, " Classes ",cl, v0tmplab,file=filelogs,append=TRUE,fill=TRUE)
+      }
+      ADJcv[[H]] <- myfun(d[ti,],P=1,FDR=fdr)
+    }
 }
+

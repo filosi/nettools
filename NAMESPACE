@@ -20,8 +20,7 @@ import(Matrix)
 ## parallel
 import(parallel)
 
-##for stability
-import(combinat)
+
 
 
 ## Exporting all generic methods for Adjacency
