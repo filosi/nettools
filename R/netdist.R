@@ -13,12 +13,16 @@ netdist <- function(g, h, method="HIM", gamma=NULL){
     g2 <- g2adj(h)
     
     ## Check for dimension and directionality of g and h
-    if ((g1$N == g2$N) & (g1$tag == g2$tag)){
-      ## Create the list of adjacency matrix
-      myadj <- list(method=METHODS[method],G1=g1$adj,G2=g2$adj,N=g1$N,tag=g1$tag)
-    } else {
-      stop("Not conformable graph g and h", call.=FALSE)
-    }
+    ## Return two different error messages
+    if ((g1$N == g2$N)){
+      if((g1$tag == g2$tag)){
+        ## Create the list of adjacency matrix
+        myadj <- list(method=METHODS[method],G1=g1$adj,G2=g2$adj,N=g1$N,tag=g1$tag)
+      } else {
+        stop("Not conformable graph g and h: one is directed while the other is undirected", call.=FALSE)
+      }else{
+        stop("Not conformable graph g and h: they have different dimensions", call.=FALSE)
+      }
 
     ## Check method for distances
     if (myadj$method=="HIM"){
@@ -84,6 +88,12 @@ g2adj.igraph <- function(x,...,type="both"){
   return(ll)
 }
 setMethod("g2adj","igraph",g2adj.igraph)
+
+g2adj.matrix <- function(x,...){
+  ll <- transfmat(x)
+  return(ll)
+}
+setMethod("g2adj","matrix",g2adj.matrix)
 
 
 ## Generical Laplacian
