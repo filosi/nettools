@@ -20,6 +20,10 @@ import(Matrix)
 ## parallel
 import(parallel)
 
+##for stability
+import(combinat)
+
+
 ## Exporting all generic methods for Adjacency
 ## exportPattern("mat2adj")
 exportMethods(mat2adj)
@@ -28,3 +32,5 @@ S3method(mat2adj,data.frame)
 
 ## Export methods for distances
 export(netdist)
+
+export(netSI)

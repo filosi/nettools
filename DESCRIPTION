@@ -8,7 +8,7 @@ Authors@R: c(person("Michele",
 Maintainer: Michele Filosi <filosi@fbk.eu>
 Depends: R (>= 2.14.1), methods
 Suggests: igraph
-Imports: WGCNA, minet, rootSolve, dtw, Matrix, parallel, minerva
+Imports: WGCNA, minet, rootSolve, dtw, Matrix, parallel, minerva, combinat
 Description: Collect the functions for network analysis.
 	     Creating adjacency matrix and compute distances between networks
 License: GPL-3 + file LICENSE

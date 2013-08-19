@@ -20,7 +20,7 @@ netdist <- function(g, h, method="HIM", gamma=NULL){
         myadj <- list(method=METHODS[method],G1=g1$adj,G2=g2$adj,N=g1$N,tag=g1$tag)
       } else {
         stop("Not conformable graph g and h: one is directed while the other is undirected", call.=FALSE)
-      }else{
+      }} else {
         stop("Not conformable graph g and h: they have different dimensions", call.=FALSE)
       }
 
