@@ -1,29 +1,48 @@
 \encoding{UTF-8}
 \name{mat2adj}
+\docType{methods}
 \alias{mat2adj}
 \alias{mat2adj.default}
 \alias{mat2adj.data.frame}
 \alias{mat2adj.matrix}
-\title{Data Matrix to Adjacency Matrix}
+\alias{mat2adj-methods}
+\alias{mat2adj.data.frame,data.frame-method}
+\alias{mat2adj.matrix,matrix-method}
+
+\title{From Data Matrix to Adjacency Matrix}
+
+\description{\code{mat2adj} is a high level function providing
+  different network inference methods. The function takes in input a data
+  matrix \emph{N by P}, with N samples on the rows and P variables on the
+  columns. The adjacency matrix \emph{P by P} will be computed with the
+  specified method, using N samples to infer the interactions between
+  the variables.
+}
+
 \usage{
 mat2adj(x,\dots)
 
-\method{mat2adj}{default}(x,method='cor', FDR=1e-3, P=6, measure='MIC', alpha=0.6, C=15,DP=1, \dots)
+\method{mat2adj}{default}(x, \dots)
+%% \S4method{mat2adj.default}{generic}(x, \dots)
 
-\method{mat2adj}{data.frame}(x,method='cor', FDR=1e-3, P=6, measure='MIC', alpha=0.6, C=15,DP=1, \dots)
+\method{mat2adj}{data.frame}(x, \dots)
+\S4method{mat2adj}{data.frame}(x, \dots)
 
-\method{mat2adj}{matrix}(x,method='cor', FDR=1e-3, P=6, measure='MIC', alpha=0.6, C=15,DP=1, \dots)
+\method{mat2adj}{matrix}(x,method='cor', FDR=1e-3, P=6, measure=NULL,
+alpha=0.6, C=15,DP=1, \dots)
+\S4method{mat2adj}{matrix}(x,method='cor', FDR=1e-3, P=6,
+measure=NULL, alpha=0.6, C=15,DP=1, \dots)
+
 }
 
 \arguments{
-  \item{x}{A matrix or data.frame of numerical values of N rows and
-  P columns}
-  \item{method}{\code{cor} (default), or a character string indicating which
-    method to use for inferring a relation between two variables. This must
-    be (an abbreviation of) one of the strings \code{WGCNA}, \code{WGCNAFDR},
+  \item{x}{ a matrix or data.frame of numerical values of N rows and P columns}
+  \item{method}{ a character string indicating which
+    method will be used for inferring a relationship between two variables. This must
+    be (an abbreviation of) one of \code{cor} (default), \code{WGCNA}, \code{WGCNAFDR},
     \code{bicor}, \code{bicorFDR}, \code{TOM}, \code{ARACNE},
     \code{CLR}, \code{MINE}, \code{MINEFDR}, \code{DTWMIC}}
-  \item{P}{6 (default), integer used as soft-thresholding power for netwoek
+  \item{P}{6 (default), integer used as soft-thresholding power for network
     construction, used by the \code{WGCNA} and \code{TOM} methods.}
   \item{FDR}{1e-3 (default), a number which indicates the number of
     values generated to compute the NULL hypothesis. To be used for
@@ -37,18 +56,11 @@ mat2adj(x,\dots)
   \item{C}{15 (default), an integer value to be passed at the mine function
     main. Only for methods \code{MINE}  and \code{MINEFDR}.}
   \item{DP}{1 (default), only for method \code{DTWMIC}.}
-  \item{\dots}{Additional argument to be pass to the downstream
+  \item{\dots}{Additional arguments to be passed to the downstream
     functions. Normally the argument passed through \dots are processed
     by the functions which compute the inference. Not all parameters are
     used by all functions.
   }
-}
-\description{\code{mat2adj} is a high level function which collects
-  different network inference methods. The function takes in input a data
-  matrix N by P, with N samples on the rows and P variables on the
-  columns. The adjacency matrix P by P will be computed with the
-  specified method, using N samples to infer the interactions between
-  the variables.
 }
 
 \details{\code{mat2adj} function is a high-level function which includes

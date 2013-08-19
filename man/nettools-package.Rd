@@ -8,7 +8,7 @@
   A collection of tools for network analysis
 }
 \description{
-  This package provide a collection of methods for variable association
+  This package provides a collection of methods for variable association
   inference in order to predict the network structure underlying the data.
   A collection of quantitative methods for network comparison is
   provided within the package.
@@ -64,7 +64,7 @@
 }
 \keyword{ package }
 \seealso{
-  Further information on the functions could be found in \pkg{WGCNA},
+  Further information on specific functions for inferring the adjacency matrix could be found in \pkg{WGCNA},
   \pkg{minerva} and \pkg{minet}.
 }
 %% \examples{
