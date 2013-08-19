@@ -19,7 +19,7 @@ Lap.default <- function(x,...){
   diag(L) <- D
   return(L)
 }
-setGeneric("Lap",Lap.default)
+## setGeneric("Lap",Lap.default)
 
 ## Lap.default <- function(x,...){
 ##   D <- apply(x,2,sum)

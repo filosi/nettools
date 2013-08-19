@@ -1,9 +1,14 @@
 \encoding{UTF-8}
 \name{mat2adj}
+\docType{methods}
 \alias{mat2adj}
 \alias{mat2adj.default}
 \alias{mat2adj.data.frame}
 \alias{mat2adj.matrix}
+\alias{mat2adj-methods}
+\alias{mat2adj.data.frame,data.frame-method}
+\alias{mat2adj.matrix,matrix-method}
+
 \title{From Data Matrix to Adjacency Matrix}
 
 \description{\code{mat2adj} is a high level function providing
@@ -18,10 +23,16 @@
 mat2adj(x,\dots)
 
 \method{mat2adj}{default}(x, \dots)
+%% \S4method{mat2adj.default}{generic}(x, \dots)
 
 \method{mat2adj}{data.frame}(x, \dots)
+\S4method{mat2adj}{data.frame}(x, \dots)
 
-\method{mat2adj}{matrix}(x,method='cor', FDR=1e-3, P=6, measure=NULL, alpha=0.6, C=15,DP=1, \dots)
+\method{mat2adj}{matrix}(x,method='cor', FDR=1e-3, P=6, measure=NULL,
+alpha=0.6, C=15,DP=1, \dots)
+\S4method{mat2adj}{matrix}(x,method='cor', FDR=1e-3, P=6,
+measure=NULL, alpha=0.6, C=15,DP=1, \dots)
+
 }
 
 \arguments{
@@ -51,7 +62,6 @@ mat2adj(x,\dots)
     used by all functions.
   }
 }
-
 
 \details{\code{mat2adj} function is a high-level function which includes
   different methods for inferring the relation between variables in a
