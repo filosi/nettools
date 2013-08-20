@@ -48,7 +48,6 @@ netSI <- function(d,indicator="S", dist='HIM', adj.method='cor', adj.measure=NUL
 
 resampling.index <- function(N,method="montecarlo", k=3, h=20){
     ##here we have to insert a check on NULL ADJs due to variance check
-  }
 }
 
 resamplingIDX <- function(N,method="montecarlo", k=3, h=20){
