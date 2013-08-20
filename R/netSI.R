@@ -1,5 +1,5 @@
 netSI <- function(d,indicator="S", dist='HIM', adj.method='cor', adj.measure=NULL,
-                  method="montecarlo", k=3, h=20, n.cores=1, ...){
+                  method="montecarlo", k=3, h=20, n.cores=NULL, ...){
   
 
   INDICATORS <- c('S','SI','Sw','Sd')
@@ -10,15 +10,13 @@ netSI <- function(d,indicator="S", dist='HIM', adj.method='cor', adj.measure=NUL
   if(indicator == -1)
     stop("ambiguous indicator")
   
-  method <- pmatch(method, METHODS)
-  
-                                        #to be set by the user???
+  ##to be set by the user???
   sseed <- 0
   set.seed(sseed)
   
   ddim <- nrow(d)
   
-                                        #for all the indicators but the first one we have to perform resampling
+  ##for all the indicators but the first one we have to perform resampling
   if(indicator!=1L){
     idxs <-  resamplingIDX(ddim,method=method, k=k, h=h)
     ADJcv <- vector(list,length=length(idxs))
@@ -29,27 +27,36 @@ netSI <- function(d,indicator="S", dist='HIM', adj.method='cor', adj.measure=NUL
       ADJcv[[paste("res",H,sep="")]] <- mat2adj(x=d[i,],method=adj.method,measure=adj.measure,...)
       ##here we have to insert a check on NULL ADJs due to variance check
     }
+    if(is.null(n.cores)){
+      if(detectCores()>=2){
+        n.cores <- detectCores()-1
+      warning("The computation has been automatically parallelized")
+      }
+      else{
+        n.cores <- 1
+      }
+    }
+    if(n.cores>1){
+      cl <- makeCluster(getOption("cl.cores",n.cores))
+      clusterEvalQ(cl,{mat2adj <- nettools:::mat2adj})
+      ll <- clusterApply(cl,1:length(idxs),FUN=mat2adj,)
+      stopCluster(cl)
+    } else {
+      ll <- lapply(list(object$L1,object$L2),function(x,mygamma=optgamma,...){
+        myomega <- sqrt(abs(round(spec(x),5)))
+        myk <- K(mygamma,myomega)
+        return(list(myomega,myk))
+      })
+    }
   
   }else{
-                                        #computing the adjacency matrix on the whole dataset
+    ##computing the adjacency matrix on the whole dataset
     ADJcv[['all']] <- mat2adj(x=d,method=adj.method,measure=adj.measure,...)
   }
-  
-  
-  ##verificare la definizione di k
 
-  ## Computation!!
-  for (H in 1:length(take)){
-    ti <- take[[H]]
-    ADJcv[[paste("res",H,sep="")]] <- mat2adj(x=d[ti,],method=adj.method,measure=adj.measure,...)
-  }
+
 }
 
-
-resampling.index <- function(N,method="montecarlo", k=3, h=20){
-    ##here we have to insert a check on NULL ADJs due to variance check
-  }
-}
 
 resamplingIDX <- function(N,method="montecarlo", k=3, h=20){
 
