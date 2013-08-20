@@ -33,8 +33,6 @@ netSI <- function(d,indicator="S", dist='HIM', adj.method='cor', adj.measure=NUL
   }else{
                                         #computing the adjacency matrix on the whole dataset
     ADJcv[['all']] <- mat2adj(x=d,method=adj.method,measure=adj.measure,...)
-<<<<<<< HEAD
-    ## if(ADJcv[['all']])
   }
   
   
@@ -49,13 +47,12 @@ netSI <- function(d,indicator="S", dist='HIM', adj.method='cor', adj.measure=NUL
 
 
 resampling.index <- function(N,method="montecarlo", k=3, h=20){
-=======
     ##here we have to insert a check on NULL ADJs due to variance check
   }
 }
 
 resamplingIDX <- function(N,method="montecarlo", k=3, h=20){
->>>>>>> b14ade71fbe8e0e12070763f6c25cbed597f3dbc
+
   
   METHODS <- c('montecarlo','LOO','kCV')
   method <- pmatch(method, METHODS)
