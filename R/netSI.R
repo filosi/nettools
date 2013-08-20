@@ -16,31 +16,28 @@ netSI <- function(d,indicator="S", dist='HIM', adj.method='cor', adj.measure=NUL
   sseed <- 0
   set.seed(sseed)
   
-  ADJcv <- vector(list,length=)
-  ddim <- dim(d)[1]
-  
+  ddim <- nrow(d)
   
   #for all the indicators but the first one we have to perform resampling
   if(indicator!=1L){
-    indexes <-  resampling.index 
+    idxs <-  resamplingIDX(ddim,method=method, k=k, h=h)
+    ADJcv <- vector(list,length=length(idxs))
+    
+    ##this cycle must be parallelized
+    for (H in 1:length(idxs)){
+      i <- idxs[[H]]
+      ADJcv[[paste("res",H,sep="")]] <- mat2adj(x=d[i,],method=adj.method,measure=adj.measure,...)
+      ##here we have to insert a check on NULL ADJs due to variance check
+    }
+  
   }else{
     #computing the adjacency matrix on the whole dataset
     ADJcv[['all']] <- mat2adj(x=d,method=adj.method,measure=adj.measure,...)
-    if(ADJcv[['all']])
-  }
-    
-    
-    ##verificare la definizione di k
-
-    ## Computation!!
-    for (H in 1:length(take)){
-      ti <- take[[H]]
-      ADJcv[[paste("res",H,sep="")]] <- mat2adj(x=d[ti,],method=adj.method,measure=adj.measure,...)
-    }
+    ##here we have to insert a check on NULL ADJs due to variance check
   }
 }
 
-resampling.index <- function(N,method="montecarlo", k=3, h=20){
+resamplingIDX <- function(N,method="montecarlo", k=3, h=20){
   
   METHODS <- c('montecarlo','LOO','kCV')
   method <- pmatch(method, METHODS)
