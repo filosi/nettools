@@ -20,7 +20,8 @@ import(Matrix)
 ## parallel
 import(parallel)
 
-
+## combinatorics utilities for stability indicators computation
+importFrom("combn",combinat)
 
 
 ## Exporting all generic methods for Adjacency
