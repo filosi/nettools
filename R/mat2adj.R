@@ -40,8 +40,15 @@ mat2adj.matrix <- function(x,method='cor',FDR=1e-3,P=6,measure=NULL,alpha=0.6,C=
       }
     }
     
-    myfun <- paste('Adj',METHODS[method],sep='')
-    tmp <- do.call(myfun,list(x=x,FDR=FDR,P=P,measure=MEASURE[measure],alpha=alpha,C=C,DP=DP,...))
-    return(tmp)
+    tmp <- checkvar(x,...)
+    if(!is.null(tmp)){
+     stop(paste("The variables indexed as",paste(tmp,collapse=", "), 
+                "have nearly zero variance: check the data matrix provided or change the tollerance parameter"),
+          call.=FALSE) 
+    }else{
+      myfun <- paste('Adj',METHODS[method],sep='')
+      tmp <- do.call(myfun,list(x=x,FDR=FDR,P=P,measure=MEASURE[measure],alpha=alpha,C=C,DP=DP,...))
+      return(tmp)
+    }
 }
 setMethod("mat2adj","matrix",mat2adj.matrix)
