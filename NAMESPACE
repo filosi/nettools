@@ -27,8 +27,9 @@ importFrom("combinat",combn)
 ## Exporting all generic methods for Adjacency
 ## exportPattern("mat2adj")
 exportMethods(mat2adj)
-S3method(mat2adj,default)
-S3method(mat2adj,data.frame)
+## S3method(mat2adj,default)
+## S3method(mat2adj,data.frame)
+## S3method(mat2adj,matrix)
 
 ## Export methods for distances
 export(netdist)

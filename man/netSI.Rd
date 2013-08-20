@@ -8,12 +8,11 @@ Network Stability Indicators
 Family NetSI of stability indicators
 }
 \usage{
-netSI(d,indicator="S", dist='HIM', adj='cor', adj.method=NULL,
-                    method="montecarlo", k=3, h=20, FDR=1e-3, n.cores=1, ...)
+netSI(d,indicator="S", dist='HIM', adj.method='cor', method="montecarlo", k=3, h=20, n.cores=NULL, save=TRUE, ...)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
-  \item{g}{ dataset used for network inference and stability indicators computation}
+  \item{d}{ dataset used for network inference and stability indicators computation}
   \item{method}{ String identifying the cross validation schema to be used for the stability computation.
         One of 'montecarlo' (default), 'LOO' for Leave One Out or 'kCV'for k-fold Cross Validation.}
   \item{k}{ Numeric value indicating the number of subset the data will be splitted in.
