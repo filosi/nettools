@@ -12,7 +12,7 @@ netSI <- function(d,indicator="S", dist='HIM', adj.method='cor', adj.measure=NUL
   
   method <- pmatch(method, METHODS)
   
-  #to be set by the user???
+                                        #to be set by the user???
   sseed <- 0
   set.seed(sseed)
   
@@ -20,25 +20,25 @@ netSI <- function(d,indicator="S", dist='HIM', adj.method='cor', adj.measure=NUL
   ddim <- dim(d)[1]
   
   
-  #for all the indicators but the first one we have to perform resampling
+                                        #for all the indicators but the first one we have to perform resampling
   if(indicator!=1L){
     indexes <-  resampling.index 
   }else{
-    #computing the adjacency matrix on the whole dataset
+                                        #computing the adjacency matrix on the whole dataset
     ADJcv[['all']] <- mat2adj(x=d,method=adj.method,measure=adj.measure,...)
-    if(ADJcv[['all']])
+    ## if(ADJcv[['all']])
   }
-    
-    
-    ##verificare la definizione di k
+  
+  
+  ##verificare la definizione di k
 
-    ## Computation!!
-    for (H in 1:length(take)){
-      ti <- take[[H]]
-      ADJcv[[paste("res",H,sep="")]] <- mat2adj(x=d[ti,],method=adj.method,measure=adj.measure,...)
-    }
+  ## Computation!!
+  for (H in 1:length(take)){
+    ti <- take[[H]]
+    ADJcv[[paste("res",H,sep="")]] <- mat2adj(x=d[ti,],method=adj.method,measure=adj.measure,...)
   }
 }
+
 
 resampling.index <- function(N,method="montecarlo", k=3, h=20){
   
