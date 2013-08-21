@@ -1,17 +1,19 @@
+# debug(netSI)
+# netSI(a,adj.method="MINE",measure="MIC",alpha=1)
+
 netSI <- function(d,indicator="all", dist='HIM', adj.method='cor', 
-                  method="montecarlo", k=3, h=20, n.cores=NULL,save=TRUE, ...){
+                  method="montecarlo", k=3, h=20, n.cores,save=TRUE, ...){
   
-  ##to handle arguments passed through the dots we need to change a little bit here... 
-  ##see coxph function of package survival
   Call <- match.call()
   id.Call <- match(c("d", "indicator", "dist", "adj.method","method","k","h","n.cores"), 
-              names(Call), nomatch=0)
+                   names(Call), nomatch=0)
   if(id.Call[1]==0){
     stop("A dataset must be provided",call.=FALSE)
   }
   
-  ##more time needed here
-  ##----------------------------------------------
+  ##retrieving the arguments passed through ...
+  ##extraArgs <- list(...)
+  ##are not needed in the lapply calls below...
   
   INDICATORS <- c('S','SI','Sw','Sd',"all")
   indicator <- pmatch(indicator,INDICATORS)
@@ -30,61 +32,100 @@ netSI <- function(d,indicator="all", dist='HIM', adj.method='cor',
   idxs <-  resamplingIDX(ddim,method=method, k=k, h=h)
   
   ##hardcoded the length of the list for optimization purposes
-  ADJcv <- vector("list",length=length(idxs)+1)
-
-  if(is.null(n.cores)){
+  ADJcv <- vector("list",length=length(idxs))
+  
+  ##check if it is user-friendly this way
+  if(is.null(Call$n.cores)){
     if(detectCores()>=2){
       n.cores <- detectCores()-1
-      warning("The computation has been automatically parallelized")
+      warning("The computation of the adjacency matrices has been automatically parallelized")
     }
     else{
       n.cores <- 1
     }
   }
+  
   if(n.cores>1){
-    ##not working at the moment... possibly there are problems with the objects evaluated on the slaves
-    cl <- makeCluster(getOption("cl.cores",n.cores))
-    clusterEvalQ(cl,{
-      d <- nettools:::d
-      idxs <- nettools:::idxs
-      mat2adj <- nettools:::mat2adj
-      adj.method <-  nettools:::adj.method
-      adj.measure <- nettools:::adj.measure
-    })
-    ##here we probably have to eval other parameters passed to the mat2adj function in case they are used... 
-    ##probably we have to do some checkings on the arguments passed
-    ADJcv <- clusterApply(cl,1:length(idxs),FUN=function(x,...){
+    
+    cl <- makeCluster(n.cores)
+    
+    ##from our checks the argument passed through ... are really used for 
+    ##building the adjacency matrices during the parallel computation
+    ADJcv <- parLapply(cl=cl,X=1:length(idxs),fun=function(x,d,method,...){
       ss <- d[idxs[[x]],]
-      tmp <- mat2adj(ss,method=adj.method,measure=adj.measure,...)
+      tmp <- nettools:::mat2adj(ss,...)
       return(tmp)
-    })
+    },d=d,method=adj.method,...)
     stopCluster(cl)
-  } else{  
-    ##we need to check that all the arguments of mat2adj are passed through the lapply
-  ADJcv <- lapply(1:length(idxs),FUN=function(x){
-    ss <- d[idxs[[x]],]
-    tmp <- mat2adj(ss,method=adj.method,measure=adj.measure,...)
-    return(tmp)})
+  } 
+  else{
+    ADJcv <- lapply(X=1:length(idxs),FUN=function(x,d,method,...){
+      ss <- d[idxs[[x]],]
+      tmp <- mat2adj(ss,...)
+      return(tmp)
+    },d=d,method=adj.method,...)
   }
-  #-----------------
-
+  
   ##computing the adjacency matrix on the whole dataset
-  ADJcv[['all']] <- mat2adj(x=d,method=adj.method,measure=adj.measure,...)
-
+  ADJall <- mat2adj(x=d,method=adj.method,...)
+  
   
   #here the computation of the stability indicators is still missing...
+  netsi <- list()
+  if(indicator==1L | indicator==5L){
+    #fare il conto di tutte le distanze tra ADJcv[["all"]] e i restanti ADJcv
+      netsi[["S"]] <- netsiS(ADJall,ADJcv,dist=dist,n.cores=n.cores)
+  }
+  if(indicator==2L | indicator==5L){
+    #fare il conto di tutte le distanze tra ADJcv[["all"]] e i restanti ADJcv
+    netsi[["SI"]] <- netsiSI(ADJcv,dist=dist,n.cores=n.cores)
+  }
+  if(indicator==3L | indicator==5L){
+    #fare il conto di tutte le distanze tra ADJcv[["all"]] e i restanti ADJcv
+    netsi[["Sw"]] <- netsiSw(ADJcv,dist=dist,n.cores=n.cores)
+  }
+  if(indicator==4L | indicator==5L){
+    #fare il conto di tutte le distanze tra ADJcv[["all"]] e i restanti ADJcv
+    netsi[["Sd"]] <- netsiSd(ADJcv,dist=dist,n.cores=n.cores)
+  }
   
   if(save==TRUE)
-    results <- list("ADJlist"=ADJcv)
+    results <- list("call"=Call,"ADJlist"=ADJcv,
+                    "S"=netsi[["S"]],"SI"=netsi[["SI"]],"Sw"=netsi[["Sw"]],"Sd"=netsi[["Sd"]])
   else
-    results <- list()
+    results <- list("S"=netsi[["S"]],"SI"=netsi[["SI"]],"Sw"=netsi[["Sw"]],"Sd"=netsi[["Sd"]])
   
   return(results)
 }
 
+##need to do some checkings in order to pass also gamma through...
+netsiS <- function(g,H,dist,n.cores){
+  type <- pmatch(dist,c("H","IM","HIM","hamming","ipsen"))
+  if(type==4L) type <- 1
+  if(type==5L) type <- 2
+  
+  if(n.cores>1){
+    cl <- makeCluster(n.cores)
+    s <- parLapply(cl=cl,X=1:length(H),fun=function(x,g,H,dist,type){
+      res <- nettools:::netdist(g,H[[x]],dist)[[type]]
+      return(res)
+    },g=g,H=H,dist=dist,type=type)
+    stopCluster(cl)
+  }else{
+    s <- lapply(X=1:length(H),fun=function(x,g,H,dist){
+      res <- netdist(g,H[[x]],dist)[[type]]
+      return(res)
+    },g=g,H=H,dist=dist)
+  }
+  return(unlist(s))
+}
+
+netsiSI <- function(H,dist,n.cores){}
+netsiSw <- function(H,dist,n.cores){}
+netsiSd <- function(H,dist,n.cores){}
+
 
 resamplingIDX <- function(N,method="montecarlo", k=3, h=20){
-  
   
   METHODS <- c('montecarlo','LOO','kCV')
   method <- pmatch(method, METHODS)

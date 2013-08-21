@@ -22,6 +22,7 @@ netSI(d,indicator="S", dist='HIM', adj.method='cor', method="montecarlo", k=3, h
     ##In case cvlab=="kcv" cv iteration are performed, each dividing the data into 1-1/cv
     }
   \item{h}{ Numeric value indicates the number of iterations (cross validations). By default it is set to 20}
+  \item{dist}{Note: if dist='HIM' only the information for HIM will be returned}
 }
 \details{
 %%  ~~ If necessary, more details than the description above ~~
