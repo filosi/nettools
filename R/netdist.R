@@ -61,7 +61,7 @@ transfmat <- function(x){
   n <- ncol(Adj)
   tag <- "undir"
   
-  ## If the graph is directed create a new matrix (function undir)
+  ## If the graph is directed create a new matrix 
   if (!isSymmetric(x,check.attributes=FALSE, check.names=FALSE)){
     zero <- matrix(0, nrow=n, ncol=n)
     tmp <- Matrix::rBind(Matrix::cBind(zero,t(Adj)),Matrix::cBind(Adj,zero))
@@ -84,12 +84,18 @@ g2adj.igraph <- function(x,...,type="both"){
   }
   Adj <- get.adjacency(x,type=type,attr=WW,sparse=TRUE)
   diag(Adj) <- 0
+  if (any(Adj>1) || any(Adj<0)){
+    stop("Edge weight should be >= 0 and <= 1", call.=FALSE)
+  }
   ll <- transfmat(Adj)
   return(ll)
 }
 setMethod("g2adj","igraph",g2adj.igraph)
 
 g2adj.matrix <- function(x,...){
+  if (any(x>1) || any(x<0)){
+    stop("Edge weight should be >= 0 and <= 1", call.=FALSE)
+  }
   ll <- transfmat(x)
   return(ll)
 }

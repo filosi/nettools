@@ -24,8 +24,8 @@
     Depends: \tab R (>= 2.14.1), minet, WGNCA, minerva, igraph, Matrix\cr
     License: \tab GPL-3\cr
   }
-
 }
+
 \author{
   Michele Filosi [aut, cre],
   Roberto Visintainer [aut, cre],
