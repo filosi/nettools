@@ -19,10 +19,11 @@
   \tabular{ll}{
     Package: \tab nettools\cr
     Type: \tab Package\cr
-    Version: \tab 1.0\cr
+    Version: \tab 0.8\cr
     Date: \tab \cr
-    Depends: \tab R (>= 2.14.1), minet, WGNCA, minerva, igraph, Matrix\cr
-    License: \tab GPL-3\cr
+    Depends: R (>= 2.14.1), methods
+    Imports: WGCNA, minet, rootSolve, dtw, Matrix, parallel, minerva, combinat
+    License: GPL-3 + file LICENSE
   }
 }
 
