@@ -157,9 +157,6 @@ netsiSI <- function(H,dist,n.cores){
   }
   return(unlist(s))
 }
-<<<<<<< HEAD
-
-netsiSw <- function(H,dist,n.cores){}
 
 ## NB dist parameter not needed
 netsiSd <- function(H,n.cores){
@@ -175,7 +172,6 @@ netsiSd <- function(H,n.cores){
   }
   return(dd)
 }
-=======
 
 netsiSw <- function(H,n.cores){
   com <- combn(1:nrow(H[[1]]), 2)
@@ -203,10 +199,6 @@ netsiSw <- function(H,n.cores){
 #   
 #   return(s)
 # }
-
-netsiSd <- function(H,n.cores){}
->>>>>>> 3f37d117d7b7a62bb5c10355c4a6f6c40bf9c087
-
 
 resamplingIDX <- function(N,method="montecarlo", k=3, h=20){
   
