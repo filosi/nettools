@@ -14,6 +14,7 @@ netSI <- function(d,indicator="all", dist='HIM', adj.method='cor',
     stop("A dataset must be provided",call.=FALSE)
   }
   
+  
   ##retrieving the arguments passed through ...
   ##extraArgs <- list(...)
   ##are not needed in the lapply calls below...
@@ -27,7 +28,7 @@ netSI <- function(d,indicator="all", dist='HIM', adj.method='cor',
     stop("ambiguous indicator")
   
   ##check on save and verbose are missing!!!!
-  
+
   ##to be set by the user???
   sseed <- 0
   set.seed(sseed)
@@ -44,18 +45,33 @@ netSI <- function(d,indicator="all", dist='HIM', adj.method='cor',
   if(is.null(Call$n.cores)){
     if(detectCores()>=2){
       n.cores <- detectCores()-1
-      warning("The computation of the adjacency matrices has been automatically parallelized")
+      cl <- makeCluster(n.cores)
+      warning("The computation has been automatically parallelized", call.=FALSE)
     }
     else{
-      n.cores <- 1
+      cl <- NULL
+    }
+  } else {
+    if (Call$n.cores==1){
+      cl <- NULL
+    } else {
+      if (Call$n.cores<detectCores()){
+        cl <- makeCluster(Call$n.cores)
+      } else {
+        if(detectCores()>=2){
+          n.cores <- detectCores()-1
+          cl <- makeCluster(n.cores)
+          warning("The computation has been automatically parallelized", call.=FALSE)
+        } 
+      }
     }
   }
   
   if(verbose==TRUE) cat("computing adjacency matrices...\n")
   
-  if(n.cores>1){
+  if(!is.null(cl)){
     
-    cl <- makeCluster(n.cores)
+    
     
     ##from our checks the argument passed through ... are really used for 
     ##building the adjacency matrices during the parallel computation
@@ -64,7 +80,6 @@ netSI <- function(d,indicator="all", dist='HIM', adj.method='cor',
       tmp <- nettools:::mat2adj(ss,...)
       return(tmp)
     },d=d,method=adj.method,...)
-    stopCluster(cl)
   } 
   else{
     ADJcv <- lapply(X=1:length(idxs),FUN=function(x,d,method,...){
@@ -78,28 +93,23 @@ netSI <- function(d,indicator="all", dist='HIM', adj.method='cor',
   ADJall <- mat2adj(x=d,method=adj.method,...)
   
   
-  #here the computation of the stability indicators is still missing...
+  #here the computation of the stability indicators
   netsi <- list()
   if(indicator==1L | indicator==5L){
     if(verbose==TRUE) cat("computing stability indicator S...\n")   
-    #fare il conto di tutte le distanze tra ADJcv[["all"]] e i restanti ADJcv
-      netsi[["S"]] <- netsiS(ADJall,ADJcv,dist=dist,n.cores=n.cores)
+      netsi[["S"]] <- netsiS(ADJall,ADJcv,dist=dist,cl=cl)
   }
   if(indicator==2L | indicator==5L){
     if(verbose==TRUE) cat("computing stability indicator SI...\n")
-    #fare il conto di tutte le distanze tra ADJcv[["all"]] e i restanti ADJcv
-    netsi[["SI"]] <- netsiSI(ADJcv,dist=dist,n.cores=n.cores)
+    netsi[["SI"]] <- netsiSI(ADJcv,dist=dist,cl=cl)
   }
   if(indicator==3L | indicator==5L){
     if(verbose==TRUE) cat("computing stability indicator Sw...\n")
-    #fare il conto di tutte le distanze tra ADJcv[["all"]] e i restanti ADJcv
-    netsi[["Sw"]] <- netsiSw(ADJcv,n.cores=n.cores)
+    netsi[["Sw"]] <- netsiSw(ADJcv,cl=cl)
   }
   if(indicator==4L | indicator==5L){
     if(verbose==TRUE) cat("computing stability indicator Sd...\n")
-    #fare il conto di tutte le distanze tra ADJcv[["all"]] e i restanti ADJcv
-    ## netsi[["Sd"]] <- netsiSd(ADJcv,dist=dist,n.cores=n.cores)
-    netsi[["Sd"]] <- netsiSd(ADJcv,n.cores=n.cores)
+    netsi[["Sd"]] <- netsiSd(ADJcv,cl=cl)
   }
   
   if(save==TRUE)
@@ -107,25 +117,26 @@ netSI <- function(d,indicator="all", dist='HIM', adj.method='cor',
                     "S"=netsi[["S"]],"SI"=netsi[["SI"]],"Sw"=netsi[["Sw"]],"Sd"=netsi[["Sd"]])
   else
     results <- list("S"=netsi[["S"]],"SI"=netsi[["SI"]],"Sw"=netsi[["Sw"]],"Sd"=netsi[["Sd"]])
+
+  if (!is.null(cl))
+    stopCluster(cl)
   
   return(results)
 }
 
 ##need to do some checkings in order to pass also gamma through...
-netsiS <- function(g,H,dist,n.cores){
+netsiS <- function(g,H,dist,cl){
   
   type <- pmatch(dist,c("H","IM","HIM","hamming","ipsen"))
   if(type==4L) type <- 1
   if(type==5L) type <- 2
   
-  if(n.cores>1){
-    cl <- makeCluster(n.cores)
+  if(!is.null(cl)){
     s <- parLapply(cl=cl,X=1:length(H),fun=function(x,g,H,dist,type){
       res <- nettools:::netdist(g,H[[x]],dist)[[type]]
       return(res)
     },g=g,H=H,dist=dist,type=type)
-    stopCluster(cl)
-  }else{
+      }else{
     s <- lapply(X=1:length(H),FUN=function(x,g,H,dist,type){
       print(x)
       res <- netdist(g,H[[x]],dist)[[type]]
@@ -135,20 +146,18 @@ netsiS <- function(g,H,dist,n.cores){
   return(unlist(s))
 }
 
-netsiSI <- function(H,dist,n.cores){
+netsiSI <- function(H,dist,cl){
   
   type <- pmatch(dist,c("H","IM","HIM","hamming","ipsen"))
   if(type==4L) type <- 1
   if(type==5L) type <- 2
   
   com <- combn(1:length(H), 2)
-  if(n.cores>1){
-    cl <- makeCluster(n.cores)
+  if(!is.null(cl)){
     s <- parLapply(cl=cl,X=1:ncol(com),fun=function(x,com,H,dist,type){
       res <- nettools:::netdist(H[[com[1,x]]],H[[com[2,x]]],dist)[[type]]
       return(res)
     },com=com,H=H,dist=dist,type=type)
-    stopCluster(cl)
   }else{
     s <- lapply(X=1:ncol(com),FUN=function(x,com,H,dist,type){
       res <- netdist(H[[com[1,x]]],H[[com[2,x]]],dist)[[type]]
@@ -159,37 +168,65 @@ netsiSI <- function(H,dist,n.cores){
 }
 
 ## NB dist parameter not needed
-netsiSd <- function(H,n.cores){
-  if (!length(H))
+netsiSd <- function(H,cl){
+  if (length(H))
     n <- ncol(H[[1]])
-    
-  if (n.cores>1){
-    cl <- makeCluster(n.cores)
+  else
+    stop("Ciao ciao")
+  
+  if (!is.null(cl)){
     dd <- parLapply(cl=cl, X=H, rowSums)
-    stopCluster(cl)
   } else {
     dd <- lapply(H, rowSums)
   }
+  dd <- matrix(unlist(dd),ncol=n)
+  
   return(dd)
 }
 
-netsiSw <- function(H,n.cores){
-  com <- combn(1:nrow(H[[1]]), 2)
-  m <- matrix(NA,nrow=length(H),ncol=ncol(com))
-  colnames(m) <- seq(ncol(m))
-  rownames(m) <- seq(nrow(m))
-
-  for(j in 1:ncol(com)){
-    for(i in 1:length(H)){
-      m[i,j] <- H[[i]][com[1,j],com[2,j]]
-      
-    }
-    colnames(m)[j] <- paste(com[1,j],com[2,j],sep="-")
+netsiSw <- function(H,cl){
+  if (length(H))
+    n <- nrow(H[[1]])
+  else
+    stop("List of adjacency matrices do not exist")
+  
+  com <- combn(1:n, 2)
+  ## m <- matrix(NA,ncol=length(H),nrow=ncol(com))
+  ## rownames(m) <- paste(com[1,],com[2,],sep="-")
+  ## colnames(m) <- names(H)
+  if (!is.null(cl)){
+    tmp <- parLapply(cl, H,
+                  function(x,com){
+                    sapply(1:ncol(com),
+                           function(y, x, allcom){
+                             x[allcom[1,y],allcom[2,y]]},
+                           x=x, allcom=com)
+                  },
+                  com=com)
+  } else {
+    tmp <- lapply(H,
+                  function(x,com){
+                    sapply(1:ncol(com),
+                           function(y, x, allcom){
+                             x[allcom[1,y],allcom[2,y]]},
+                           x=x, allcom=com)
+                  },
+                  com=com)
   }
-  rownames(m) <- names(H)
-  return(m)    
+
+  ## Set up the results in a matrix
+  m <- matrix(unlist(tmp), ncol=length(H))
+  rownames(m) <- paste(com[1,],com[2,],sep="-")
+  colnames(m) <- names(H)
+  
+  ## for(i in 1:length(H)){
+  ##   for(j in 1:ncol(com)){
+  ##     m[j,i] <- H[[i]][com[1,j],com[2,j]]
+  ##   }
+  ## }
+  return(m)
 }
-  #   s <- lapply(X=1:length(H),FUN=function(x,com,H){
+#   s <- lapply(X=1:length(H),FUN=function(x,com,H){
 #     res <- lapply(X=1:ncol(com),FUN=function(y,com,G){
 #       m[x,y] <- G[com[1,y],com[2,y]]
 #       return(m)
