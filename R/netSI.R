@@ -160,6 +160,8 @@ netsiSI <- function(H,dist,n.cores){
 netsiSw <- function(H,n.cores){
   com <- combn(1:nrow(H[[1]]), 2)
   m <- matrix(NA,nrow=length(H),ncol=ncol(com))
+  colnames(m) <- seq(ncol(m))
+  rownames(m) <- seq(nrow(m))
 
   for(j in 1:ncol(com)){
     for(i in 1:length(H)){
