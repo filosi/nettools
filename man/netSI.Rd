@@ -8,7 +8,7 @@ Network Stability Indicators
 Family NetSI of stability indicators
 }
 \usage{
-netSI(d,indicator="S", dist='HIM', adj.method='cor', method="montecarlo", k=3, h=20, n.cores=NULL, save=TRUE, ...)
+netSI(d,indicator="S", dist='HIM', adj.method='cor', method="montecarlo", k=3, h=20, n.cores=NULL, save=TRUE, verbose=TRUE ...)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
