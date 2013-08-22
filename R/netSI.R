@@ -87,7 +87,8 @@ netSI <- function(d,indicator="all", dist='HIM', adj.method='cor',
   }
   if(indicator==4L | indicator==5L){
     #fare il conto di tutte le distanze tra ADJcv[["all"]] e i restanti ADJcv
-    netsi[["Sd"]] <- netsiSd(ADJcv,dist=dist,n.cores=n.cores)
+    ## netsi[["Sd"]] <- netsiSd(ADJcv,dist=dist,n.cores=n.cores)
+    netsi[["Sd"]] <- netsiSd(ADJcv,n.cores=n.cores)
   }
   
   if(save==TRUE)
@@ -142,10 +143,25 @@ netsiSI <- function(H,dist,n.cores){
       return(res)
     },com=com,H=H,dist=dist,type=type)
   }
-  return(unlist(s))}
+  return(unlist(s))
+}
 
 netsiSw <- function(H,dist,n.cores){}
-netsiSd <- function(H,dist,n.cores){}
+
+## NB dist parameter not needed
+netsiSd <- function(H,n.cores){
+  if (!length(H))
+    n <- ncol(H[[1]])
+    
+  if (n.cores>1){
+    cl <- makeCluster(n.cores)
+    dd <- parLapply(cl=cl, X=H, rowSums)
+    stopCluster(cl)
+  } else {
+    dd <- lapply(H, rowSums)
+  }
+  return(dd)
+}
 
 
 resamplingIDX <- function(N,method="montecarlo", k=3, h=20){
