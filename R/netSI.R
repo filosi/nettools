@@ -1,5 +1,6 @@
 # debug(netSI)
 # netSI(a,adj.method="MINE",measure="MIC",alpha=1)
+# netSI(a,adj.method="cor",method="LOO")
 
 netSI <- function(d,indicator="all", dist='HIM', adj.method='cor', 
                   method="montecarlo", k=3, h=20, n.cores,save=TRUE, ...){
@@ -112,15 +113,37 @@ netsiS <- function(g,H,dist,n.cores){
     },g=g,H=H,dist=dist,type=type)
     stopCluster(cl)
   }else{
-    s <- lapply(X=1:length(H),fun=function(x,g,H,dist){
+    s <- lapply(X=1:length(H),FUN=function(x,g,H,dist,type){
+      print(x)
       res <- netdist(g,H[[x]],dist)[[type]]
       return(res)
-    },g=g,H=H,dist=dist)
+    },g=g,H=H,dist=dist,type=type)
   }
   return(unlist(s))
 }
 
-netsiSI <- function(H,dist,n.cores){}
+netsiSI <- function(H,dist,n.cores){  
+  type <- pmatch(dist,c("H","IM","HIM","hamming","ipsen"))
+  if(type==4L) type <- 1
+  if(type==5L) type <- 2
+  
+  com <- combn(1:length(H), 2)
+  if(n.cores>1){
+    cl <- makeCluster(n.cores)
+    s <- parLapply(cl=cl,X=1:ncol(com),fun=function(x,com,H,dist,type){
+      res <- nettools:::netdist(H[[com[1,x]]],H[[com[2,x]]],dist)[[type]]
+      return(res)
+    },com=com,H=H,dist=dist,type=type)
+    stopCluster(cl)
+  }else{
+    s <- lapply(X=1:ncol(com),FUN=function(x,com,H,dist,type){
+      print(x)
+      res <- netdist(H[[com[1,x]]],H[[com[2,x]]],dist)[[type]]
+      return(res)
+    },com=com,H=H,dist=dist,type=type)
+  }
+  return(unlist(s))}
+
 netsiSw <- function(H,dist,n.cores){}
 netsiSd <- function(H,dist,n.cores){}
 
