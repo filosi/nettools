@@ -1,9 +1,11 @@
 # debug(netSI)
+# a <- matrix(rnorm(1000),ncol=100)
+# b <- matrix(rnorm(1000),ncol=100)
 # netSI(a,adj.method="MINE",measure="MIC",alpha=1)
 # netSI(a,adj.method="cor",method="LOO")
 
 netSI <- function(d,indicator="all", dist='HIM', adj.method='cor', 
-                  method="montecarlo", k=3, h=20, n.cores,save=TRUE, ...){
+                  method="montecarlo", k=3, h=20, n.cores,save=TRUE, verbose=TRUE,...){
   
   Call <- match.call()
   id.Call <- match(c("d", "indicator", "dist", "adj.method","method","k","h","n.cores"), 
@@ -24,12 +26,15 @@ netSI <- function(d,indicator="all", dist='HIM', adj.method='cor',
   if(indicator == -1)
     stop("ambiguous indicator")
   
+  ##check on save and verbose are missing!!!!
+  
   ##to be set by the user???
   sseed <- 0
   set.seed(sseed)
   
   ddim <- nrow(d)
   
+  if(verbose==TRUE) cat("computing resampling...\n")
   idxs <-  resamplingIDX(ddim,method=method, k=k, h=h)
   
   ##hardcoded the length of the list for optimization purposes
@@ -45,6 +50,8 @@ netSI <- function(d,indicator="all", dist='HIM', adj.method='cor',
       n.cores <- 1
     }
   }
+  
+  if(verbose==TRUE) cat("computing adjacency matrices...\n")
   
   if(n.cores>1){
     
@@ -74,18 +81,22 @@ netSI <- function(d,indicator="all", dist='HIM', adj.method='cor',
   #here the computation of the stability indicators is still missing...
   netsi <- list()
   if(indicator==1L | indicator==5L){
+    if(verbose==TRUE) cat("computing stability indicator S...\n")   
     #fare il conto di tutte le distanze tra ADJcv[["all"]] e i restanti ADJcv
       netsi[["S"]] <- netsiS(ADJall,ADJcv,dist=dist,n.cores=n.cores)
   }
   if(indicator==2L | indicator==5L){
+    if(verbose==TRUE) cat("computing stability indicator SI...\n")
     #fare il conto di tutte le distanze tra ADJcv[["all"]] e i restanti ADJcv
     netsi[["SI"]] <- netsiSI(ADJcv,dist=dist,n.cores=n.cores)
   }
   if(indicator==3L | indicator==5L){
+    if(verbose==TRUE) cat("computing stability indicator Sw...\n")
     #fare il conto di tutte le distanze tra ADJcv[["all"]] e i restanti ADJcv
-    netsi[["Sw"]] <- netsiSw(ADJcv,dist=dist,n.cores=n.cores)
+    netsi[["Sw"]] <- netsiSw(ADJcv,n.cores=n.cores)
   }
   if(indicator==4L | indicator==5L){
+    if(verbose==TRUE) cat("computing stability indicator Sd...\n")
     #fare il conto di tutte le distanze tra ADJcv[["all"]] e i restanti ADJcv
     netsi[["Sd"]] <- netsiSd(ADJcv,dist=dist,n.cores=n.cores)
   }
@@ -101,6 +112,7 @@ netSI <- function(d,indicator="all", dist='HIM', adj.method='cor',
 
 ##need to do some checkings in order to pass also gamma through...
 netsiS <- function(g,H,dist,n.cores){
+  
   type <- pmatch(dist,c("H","IM","HIM","hamming","ipsen"))
   if(type==4L) type <- 1
   if(type==5L) type <- 2
@@ -122,7 +134,8 @@ netsiS <- function(g,H,dist,n.cores){
   return(unlist(s))
 }
 
-netsiSI <- function(H,dist,n.cores){  
+netsiSI <- function(H,dist,n.cores){
+  
   type <- pmatch(dist,c("H","IM","HIM","hamming","ipsen"))
   if(type==4L) type <- 1
   if(type==5L) type <- 2
@@ -137,15 +150,39 @@ netsiSI <- function(H,dist,n.cores){
     stopCluster(cl)
   }else{
     s <- lapply(X=1:ncol(com),FUN=function(x,com,H,dist,type){
-      print(x)
       res <- netdist(H[[com[1,x]]],H[[com[2,x]]],dist)[[type]]
       return(res)
     },com=com,H=H,dist=dist,type=type)
   }
-  return(unlist(s))}
+  return(unlist(s))
+}
 
-netsiSw <- function(H,dist,n.cores){}
-netsiSd <- function(H,dist,n.cores){}
+netsiSw <- function(H,n.cores){
+  com <- combn(1:nrow(H[[1]]), 2)
+  m <- matrix(NA,nrow=length(H),ncol=ncol(com))
+
+  for(j in 1:ncol(com)){
+    for(i in 1:length(H)){
+      m[i,j] <- H[[i]][com[1,j],com[2,j]]
+      
+    }
+    colnames(m)[j] <- paste(com[1,j],com[2,j],sep="-")
+  }
+  rownames(m) <- names(H)
+  return(m)    
+}
+  #   s <- lapply(X=1:length(H),FUN=function(x,com,H){
+#     res <- lapply(X=1:ncol(com),FUN=function(y,com,G){
+#       m[x,y] <- G[com[1,y],com[2,y]]
+#       return(m)
+#     },com=com,G=H[[x]])
+#     return(res)
+#   },com=com,H=H)
+#   
+#   return(s)
+# }
+
+netsiSd <- function(H,n.cores){}
 
 
 resamplingIDX <- function(N,method="montecarlo", k=3, h=20){
