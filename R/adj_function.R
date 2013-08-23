@@ -162,7 +162,7 @@ AdjDTWMIC <- function(x,DP,...){
 }
 
 ## Function for check the variance by features
-checkvar <- function(x, tol=1e-5){
+checkvar <- function(x, tol=1e-5, ...){
   
   ## Compute the variance by columns
   feat.var <- apply(x,2,var)

@@ -70,9 +70,6 @@ netSI <- function(d,indicator="all", dist='HIM', adj.method='cor',
   if(verbose==TRUE) cat("computing adjacency matrices...\n")
   
   if(!is.null(cl)){
-    
-    
-    
     ##from our checks the argument passed through ... are really used for 
     ##building the adjacency matrices during the parallel computation
     ADJcv <- parLapply(cl=cl,X=1:length(idxs),fun=function(x,d,method,...){
@@ -82,13 +79,13 @@ netSI <- function(d,indicator="all", dist='HIM', adj.method='cor',
     },d=d,method=adj.method,...)
   } 
   else{
-    ADJcv <- lapply(X=1:length(idxs),FUN=function(x,d,method,...){
-      ss <- d[idxs[[x]],]
+    ADJcv <- lapply(X=idxs,FUN=function(x,d,method,...){
+      ss <- d[x,]
       tmp <- mat2adj(ss,...)
       return(tmp)
     },d=d,method=adj.method,...)
   }
-  
+
   ##computing the adjacency matrix on the whole dataset
   ADJall <- mat2adj(x=d,method=adj.method,...)
   
@@ -96,8 +93,8 @@ netSI <- function(d,indicator="all", dist='HIM', adj.method='cor',
   #here the computation of the stability indicators
   netsi <- list()
   if(indicator==1L | indicator==5L){
-    if(verbose==TRUE) cat("computing stability indicator S...\n")   
-      netsi[["S"]] <- netsiS(ADJall,ADJcv,dist=dist,cl=cl)
+    if(verbose==TRUE) cat("computing stability indicator S...\n")
+    netsi[["S"]] <- netsiS(ADJall,ADJcv,dist=dist,cl=cl)
   }
   if(indicator==2L | indicator==5L){
     if(verbose==TRUE) cat("computing stability indicator SI...\n")
@@ -132,16 +129,15 @@ netsiS <- function(g,H,dist,cl){
   if(type==5L) type <- 2
   
   if(!is.null(cl)){
-    s <- parLapply(cl=cl,X=1:length(H),fun=function(x,g,H,dist,type){
-      res <- nettools:::netdist(g,H[[x]],dist)[[type]]
+    s <- parLapply(cl=cl,X=H,fun=function(x,g,dist,type){
+      res <- nettools:::netdist(g,x,dist)[[type]]
       return(res)
-    },g=g,H=H,dist=dist,type=type)
-      }else{
-    s <- lapply(X=1:length(H),FUN=function(x,g,H,dist,type){
-      print(x)
-      res <- netdist(g,H[[x]],dist)[[type]]
+    },g=g,dist=dist,type=type)
+  }else{
+    s <- lapply(X=H,FUN=function(x,g,dist,type){
+      res <- netdist(g,x,dist)[[type]]
       return(res)
-    },g=g,H=H,dist=dist,type=type)
+    },g=g,dist=dist,type=type)
   }
   return(unlist(s))
 }
@@ -254,7 +250,7 @@ resamplingIDX <- function(N,method="montecarlo", k=3, h=20){
   
   ## Leave One Out
   if (method==2L){
-    if (h!=1)
+    if (k!=1)
       warning("h is different than 1 but method is set to LOO (Leave One Out cross-validation schema).\nh will be ignored.")
     h <- N
     take <- lapply(1:N,function(x,allid){return(allid[which(allid!=x)])},allid=1:N)

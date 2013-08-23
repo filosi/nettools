@@ -6,7 +6,7 @@ mat2adj <- function(x,...) UseMethod("mat2adj")
 mat2adj.data.frame <- function(x,...){
   x <- apply(x,2,as.numeric)
   x <- as.matrix(x)
-  UseMethod("mat2adj", x)
+  UseMethod("mat2adj",x)
 }
 setMethod("mat2adj","data.frame",mat2adj.data.frame)
 

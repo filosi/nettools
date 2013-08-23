@@ -84,7 +84,7 @@ g2adj.igraph <- function(x,...,type="both"){
   }
   Adj <- get.adjacency(x,type=type,attr=WW,sparse=TRUE)
   diag(Adj) <- 0
-  if (any(Adj>1) || any(Adj<0)){
+  if (any(Adj > 1) || any(Adj < 0)){
     stop("Edge weight should be >= 0 and <= 1", call.=FALSE)
   }
   ll <- transfmat(Adj)
@@ -93,7 +93,7 @@ g2adj.igraph <- function(x,...,type="both"){
 setMethod("g2adj","igraph",g2adj.igraph)
 
 g2adj.matrix <- function(x,...){
-  if (any(x>1) || any(x<0)){
+  if (any(x > 1) || any(x < 0)){
     stop("Edge weight should be >= 0 and <= 1", call.=FALSE)
   }
   ll <- transfmat(x)
@@ -130,7 +130,7 @@ ipsen.list <- function(object,...,gamma=NULL){
   }
   
   ## Check if network is directed or not
-  if(object$N>3000 && detectCores() >= 2){
+  if(object$N>1000 && detectCores() >= 2){
     cl <- makeCluster(getOption("cl.cores",2))
     clusterEvalQ(cl,{K <- nettools:::K
                      rho <- nettools:::rho
