@@ -126,7 +126,7 @@ netsiS <- function(g,H,dist,cl){
   
   type <- pmatch(dist,c("H","IM","HIM","hamming","ipsen"))
   if(type==4L) type <- 1
-  if(type==5L) type <- 2
+  if(type==5L) type <- 1
   
   if(!is.null(cl)){
     s <- parLapply(cl=cl,X=H,fun=function(x,g,dist,type){
@@ -146,7 +146,7 @@ netsiSI <- function(H,dist,cl){
   
   type <- pmatch(dist,c("H","IM","HIM","hamming","ipsen"))
   if(type==4L) type <- 1
-  if(type==5L) type <- 2
+  if(type==5L) type <- 1
   
   com <- combn(1:length(H), 2)
   if(!is.null(cl)){
@@ -168,7 +168,7 @@ netsiSd <- function(H,cl){
   if (length(H))
     n <- ncol(H[[1]])
   else
-    stop("Ciao ciao")
+    stop("No adjacency matrix computed",call.=FALSE)
   
   if (!is.null(cl)){
     dd <- parLapply(cl=cl, X=H, rowSums)
