@@ -153,6 +153,7 @@ ipsen.list <- function(object,...,gamma=NULL){
     (rho(omega, optgamma,ll[[1]])-rho(omega,optgamma,ll[[2]]))**2
   }
   dist <- sqrt(integrate(integrand,lower=0,upper=Inf,mygamma=optgamma,given_omega_G=ll[[1]][[1]],given_omega_H=ll[[2]][[1]], stop.on.error=FALSE,rel.tol=.Machine$double.eps,subdivisions=1e4)$value)
+  names(dist) <- "IM"
   return(dist)
 }
 setMethod("ipsen","list",ipsen.list)
@@ -163,10 +164,13 @@ hamming <- function(object,...) UseMethod("hamming")
 hamming.list <- function(object,...){
   ## for weighted networks, weights must be in [0,1]
   if (object$tag == "undir"){
-    return(ham.undir(object, ...))
+    dist <- ham.undir(object, ...)
   } else{
-    return(ham.dir(object, ...))
+    dist <- ham.dir(object, ...)
+    
   }
+  names(dist) <- "H"
+  return(dist)
 }
 setMethod("hamming","list",hamming.list)
 
@@ -177,6 +181,8 @@ him.list <- function(object,...){
   ipd <- ipsen(object$LAP,gamma=NULL)
   had <- hamming(object$ADJ)
   gloc <- sqrt(had**2/2+ipd**2/2)
-  return(c("H"=had,"IM"=ipd,"HIM"=gloc))
+  dist <- c(had,ipd,gloc)
+  names(dist) <- c("H","IM","HIM")
+  return(dist)
 }
 setMethod("him","list",him.list)

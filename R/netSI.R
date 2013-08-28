@@ -40,9 +40,11 @@ netSI <- function(d,indicator="all", dist='HIM', adj.method='cor',
   
   ##hardcoded the length of the list for optimization purposes
   ADJcv <- vector("list",length=length(idxs))
-  
+
+  ## Call$n.cores should be evaluated first
+  n.cores <- eval(Call$n.cores)
   ##check if it is user-friendly this way
-  if(is.null(Call$n.cores)){
+  if(is.null(n.cores)){
     if(detectCores()>=2){
       n.cores <- detectCores()-1
       cl <- makeCluster(n.cores)
@@ -52,11 +54,11 @@ netSI <- function(d,indicator="all", dist='HIM', adj.method='cor',
       cl <- NULL
     }
   } else {
-    if (Call$n.cores==1){
+    if (n.cores==1){
       cl <- NULL
     } else {
-      if (Call$n.cores<detectCores()){
-        cl <- makeCluster(Call$n.cores)
+      if (n.cores<detectCores()){
+        cl <- makeCluster(n.cores)
       } else {
         if(detectCores()>=2){
           n.cores <- detectCores()-1
@@ -126,7 +128,7 @@ netsiS <- function(g,H,dist,cl){
   
   type <- pmatch(dist,c("H","IM","HIM","hamming","ipsen"))
   if(type==4L) type <- 1
-  if(type==5L) type <- 1
+  if(type==5L) type <- 2
   
   if(!is.null(cl)){
     s <- parLapply(cl=cl,X=H,fun=function(x,g,dist,type){
@@ -146,7 +148,7 @@ netsiSI <- function(H,dist,cl){
   
   type <- pmatch(dist,c("H","IM","HIM","hamming","ipsen"))
   if(type==4L) type <- 1
-  if(type==5L) type <- 1
+  if(type==5L) type <- 2
   
   com <- combn(1:length(H), 2)
   if(!is.null(cl)){
