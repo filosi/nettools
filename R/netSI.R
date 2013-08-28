@@ -29,8 +29,10 @@ netSI <- function(d,indicator="all", dist='HIM', adj.method='cor',
   
   ##check on save and verbose are missing!!!!
 
-  ##to be set by the user???
-  sseed <- 0
+  ## It can be passed through ...
+  if (is.null(Call$sseed)) sseed <- 0
+  else sseed <- eval(Call$sseed)
+  
   set.seed(sseed)
   
   ddim <- nrow(d)
