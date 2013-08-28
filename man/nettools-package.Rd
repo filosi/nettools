@@ -22,17 +22,17 @@
     Version: \tab 0.8\cr
     Date: \tab \cr
     Depends: R (>= 2.14.1), methods
-    Imports: WGCNA, minet, rootSolve, dtw, Matrix, parallel, minerva, combinat
+    Imports: WGCNA, minet, rootSolve, dtw, Matrix, parallel, minerva,
+    combinat
     License: GPL-3 + file LICENSE
   }
 }
 
 \author{
   Michele Filosi [aut, cre],
-  Roberto Visintainer [aut, cre],
-  Samantha Riccadonna [aut, cre],
-  Giuseppe Jurman [aut, cre],
-  Davide Albanese [ctb],
+  Roberto Visintainer [aut],
+  Samantha Riccadonna [aut],
+  Giuseppe Jurman [ctb],
   Cesare Furlanello [ctb]\cr
   Maintainer: Michele Filosi <filosi@fbk.eu>
 }

@@ -43,6 +43,8 @@ netSI <- function(d,indicator="all", dist='HIM', adj.method='cor',
 
   ## Call$n.cores should be evaluated first
   n.cores <- eval(Call$n.cores)
+  print(n.cores)
+  
   ##check if it is user-friendly this way
   if(is.null(n.cores)){
     if(detectCores()>=2){

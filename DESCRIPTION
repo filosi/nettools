@@ -3,8 +3,12 @@ Type: Package
 Title: Function for creating adjacency matrix and network distances
 Version: 0.8
 Date: 2013-08-08
-Authors@R: c(person("Michele",
-        "Filosi",role=c("aut","cre"),email="filosi@fbk.eu"))
+Authors@R: c(person("Michele","Filosi",role=c("aut","cre"), email = "filosi@fbk.eu"),
+	   person("Roberto", "Visintainer", role = "aut", email = "visintainer@fbk.eu"),
+	   person("Samantha", "Riccadonna", role = "aut", email = "riccadonna@fbk.eu"), 
+	   person("Giuseppe", "Jurman", role = "ctb", email = "jurman@fbk.eu"), 
+	   person("Cesare", "Furlanello", role = "ctb", email = "furlan@fbk.eu")
+)
 Maintainer: Michele Filosi <filosi@fbk.eu>
 Depends: R (>= 2.14.1), methods
 Suggests: igraph
@@ -13,4 +17,5 @@ Description: Collect the functions for network analysis.
 	     Creating adjacency matrix and compute distances between networks
 License: GPL-3 + file LICENSE
 Packaged: 2012-11-27 21:24:00 UTC; michele
-Author: Michele Filosi [aut, cre]
+Author: Michele Filosi [aut, cre], Roberto Visintainer [aut], Samantha Riccadonna [ctb], Giuseppe Jurman [ctb], Cesare Furlanello [ctb]
+
