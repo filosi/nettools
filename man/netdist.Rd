@@ -14,7 +14,7 @@
 
 %- maybe also 'usage' for other objects documented here.
 \usage{
-netdist(g, h, method = "HIM", gamma = NULL)
+netdist(g, h, method = "HIM", g = NULL)
 }
 
 \arguments{
@@ -24,9 +24,9 @@ netdist(g, h, method = "HIM", gamma = NULL)
     valid method or unique abbreviation between \code{ipsen} and
     \code{hamming}.
   }
-  \item{gamma}{NULL (default), a numeric value for the gamma parameter,
+  \item{g}{NULL (default), a numeric value for the gamma parameter,
     only if method \code{"ipsen"} is called, otherwise it will be
-    ignored. If \code{"gamma=NULL"} an optimal value based on the number
+    ignored. If \code{"g=NULL"} an optimal value based on the number
     of columns in the adjacency matrix is computed. 
     See function \code{"HIM"} for further details.
   }
@@ -43,7 +43,7 @@ netdist(g, h, method = "HIM", gamma = NULL)
 }
 \value{For method \code{"HIM"} a named vector with 3 values is returned. 
 Respectively, "hamming", "Ipsen-Mikhailov" and "him" distance. 
-The parameter \code{"gamma"} is set to "NA".
+The parameter \code{"g"} is set to "NA".
 For method \code{"ipsen"} the "Ipsen-Mikhailov" distance is returned.
 For method \code{"hamming"} the "Hamming" distance is returned.
 %%  ~Describe the value returned

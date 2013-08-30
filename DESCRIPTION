@@ -1,14 +1,13 @@
 Package: nettools
 Type: Package
-Title: Function for creating adjacency matrix and network distances
+Title: A comprehensive network analysis tool: from inference method to distances between networks and network stability 
 Version: 0.8
 Date: 2013-08-08
 Authors@R: c(person("Michele","Filosi",role=c("aut","cre"), email = "filosi@fbk.eu"),
 	   person("Roberto", "Visintainer", role = "aut", email = "visintainer@fbk.eu"),
 	   person("Samantha", "Riccadonna", role = "aut", email = "riccadonna@fbk.eu"), 
 	   person("Giuseppe", "Jurman", role = "ctb", email = "jurman@fbk.eu"), 
-	   person("Cesare", "Furlanello", role = "ctb", email = "furlan@fbk.eu")
-)
+	   person("Cesare", "Furlanello", role = "ctb", email = "furlan@fbk.eu"))
 Maintainer: Michele Filosi <filosi@fbk.eu>
 Depends: R (>= 2.14.1), methods
 Suggests: igraph

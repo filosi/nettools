@@ -5,7 +5,8 @@
 # netSI(a,adj.method="cor",method="LOO")
 
 netSI <- function(d,indicator="all", dist='HIM', adj.method='cor', 
-                  method="montecarlo", k=3, h=20, n.cores,save=TRUE, verbose=TRUE,...){
+                  method="montecarlo", k=3, h=20, n.cores,save=TRUE,
+                  verbose=TRUE, ...){
   
   Call <- match.call()
   id.Call <- match(c("d", "indicator", "dist", "adj.method","method","k","h","n.cores"), 
@@ -32,8 +33,11 @@ netSI <- function(d,indicator="all", dist='HIM', adj.method='cor',
   ## It can be passed through ...
   if (is.null(Call$sseed)) sseed <- 0
   else sseed <- eval(Call$sseed)
-  
   set.seed(sseed)
+
+  ## Pass parameter gamma to netdist functions
+  ga <- Call$ga
+  cat("Out function:", ga, "\n")
   
   ddim <- nrow(d)
   
@@ -94,25 +98,24 @@ netSI <- function(d,indicator="all", dist='HIM', adj.method='cor',
 
   ##computing the adjacency matrix on the whole dataset
   ADJall <- mat2adj(x=d,method=adj.method,...)
-  
-  
+    
   #here the computation of the stability indicators
   netsi <- list()
   if(indicator==1L | indicator==5L){
     if(verbose==TRUE) cat("computing stability indicator S...\n")
-    netsi[["S"]] <- netsiS(ADJall,ADJcv,dist=dist,cl=cl)
+    netsi[["S"]] <- netsiS(ADJall, ADJcv, dist=dist, cl=cl, ga, ...)
   }
   if(indicator==2L | indicator==5L){
     if(verbose==TRUE) cat("computing stability indicator SI...\n")
-    netsi[["SI"]] <- netsiSI(ADJcv,dist=dist,cl=cl)
+    netsi[["SI"]] <- netsiSI(ADJcv, dist=dist, cl=cl, ga, ...)
   }
   if(indicator==3L | indicator==5L){
     if(verbose==TRUE) cat("computing stability indicator Sw...\n")
-    netsi[["Sw"]] <- netsiSw(ADJcv,cl=cl)
+    netsi[["Sw"]] <- netsiSw(ADJcv, cl=cl)
   }
   if(indicator==4L | indicator==5L){
     if(verbose==TRUE) cat("computing stability indicator Sd...\n")
-    netsi[["Sd"]] <- netsiSd(ADJcv,cl=cl)
+    netsi[["Sd"]] <- netsiSd(ADJcv, cl=cl)
   }
   
   if(save==TRUE)
@@ -128,36 +131,36 @@ netSI <- function(d,indicator="all", dist='HIM', adj.method='cor',
 }
 
 ##need to do some checkings in order to pass also gamma through...
-netsiS <- function(g,H,dist,cl){
+netsiS <- function(g,H,dist,cl, ...){
   
   type <- pmatch(dist,c("H","IM","HIM","hamming","ipsen"))
   if(type==4L) type <- 1
   if(type==5L) type <- 2
   
   if(!is.null(cl)){
-    s <- parLapply(cl=cl,X=H,fun=function(x,g,dist,type){
-      res <- nettools:::netdist(g,x,dist)[[type]]
+    s <- parLapply(cl=cl,X=H,fun=function(x,g,dist,type, ...){
+      res <- nettools:::netdist(g,x,dist, ...)[[type]]
       return(res)
     },g=g,dist=dist,type=type)
   }else{
-    s <- lapply(X=H,FUN=function(x,g,dist,type){
-      res <- netdist(g,x,dist)[[type]]
+    s <- lapply(X=H,FUN=function(x,g,dist,type, ...){
+      res <- netdist(g,x,dist, ...)[[type]]
       return(res)
     },g=g,dist=dist,type=type)
   }
   return(unlist(s))
 }
 
-netsiSI <- function(H,dist,cl){
+netsiSI <- function(H,dist,cl, ...){
   
   type <- pmatch(dist,c("H","IM","HIM","hamming","ipsen"))
   if(type==4L) type <- 1
   if(type==5L) type <- 2
-  
+  print(ga)
   com <- combn(1:length(H), 2)
   if(!is.null(cl)){
-    s <- parLapply(cl=cl,X=1:ncol(com),fun=function(x,com,H,dist,type){
-      res <- nettools:::netdist(H[[com[1,x]]],H[[com[2,x]]],dist)[[type]]
+    s <- parLapply(cl=cl,X=1:ncol(com),fun=function(x,com,H,dist,type, ...){
+      res <- nettools:::netdist(H[[com[1,x]]],H[[com[2,x]]],dist, ...)[[type]]
       return(res)
     },com=com,H=H,dist=dist,type=type)
   }else{

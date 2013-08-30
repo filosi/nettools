@@ -7,17 +7,17 @@ Adjcor <- function(x,method='pearson',...){
 
 ## WGCNA method with cor^P
 AdjWGCNA <- function(x,P,...){
-    ## Default P = 6
-    if (P!=6)
-        warning(paste("WGCNA computed with P =",P,"!!!"))
-    ## Adj <- WGCNA::unsignedAdjacency(x,
-    ##                                 power = P,
-    ##                                 corFnc = 'cor')
-    Adj <- unsignedAdjacency(x,
-                             power = P,
-                             corFnc = 'cor')
-    diag(Adj) <- 0
-    return(Adj)
+  ## Default P = 6
+  if (P!=6)
+    warning(paste("WGCNA computed with P =",P,"!!!"))
+  ## Adj <- WGCNA::unsignedAdjacency(x,
+  ##                                 power = P,
+  ##                                 corFnc = 'cor')
+  Adj <- unsignedAdjacency(x,
+                           power = P,
+                           corFnc = 'cor')
+  diag(Adj) <- 0
+  return(Adj)
 }
 
 ## Function for computing the FDR value on the null hypothesis
