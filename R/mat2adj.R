@@ -18,9 +18,9 @@ mat2adj.matrix <- function(x,method='cor',FDR=1e-3,P=6,measure=NULL,alpha=0.6,C=
     MEASURE <- c('MIC','MAS','MCN','MEV','MICR2')
     method <- pmatch(method, METHODS)
     if(is.na(method))
-        stop("invalid distance method")
+        stop("invalid distance method", call. = FALSE)
     if(method == -1)
-        stop("ambiguous distance method")
+        stop("ambiguous distance method", call. = FALSE)
     if(method == 3L)
       if (P > 1){
         P <- 1
