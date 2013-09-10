@@ -79,20 +79,20 @@ netSI <- function(d,indicator="all", dist='HIM', adj.method='cor',
   if(!is.null(cl)){
     ##from our checks the argument passed through ... are really used for 
     ##building the adjacency matrices during the parallel computation
-    ADJcv <- parLapply(cl=cl,X=1:length(idxs),fun=function(x,d,method,...){
-      ss <- d[idxs[[x]],]
-      tmp <- nettools:::mat2adj(ss,...)
+    ADJcv <- parLapply(cl=cl,X=idxs,fun=function(x,d,method,...){
+      ss <- d[x,]
+      tmp <- nettools:::mat2adj(ss, method=method, ...)
       return(tmp)
     },d=d,method=adj.method,...)
   } 
   else{
     ADJcv <- lapply(X=idxs,FUN=function(x,d,method,...){
       ss <- d[x,]
-      tmp <- mat2adj(ss,...)
+      tmp <- mat2adj(ss, method=method, ...)
       return(tmp)
     },d=d,method=adj.method,...)
   }
-
+  
   ##computing the adjacency matrix on the whole dataset
   ADJall <- mat2adj(x=d,method=adj.method,...)
     

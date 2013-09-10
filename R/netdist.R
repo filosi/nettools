@@ -1,10 +1,14 @@
-netdist <- function(g, h, method="HIM", ga=NULL, ){
+netdist <- function(g, h, method="HIM", ga=NULL, ...){
   
   METHODS <- c('HIM','ipsen','hamming')
   method <- pmatch(method, METHODS)
 
   Call <- match.call()
   
+  ## nnodes (1000 by default) number of nodes where to start parallel computation for
+  ## ipsen and him distance
+  ## if number of nodes < nnodes it won't start,
+  ## otherwise a 2 process will be launched
   if (is.null(Call$nnodes))
     nnodes <- 1000 else nnodes <- Call$nnodes
   
@@ -32,11 +36,11 @@ netdist <- function(g, h, method="HIM", ga=NULL, ){
   ## Check method for distances
   if (myadj$method=="HIM"){
     mylap <- list(L1=Lap(g1$adj),L2=Lap(g2$adj),N=g1$N, tag=g1$tag)
-    dd <- him(list(ADJ=myadj,LAP=mylap), ...)
+    dd <- him(list(ADJ=myadj,LAP=mylap), nnodes, ...)
   }
   if (myadj$method=="ipsen"){
     mylap <- list(L1=Lap(g1$adj),L2=Lap(g2$adj),N=g1$N, tag=g1$tag)
-    dd <- ipsen(mylap,ga=ga, ...)
+    dd <- ipsen(mylap,ga=ga, nnodes, ...)
   }
   if (myadj$method=="hamming"){
     dd <- hamming(myadj, ...)
@@ -115,7 +119,7 @@ setMethod("Lap","Matrix",Lap.default)
 ## Ipsen distance
 ##----------------------------------------
 ipsen <- function(object,...) UseMethod("ipsen")
-ipsen.list <- function(object,...,ga=NULL){
+ipsen.list <- function(object,...,ga=NULL, nnodes=1000 ){
   if (is.null(ga)){
     if (object$tag == "undir"){
       optgamma <- optimal_gamma(object$N)
@@ -174,8 +178,8 @@ setMethod("hamming","list",hamming.list)
 ## Him distance
 ##----------------------------------------
 him <- function(object,...) UseMethod("him")
-him.list <- function(object,...){
-  ipd <- ipsen(object$LAP,ga=NULL)
+him.list <- function(object,..., nnodes=1000){
+  ipd <- ipsen(object$LAP,ga=NULL, ...)
   had <- hamming(object$ADJ)
   gloc <- sqrt(had**2/2+ipd**2/2)
   dist <- c(had,ipd,gloc)
