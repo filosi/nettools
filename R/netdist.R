@@ -1,7 +1,12 @@
-netdist <- function(g, h, method="HIM", ga=NULL){
+netdist <- function(g, h, method="HIM", ga=NULL, ){
   
   METHODS <- c('HIM','ipsen','hamming')
   method <- pmatch(method, METHODS)
+
+  Call <- match.call()
+  
+  if (is.null(Call$nnodes))
+    nnodes <- 1000 else nnodes <- Call$nnodes
   
   if(is.na(method))
     stop("invalid distance method")
@@ -27,27 +32,17 @@ netdist <- function(g, h, method="HIM", ga=NULL){
   ## Check method for distances
   if (myadj$method=="HIM"){
     mylap <- list(L1=Lap(g1$adj),L2=Lap(g2$adj),N=g1$N, tag=g1$tag)
-    dd <- him(list(ADJ=myadj,LAP=mylap))
+    dd <- him(list(ADJ=myadj,LAP=mylap), ...)
   }
   if (myadj$method=="ipsen"){
     mylap <- list(L1=Lap(g1$adj),L2=Lap(g2$adj),N=g1$N, tag=g1$tag)
-    dd <- ipsen(mylap,ga=ga)
+    dd <- ipsen(mylap,ga=ga, ...)
   }
   if (myadj$method=="hamming"){
-    dd <- hamming(myadj)
+    dd <- hamming(myadj, ...)
   }
   return(dd)
 }
-
-
-
-## Check if a matrix is symmetric
-## cksymm <- function(x,...){
-##   if (all((x - t(x)) == 0))
-##     return(TRUE)
-##   else
-##     return(FALSE)
-## }
 
 
 ## Prepare the matrix for computing distance if the graph is directed
@@ -85,7 +80,8 @@ g2adj.igraph <- function(x,...,type="both"){
   Adj <- get.adjacency(x,type=type,attr=WW,sparse=TRUE)
   diag(Adj) <- 0
   if (any(Adj > 1) || any(Adj < 0)){
-    stop("Edge weight should be >= 0 and <= 1", call.=FALSE)
+    warning("Edge weight should be >= 0 and <= 1, scaling has been automatically applied!", call.=FALSE)
+    Adj <- (Adj - min(Adj)) / (max(Adj) - min(Adj))
   }
   ll <- transfmat(Adj)
   return(ll)
@@ -94,7 +90,8 @@ setMethod("g2adj","igraph",g2adj.igraph)
 
 g2adj.matrix <- function(x,...){
   if (any(x > 1) || any(x < 0)){
-    stop("Edge weight should be >= 0 and <= 1", call.=FALSE)
+    warning("Edge weight should be >= 0 and <= 1, scaling has been automatically applied!", call.=FALSE)
+    Adj <- (Adj - min(Adj)) / (max(Adj) - min(Adj))
   }
   ll <- transfmat(x)
   return(ll)
@@ -130,7 +127,7 @@ ipsen.list <- function(object,...,ga=NULL){
   }
   
   ## Check if network is directed or not
-  if(object$N>1000 && detectCores() >= 2){
+  if(object$N>nnodes && detectCores() >= 2){
     cl <- makeCluster(getOption("cl.cores",2))
     clusterEvalQ(cl,{K <- nettools:::K
                      rho <- nettools:::rho
