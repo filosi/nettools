@@ -1,25 +1,17 @@
-# debug(netSI)
-# a <- matrix(rnorm(1000),ncol=100)
-# b <- matrix(rnorm(1000),ncol=100)
-# netSI(a,adj.method="MINE",measure="MIC",alpha=1)
-# netSI(a,adj.method="cor",method="LOO")
-
 netSI <- function(d,indicator="all", dist='HIM', adj.method='cor', 
                   method="montecarlo", k=3, h=20, n.cores,save=TRUE,
                   verbose=TRUE, ...){
-  
+
+  ## Get the function call parameters
+  ## NB the parameters should be evaluated with eval()
   Call <- match.call()
   id.Call <- match(c("d", "indicator", "dist", "adj.method","method","k","h","n.cores"), 
                    names(Call), nomatch=0)
   if(id.Call[1]==0){
     stop("A dataset must be provided",call.=FALSE)
   }
-    
-  ##retrieving the arguments passed through ...
-  ##extraArgs <- list(...)
-  ##are not needed in the lapply calls below...
   
-  INDICATORS <- c('S','SI','Sw','Sd',"all")
+  ## Choose the indicators INDICATORS <- c('S','SI','Sw','Sd',"all")
   indicator <- pmatch(indicator,INDICATORS)
   
   if(is.na(indicator))
@@ -36,26 +28,27 @@ netSI <- function(d,indicator="all", dist='HIM', adj.method='cor',
 
   ## Pass parameter gamma to netdist functions
   ga <- Call$ga
-    
+
+  ## Get the dimension of the input matrix
   ddim <- nrow(d)
-  
+
+  ## Get the resampling indexes
   if(verbose==TRUE) cat("computing resampling...\n")
   idxs <-  resamplingIDX(ddim,method=method, k=k, h=h)
   
-  ##hardcoded the length of the list for optimization purposes
+  ## length of the list for optimization purposes
   ADJcv <- vector("list",length=length(idxs))
 
-  ## Call$n.cores should be evaluated first
+  ## evaluate the number of cores to be used (Call$n.cores)
   n.cores <- eval(Call$n.cores)
   
-  ##check if it is user-friendly this way
+  ## Check availability of cores, otherwise set a default
   if(is.null(n.cores)){
     if(detectCores()>=2){
       n.cores <- detectCores()-1
       cl <- makeCluster(n.cores)
       warning("The computation has been automatically parallelized", call.=FALSE)
-    }
-    else{
+    } else {
       cl <- NULL
     }
   } else {
@@ -75,17 +68,17 @@ netSI <- function(d,indicator="all", dist='HIM', adj.method='cor',
   }
   
   if(verbose==TRUE) cat("computing adjacency matrices...\n")
-  
+
+  ## Compute the adjacency matrices for each resampling index
   if(!is.null(cl)){
-    ##from our checks the argument passed through ... are really used for 
-    ##building the adjacency matrices during the parallel computation
+    ## Parallel computation
     ADJcv <- parLapply(cl=cl,X=idxs,fun=function(x,d,method,...){
       ss <- d[x,]
       tmp <- nettools:::mat2adj(ss, method=method, ...)
       return(tmp)
     },d=d,method=adj.method,...)
-  } 
-  else{
+  } else {
+    ## One core computation
     ADJcv <- lapply(X=idxs,FUN=function(x,d,method,...){
       ss <- d[x,]
       tmp <- mat2adj(ss, method=method, ...)
@@ -96,7 +89,7 @@ netSI <- function(d,indicator="all", dist='HIM', adj.method='cor',
   ##computing the adjacency matrix on the whole dataset
   ADJall <- mat2adj(x=d,method=adj.method,...)
     
-  #here the computation of the stability indicators
+  ## Compute the stability indicators
   netsi <- list()
   if(indicator==1L | indicator==5L){
     if(verbose==TRUE) cat("computing stability indicator S...\n")
@@ -127,7 +120,8 @@ netSI <- function(d,indicator="all", dist='HIM', adj.method='cor',
   return(results)
 }
 
-##need to do some checkings in order to pass also gamma through...
+
+## Stability indicator S
 netsiS <- function(g,H,dist,cl, ...){
   
   type <- pmatch(dist,c("H","IM","HIM","hamming","ipsen"))
@@ -148,18 +142,21 @@ netsiS <- function(g,H,dist,cl, ...){
   return(unlist(s))
 }
 
+## Stability indicator SI
 netsiSI <- function(H,dist,cl, ...){
-  
   type <- pmatch(dist,c("H","IM","HIM","hamming","ipsen"))
   if(type==4L) type <- 1
   if(type==5L) type <- 1
+
   com <- combn(1:length(H), 2)
+  
   if(!is.null(cl)){
+    ## Parallel computation
     s <- parLapply(cl=cl,X=1:ncol(com),fun=function(x,com,H,dist,type, ...){
       res <- nettools:::netdist(H[[com[1,x]]],H[[com[2,x]]],dist, ...)[[type]]
       return(res)
     },com=com,H=H,dist=dist,type=type, ...)
-  }else{
+  }else{ ## One core computation
     s <- lapply(X=1:ncol(com),FUN=function(x,com,H,dist,type, ...){
       res <- netdist(H[[com[1,x]]],H[[com[2,x]]],dist, ...)[[type]]
       return(res)
@@ -168,34 +165,31 @@ netsiSI <- function(H,dist,cl, ...){
   return(unlist(s))
 }
 
-## NB dist parameter not needed
+## Degree stability
 netsiSd <- function(H,cl){
   if (length(H))
-    n <- ncol(H[[1]])
-  else
-    stop("No adjacency matrix computed",call.=FALSE)
+    n <- ncol(H[[1]]) else stop("No adjacency matrix computed",call.=FALSE)
   
   if (!is.null(cl)){
+    ## Parallel computation
     dd <- parLapply(cl=cl, X=H, rowSums)
   } else {
+    ## One core computation
     dd <- lapply(H, rowSums)
   }
   dd <- matrix(unlist(dd),ncol=n)
-  
   return(dd)
 }
 
+## Edges stability
 netsiSw <- function(H,cl){
   if (length(H))
-    n <- nrow(H[[1]])
-  else
-    stop("List of adjacency matrices do not exist")
+    n <- nrow(H[[1]]) else stop("List of adjacency matrices do not exist")
   
   com <- combn(1:n, 2)
-  ## m <- matrix(NA,ncol=length(H),nrow=ncol(com))
-  ## rownames(m) <- paste(com[1,],com[2,],sep="-")
-  ## colnames(m) <- names(H)
+
   if (!is.null(cl)){
+    ## Parallel computation
     tmp <- parLapply(cl, H,
                   function(x,com){
                     sapply(1:ncol(com),
@@ -205,6 +199,7 @@ netsiSw <- function(H,cl){
                   },
                   com=com)
   } else {
+    ## One core computation
     tmp <- lapply(H,
                   function(x,com){
                     sapply(1:ncol(com),
@@ -220,29 +215,16 @@ netsiSw <- function(H,cl){
   rownames(m) <- paste(com[1,],com[2,],sep="-")
   colnames(m) <- names(H)
   
-  ## for(i in 1:length(H)){
-  ##   for(j in 1:ncol(com)){
-  ##     m[j,i] <- H[[i]][com[1,j],com[2,j]]
-  ##   }
-  ## }
   return(m)
 }
-#   s <- lapply(X=1:length(H),FUN=function(x,com,H){
-#     res <- lapply(X=1:ncol(com),FUN=function(y,com,G){
-#       m[x,y] <- G[com[1,y],com[2,y]]
-#       return(m)
-#     },com=com,G=H[[x]])
-#     return(res)
-#   },com=com,H=H)
-#   
-#   return(s)
-# }
 
+## Function for the computation of resampling indexes
 resamplingIDX <- function(N,method="montecarlo", k=3, h=20){
-  
+
+  ## Check of resampling methods
   METHODS <- c('montecarlo','LOO','kCV')
   method <- pmatch(method, METHODS)
-  
+
   if(is.na(method))
     stop("invalid distance method")
   if(method == -1)
@@ -277,6 +259,6 @@ resamplingIDX <- function(N,method="montecarlo", k=3, h=20){
     }
   }
   
+  ## return a list with indexes
   return(take)
-  
 }
