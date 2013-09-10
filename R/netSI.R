@@ -14,8 +14,7 @@ netSI <- function(d,indicator="all", dist='HIM', adj.method='cor',
   if(id.Call[1]==0){
     stop("A dataset must be provided",call.=FALSE)
   }
-  
-  
+    
   ##retrieving the arguments passed through ...
   ##extraArgs <- list(...)
   ##are not needed in the lapply calls below...
@@ -37,8 +36,7 @@ netSI <- function(d,indicator="all", dist='HIM', adj.method='cor',
 
   ## Pass parameter gamma to netdist functions
   ga <- Call$ga
-  ## cat("Out function:", ga, "\n")
-  
+    
   ddim <- nrow(d)
   
   if(verbose==TRUE) cat("computing resampling...\n")
@@ -49,7 +47,6 @@ netSI <- function(d,indicator="all", dist='HIM', adj.method='cor',
 
   ## Call$n.cores should be evaluated first
   n.cores <- eval(Call$n.cores)
-  ## print(n.cores)
   
   ##check if it is user-friendly this way
   if(is.null(n.cores)){
@@ -103,11 +100,11 @@ netSI <- function(d,indicator="all", dist='HIM', adj.method='cor',
   netsi <- list()
   if(indicator==1L | indicator==5L){
     if(verbose==TRUE) cat("computing stability indicator S...\n")
-    netsi[["S"]] <- netsiS(ADJall, ADJcv, dist=dist, cl=cl, ga, ...)
+    netsi[["S"]] <- netsiS(ADJall, ADJcv, dist=dist, cl=cl, ...)
   }
   if(indicator==2L | indicator==5L){
     if(verbose==TRUE) cat("computing stability indicator SI...\n")
-    netsi[["SI"]] <- netsiSI(ADJcv, dist=dist, cl=cl, ga, ...)
+    netsi[["SI"]] <- netsiSI(ADJcv, dist=dist, cl=cl, ...)
   }
   if(indicator==3L | indicator==5L){
     if(verbose==TRUE) cat("computing stability indicator Sw...\n")
@@ -139,14 +136,14 @@ netsiS <- function(g,H,dist,cl, ...){
   
   if(!is.null(cl)){
     s <- parLapply(cl=cl,X=H,fun=function(x,g,dist,type, ...){
-      res <- nettools:::netdist(g,x,dist, ...)[[type]]
+      res <- nettools:::netdist(g,x,dist, ga)[[type]]
       return(res)
-    },g=g,dist=dist,type=type)
+    },g=g,dist=dist,type=type, ...)
   }else{
-    s <- lapply(X=H,FUN=function(x,g,dist,type, ...){
+    s <- lapply(X=H,FUN=function(x,g,dist,type,...){
       res <- netdist(g,x,dist, ...)[[type]]
       return(res)
-    },g=g,dist=dist,type=type)
+    },g=g,dist=dist,type=type,...)
   }
   return(unlist(s))
 }
@@ -156,18 +153,17 @@ netsiSI <- function(H,dist,cl, ...){
   type <- pmatch(dist,c("H","IM","HIM","hamming","ipsen"))
   if(type==4L) type <- 1
   if(type==5L) type <- 1
-  ## print(ga)
   com <- combn(1:length(H), 2)
   if(!is.null(cl)){
     s <- parLapply(cl=cl,X=1:ncol(com),fun=function(x,com,H,dist,type, ...){
       res <- nettools:::netdist(H[[com[1,x]]],H[[com[2,x]]],dist, ...)[[type]]
       return(res)
-    },com=com,H=H,dist=dist,type=type)
+    },com=com,H=H,dist=dist,type=type, ...)
   }else{
-    s <- lapply(X=1:ncol(com),FUN=function(x,com,H,dist,type){
-      res <- netdist(H[[com[1,x]]],H[[com[2,x]]],dist)[[type]]
+    s <- lapply(X=1:ncol(com),FUN=function(x,com,H,dist,type, ...){
+      res <- netdist(H[[com[1,x]]],H[[com[2,x]]],dist, ...)[[type]]
       return(res)
-    },com=com,H=H,dist=dist,type=type)
+    },com=com,H=H,dist=dist,type=type, ...)
   }
   return(unlist(s))
 }
