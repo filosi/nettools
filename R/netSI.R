@@ -37,7 +37,7 @@ netSI <- function(d,indicator="all", dist='HIM', adj.method='cor',
 
   ## Pass parameter gamma to netdist functions
   ga <- Call$ga
-  cat("Out function:", ga, "\n")
+  ## cat("Out function:", ga, "\n")
   
   ddim <- nrow(d)
   
@@ -49,7 +49,7 @@ netSI <- function(d,indicator="all", dist='HIM', adj.method='cor',
 
   ## Call$n.cores should be evaluated first
   n.cores <- eval(Call$n.cores)
-  print(n.cores)
+  ## print(n.cores)
   
   ##check if it is user-friendly this way
   if(is.null(n.cores)){
@@ -135,7 +135,7 @@ netsiS <- function(g,H,dist,cl, ...){
   
   type <- pmatch(dist,c("H","IM","HIM","hamming","ipsen"))
   if(type==4L) type <- 1
-  if(type==5L) type <- 2
+  if(type==5L) type <- 1
   
   if(!is.null(cl)){
     s <- parLapply(cl=cl,X=H,fun=function(x,g,dist,type, ...){
@@ -155,8 +155,8 @@ netsiSI <- function(H,dist,cl, ...){
   
   type <- pmatch(dist,c("H","IM","HIM","hamming","ipsen"))
   if(type==4L) type <- 1
-  if(type==5L) type <- 2
-  print(ga)
+  if(type==5L) type <- 1
+  ## print(ga)
   com <- combn(1:length(H), 2)
   if(!is.null(cl)){
     s <- parLapply(cl=cl,X=1:ncol(com),fun=function(x,com,H,dist,type, ...){
