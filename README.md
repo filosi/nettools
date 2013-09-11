@@ -13,4 +13,4 @@ unzip nettools-master.zip
 R CMD build nettools-master
 
 ## Install it using (change the version according to the latest version):
-R CMD INSTALL nettools_1.2.tar.gz
+R CMD INSTALL nettools_0.8.tar.gz
