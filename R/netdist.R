@@ -43,11 +43,10 @@ netdist <- function(g, h, method="HIM", ga=NULL, ...){
     dd <- ipsen(mylap,ga=ga, nnodes, ...)
   }
   if (myadj$method=="hamming"){
-    dd <- hamming(myadj, ...)
+    dd <- hamming(myadj)
   }
   return(dd)
 }
-
 
 ## Prepare the matrix for computing distance if the graph is directed
 transfmat <- function(x){
@@ -67,6 +66,13 @@ transfmat <- function(x){
     Adj <- tmp
     tag <- "dir"
   }
+
+  ## Normalize the weights
+  if (any(Adj > 1) || any(Adj < 0)){
+    warning("Edge weight should be >= 0 and <= 1, scaling has been automatically applied!", call.=FALSE)
+    Adj <- (Adj - min(Adj)) / (max(Adj) - min(Adj))
+  }
+
   return(list(adj = Adj, tag = tag, N=n))
 }
 
@@ -83,24 +89,19 @@ g2adj.igraph <- function(x,...,type="both"){
   }
   Adj <- get.adjacency(x,type=type,attr=WW,sparse=TRUE)
   diag(Adj) <- 0
-  if (any(Adj > 1) || any(Adj < 0)){
-    warning("Edge weight should be >= 0 and <= 1, scaling has been automatically applied!", call.=FALSE)
-    Adj <- (Adj - min(Adj)) / (max(Adj) - min(Adj))
-  }
   ll <- transfmat(Adj)
+
   return(ll)
 }
 setMethod("g2adj","igraph",g2adj.igraph)
 
 g2adj.matrix <- function(x,...){
-  if (any(x > 1) || any(x < 0)){
-    warning("Edge weight should be >= 0 and <= 1, scaling has been automatically applied!", call.=FALSE)
-    Adj <- (Adj - min(Adj)) / (max(Adj) - min(Adj))
-  }
   ll <- transfmat(x)
+  
   return(ll)
 }
 setMethod("g2adj","matrix",g2adj.matrix)
+setMethod("g2adj","Matrix",g2adj.matrix)
 
 
 ## Generical Laplacian
