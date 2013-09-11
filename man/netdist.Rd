@@ -68,8 +68,8 @@ netdist(g, h, method = "HIM", ga = NULL, ...)
 \references{
   
   G. Jurman, R. Visintainer, S. Riccadonna, M. Filosi, C. Furlanello
-  \emph{A glocal distance for network comparison}
-  arXiv 2012, arXiv:1201.2931
+  \emph{A glocal distance for network comparison
+  arXiv 2012, arXiv:1201.2931}\cr
   
   %% ~put references to the literature/web site here ~
 }
