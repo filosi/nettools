@@ -109,10 +109,20 @@ netSI <- function(d,indicator="all", dist='HIM', adj.method='cor',
     netsi[["Sd"]] <- netsiSd(ADJcv, cl=cl)
   }
   
-  if(save==TRUE)
+  if(save==TRUE){
     results <- list("call"=Call,"ADJlist"=ADJcv,
-                    "S"=netsi[["S"]],"SI"=netsi[["SI"]],"Sw"=netsi[["Sw"]],"Sd"=netsi[["Sd"]]) else results <- list("S"=netsi[["S"]],"SI"=netsi[["SI"]],"Sw"=netsi[["Sw"]],"Sd"=netsi[["Sd"]])
-
+                    "S"=netsi[["S"]],
+                    "SI"=netsi[["SI"]],
+                    "Sw"=netsi[["Sw"]],
+                    "Sd"=netsi[["Sd"]])
+  } else {
+    results <- list("S"=mean(netsi[["S"]]),
+                    "SI"=mean(netsi[["SI"]]),
+                    "Sw"=apply(netsi[["Sw"]], 1, mean, na.rm=TRUE),
+                    "Sd"=apply(netsi[["Sd"]], 2, mean, na.rm=TRUE)
+                    )
+  }
+  
   if (!is.null(cl))
     stopCluster(cl)
   
