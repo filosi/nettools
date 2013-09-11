@@ -11,7 +11,8 @@ netSI <- function(d,indicator="all", dist='HIM', adj.method='cor',
     stop("A dataset must be provided",call.=FALSE)
   }
   
-  ## Choose the indicators INDICATORS <- c('S','SI','Sw','Sd',"all")
+  ## Choose the indicators
+  INDICATORS <- c('S','SI','Sw','Sd',"all")
   indicator <- pmatch(indicator,INDICATORS)
   
   if(is.na(indicator))
@@ -110,9 +111,7 @@ netSI <- function(d,indicator="all", dist='HIM', adj.method='cor',
   
   if(save==TRUE)
     results <- list("call"=Call,"ADJlist"=ADJcv,
-                    "S"=netsi[["S"]],"SI"=netsi[["SI"]],"Sw"=netsi[["Sw"]],"Sd"=netsi[["Sd"]])
-  else
-    results <- list("S"=netsi[["S"]],"SI"=netsi[["SI"]],"Sw"=netsi[["Sw"]],"Sd"=netsi[["Sd"]])
+                    "S"=netsi[["S"]],"SI"=netsi[["SI"]],"Sw"=netsi[["Sw"]],"Sd"=netsi[["Sd"]]) else results <- list("S"=netsi[["S"]],"SI"=netsi[["SI"]],"Sw"=netsi[["Sw"]],"Sd"=netsi[["Sd"]])
 
   if (!is.null(cl))
     stopCluster(cl)
