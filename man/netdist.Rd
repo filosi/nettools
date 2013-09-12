@@ -14,7 +14,7 @@
 
 %- maybe also 'usage' for other objects documented here.
 \usage{
-netdist(g, h, method = "HIM", ga = NULL, ...)
+netdist(g, h, method = "HIM", ga = NULL, components=TRUE, ...)
 }
 
 \arguments{
@@ -23,10 +23,15 @@ netdist(g, h, method = "HIM", ga = NULL, ...)
   \item{method}{\code{HIM}
     (default), or character string containing a valid method or unique
     abbreviation between \code{ipsen} and \code{hamming}.}
-  \item{ga}{NULL (default), a numeric value for the gamma parameter used
+  \item{ga}{\code{NULL} (default), a numeric value for the gamma parameter used
     only if method \code{ipsen} is called.  If \code{ga=NULL} an optimal
     value based on the number of nodes in the adjacency matrix is
     computed.}
+  \item{components}{\code{TRUE} (default), to obtain the components 
+    (Hamming and Ipsen-Mikhailov) for \code{method=HIM}; 
+    otherwise the function returns only the HIM value.
+    If \code{method} is set to \code{hamming} or \code{ipsen} it will be ignored.
+  }
   \item{\dots}{Additional arguments to be passed to the
     downstream functions. Normally the argument passed through \dots are
     processed by the functions which compute the distance. Not all

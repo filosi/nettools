@@ -1,4 +1,4 @@
-netdist <- function(g, h, method="HIM", ga=NULL, ...){
+netdist <- function(g, h, method="HIM", ga=NULL, components=TRUE, ...){
   
   METHODS <- c('HIM','ipsen','hamming')
   method <- pmatch(method, METHODS)
@@ -17,6 +17,32 @@ netdist <- function(g, h, method="HIM", ga=NULL, ...){
   if(method == -1)
     stop("ambiguous distance method")
   
+  ##check on components argument
+  if(is.null(Call$components)){
+    if(method==1)
+      comp <- TRUE
+  }else{
+    comp <- eval(Call$components)
+    if(method==1){
+      if(!is.logical(comp))
+        stop("components must be TRUE or FALSE")
+    }else{
+      warning("components parameter will be ignored", .call = FALSE)
+    }
+  }
+  
+  #check on ga passing through ipsen function
+  if(is.null(Call$ga)){
+    if(method==2){
+      warning("The ga parameter will be automatically defined.", .call=FALSE)
+    }
+  }else{
+    ga <- eval(Call$ga)
+    if(!is.numeric(ga))
+      stop("ga must be numeric",.call=FALSE)
+  }
+  
+    
   ## Create the class
   g1 <- g2adj(g)
   g2 <- g2adj(h)
@@ -36,7 +62,7 @@ netdist <- function(g, h, method="HIM", ga=NULL, ...){
   ## Check method for distances
   if (myadj$method=="HIM"){
     mylap <- list(L1=Lap(g1$adj),L2=Lap(g2$adj),N=g1$N, tag=g1$tag)
-    dd <- him(list(ADJ=myadj,LAP=mylap), nnodes, ...)
+    dd <- him(list(ADJ=myadj,LAP=mylap), nnodes, ga=ga,  components=comp, ...)
   }
   if (myadj$method=="ipsen"){
     mylap <- list(L1=Lap(g1$adj),L2=Lap(g2$adj),N=g1$N, tag=g1$tag)
@@ -45,6 +71,7 @@ netdist <- function(g, h, method="HIM", ga=NULL, ...){
   if (myadj$method=="hamming"){
     dd <- hamming(myadj)
   }
+  
   return(dd)
 }
 
@@ -120,7 +147,7 @@ setMethod("Lap","Matrix",Lap.default)
 ## Ipsen distance
 ##----------------------------------------
 ipsen <- function(object,...) UseMethod("ipsen")
-ipsen.list <- function(object,...,ga=NULL, nnodes=1000 ){
+ipsen.list <- function(object, ..., ga=NULL, nnodes=1000 ){
   if (is.null(ga)){
     if (object$tag == "undir"){
       optgamma <- optimal_gamma(object$N)
@@ -128,7 +155,7 @@ ipsen.list <- function(object,...,ga=NULL, nnodes=1000 ){
       optgamma <- optimal_gamma_dir(object$N)
     }
   } else {
-    optgamma <- g
+    optgamma <- ga
   }
   
   ## Check if network is directed or not
@@ -179,12 +206,16 @@ setMethod("hamming","list",hamming.list)
 ## Him distance
 ##----------------------------------------
 him <- function(object,...) UseMethod("him")
-him.list <- function(object,..., nnodes=1000){
-  ipd <- ipsen(object$LAP,ga=NULL, ...)
+him.list <- function(object,..., ga=NULL, components=TRUE, nnodes=1000){
+  ipd <- ipsen(object$LAP, ga, ...)
   had <- hamming(object$ADJ)
   gloc <- sqrt(had**2/2+ipd**2/2)
-  dist <- c(had,ipd,gloc)
-  names(dist) <- c("H","IM","HIM")
-  return(dist)
+  if(components==TRUE){
+    dist <- c(had,ipd,gloc)
+    names(dist) <- c("H","IM","HIM")
+    return(dist)
+  }else{
+    return(gloc)
+  }
 }
 setMethod("him","list",him.list)
