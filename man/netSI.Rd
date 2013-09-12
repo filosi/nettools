@@ -9,7 +9,7 @@ Family NetSI of stability indicators for network inference methods
 }
 \usage{
 netSI(d,indicator="all", dist='HIM', adj.method='cor',
-method="montecarlo", k=3, h=20, n.cores=NULL, save=TRUE, verbose=TRUE, ...)
+method="montecarlo", k=3, h=20, n.cores, save=TRUE, verbose=TRUE, ...)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
