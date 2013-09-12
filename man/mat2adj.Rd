@@ -53,23 +53,23 @@ alpha=0.6, C=15,DP=1, \dots)
   \item{x}{ a matrix or data.frame of numerical values of N rows and P columns}
   \item{method}{ a character string indicating which
     method will be used for inferring a relationship between two variables. This must
-    be (an abbreviation of) one of \code{cor} (default), \code{WGCNA}, \code{WGCNAFDR},
-    \code{bicor}, \code{bicorFDR}, \code{TOM}, \code{ARACNE},
-    \code{CLR}, \code{MINE}, \code{MINEFDR}, \code{DTWMIC}}
+    be (an abbreviation of) one of \code{"cor"} (default), \code{"WGCNA"}, \code{"WGCNAFDR"},
+    \code{"bicor"}, \code{"bicorFDR"}, \code{"TOM"}, \code{"ARACNE"},
+    \code{"CLR"}, \code{"MINE"}, \code{"MINEFDR"}, \code{"DTWMIC"}}
   \item{P}{6 (default), integer used as soft-thresholding power for network
-    construction, used by the \code{WGCNA} and \code{TOM} methods.}
+    construction, used by the \code{"WGCNA"} and \code{"TOM"} methods.}
   \item{FDR}{1e-3 (default), a number which indicates the number of
     values generated to compute the NULL hypothesis. To be used for
-    methods \code{WGCNAFDR}, \code{MINEFDR} and \code{bicorFDR}}
-  \item{measure}{\code{MIC} (default), a valid string indicating
-    the measure of the MINE suite to compute. One of \code{MIC},
-    \code{MCN}, \code{MEV}, \code{MAS} or \code{MICR2}.}
+    methods \code{"WGCNAFDR"}, \code{"MINEFDR"} and \code{"bicorFDR"}}
+  \item{measure}{\code{"MIC"} (default), a valid string indicating
+    the measure of the MINE suite to compute. One of \code{"MIC"},
+    \code{"MCN"}, \code{"MEV"}, \code{"MAS"} or \code{"MICR2"}.}
   \item{alpha}{0.6 (default), the \code{alpha} argument to be
     passed to the function \code{mine}. See also
     \code{\link[minerva]{mine}}}
   \item{C}{15 (default), an integer value to be passed at the mine function
-    main. Only for methods \code{MINE}  and \code{MINEFDR}.}
-  \item{DP}{1 (default), only for method \code{DTWMIC}.}
+    main. Only for methods \code{"MINE"}  and \code{"MINEFDR"}.}
+  \item{DP}{1 (default), only for method \code{"DTWMIC"}.}
   \item{\dots}{Additional arguments to be passed to the downstream
     functions. Normally the argument passed through \dots are processed
     by the functions which compute the inference. Not all parameters are
@@ -86,25 +86,26 @@ alpha=0.6, C=15,DP=1, \dots)
   \describe{
     \item{\code{cor}}{(default) computes the interaction using the
       'Pearson' correlation coefficient. Different correlation methods, such
-  as \code{Spearman} could be passed to the function using \dots.}
+      as \code{Spearman} could be passed to the function using \dots.}
     
+    \item{\code{ARACNE}}{Algorithm for the Reconstruction of Gene
+      Regulatory Networks, see also package \pkg{minet}}
+    \item{\code{CLR}}{Context Likelihood of Relatedness see also
+      package \pkg{minet}}
+    \item{\code{TOM} (Topological Overlap Matrix) calculates the
+      topological overlap matrix from a given adjacency matrix.}
+    %% The Adjacency matrix is computed with the method \code{"cor"} using the
+    %% correlation coefficient and the soft thresholding P passed by the user
+    %% (The Defaults are Pearson and P = 6)\cr
+    \item{\code{MINE}}{ methods use a non-linear mutual
+      information coefficient to asses statistical dependency between
+      variables. This method is based on the \pkg{minerva} package
+      implementation.}\cr
   }
   
-  \code{ARACNE}
-  \code{CLR}
-  The method \code{TOM} (Topological Overlap Matrix) calculates the
-  topological overlap matrix from a given adjacency matrix. The
-  Adjacency matrix is computed with the method \code{cor} using the
-  correlation coefficient and the soft thresholding P passed by the user
-  (The Defaults are Pearson and P = 6)\cr
-  \code{MINE} methods use a non-linear mutual
-  information coefficient to asses statistical dependency between
-  variables. This method is based on the \pkg{minerva} package
-  implementation.\cr
-  
-  For some methods an \code{FDR} correction is available, based the
+  For some methods an \code{"FDR"} correction is available, based the
   estimation of the null hypothesis through permutations. Just the links
-  with a P-value lower than \code{FDR} are inferred. 1/(\code{FDR})
+  with a P-value lower than \code{"FDR"} are inferred. 1/(\code{"FDR"})
   permutations are performed and each link is considered real just if it
   is inferred in all the permutations. The default value is 1e-3
   
@@ -126,8 +127,8 @@ alpha=0.6, C=15,DP=1, \dots)
   value is 15.\cr
   The \strong{Maximal Information Coefficient (MIC)} is defined as
   \deqn{\textrm{MIC}(D)=\max_{XY<B(n)} M(D)_{X,Y} = \max_{XY<B(n)}
-  \frac{I^*(D,X,Y)}{log(\min{X,Y})},}{MIC(D)=max_{XY<B(n)}
-  M(D)_{X,Y}=max_{XY<B(n)} I*(D,X,Y)/log(min(X,Y)),} where
+    \frac{I^*(D,X,Y)}{log(\min{X,Y})},}{MIC(D)=max_{XY<B(n)}
+    M(D)_{X,Y}=max_{XY<B(n)} I*(D,X,Y)/log(min(X,Y)),} where
   \eqn{B(n)=n^{\alpha}} is the search-grid size,
   \eqn{I^*(D,X,Y)}{I*(D,X,Y)} is the maximum mutual information over all
   grids \emph{X-by-Y}, of the distribution induced by D on a grid having
@@ -145,7 +146,8 @@ alpha=0.6, C=15,DP=1, \dots)
   \deqn{\textrm{MCN}(D,\epsilon) = \min_{XY<B(n)} \{\log(XY): M(D)_{X,Y}
     \geq (1-\epsilon)MIC(D)\}.}{MCN(D,\epsilon) = min_{XY<B(n)} {log(XY):
       M(D)_{X,Y} >= (1-\epsilon)MIC(D)}.}  More details are provided in the
-  supplementary material (SOM) of the original paper.}
+  supplementary material (SOM) of the original paper.
+}
   
 \value{A P by P symmetric adjacency matrix with the diagonal set to
   0. Self loop and direction of the edges are not taking into

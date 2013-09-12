@@ -13,11 +13,10 @@ method="montecarlo", k=3, h=20, n.cores=NULL, save=TRUE, verbose=TRUE, ...)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
-  \item{d}{dataset used for network inference and stability indicators
-    computation}
-  \item{indicator}{\code{all} (default) character string denoting all or
+  \item{d}{numerical matrix or data.frame to be used for network inference.}
+  \item{indicator}{\code{all} (default) character string. Indicating all or
     one of the four indicators available. This must be on of the strings
-    \code{"S"},\code{"SI"}, \code{"Sw"} or \code{"Sd"}}
+    \code{"S"},\code{"SI"}, \code{"Sw"} or \code{"Sd"}.}
   \item{dist}{\code{HIM} (default), character string indicating the
     distance to be used for the stability computation in case of
     indicators S and SI.}
