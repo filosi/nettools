@@ -2,6 +2,7 @@ netdist <- function(g, h, method="HIM", ga=NULL, components=TRUE, ...){
   
   METHODS <- c('HIM','ipsen','hamming')
   method <- pmatch(method, METHODS)
+  
 
   Call <- match.call()
   
@@ -27,19 +28,19 @@ netdist <- function(g, h, method="HIM", ga=NULL, components=TRUE, ...){
       if(!is.logical(comp))
         stop("components must be TRUE or FALSE")
     }else{
-      warning("components parameter will be ignored", .call = FALSE)
+      warning("components parameter will be ignored", call. = FALSE)
     }
   }
   
   #check on ga passing through ipsen function
   if(is.null(Call$ga)){
     if(method==2){
-      warning("The ga parameter will be automatically defined.", .call=FALSE)
+      warning("The ga parameter will be automatically defined.", call.=FALSE)
     }
   }else{
     ga <- eval(Call$ga)
     if(!is.numeric(ga))
-      stop("ga must be numeric",.call=FALSE)
+      stop("ga must be numeric",call.=FALSE)
   }
   
     
@@ -215,7 +216,9 @@ him.list <- function(object,..., ga=NULL, components=TRUE, nnodes=1000){
     names(dist) <- c("H","IM","HIM")
     return(dist)
   }else{
-    return(gloc)
+    dist <- gloc
+    names(dist) <- "HIM"
+    return(dist)
   }
 }
 setMethod("him","list",him.list)

@@ -18,6 +18,7 @@ badj <- mat2adj(b)
 ## Him distance
 netdist(aadj,badj,method="HIM")
 ##
+netdist(aadj,badj,method="HIM", components=FALSE)
 
 
 ## Hamming distance
@@ -53,3 +54,17 @@ a2 <- get.adjacency(g2,type="both",sparse=TRUE)
 
 ## HIM distance
 netdist(g1,g2,method="HIM")
+
+
+##-------------------------------------------------
+## Computing stability indicators
+##-------------------------------------------------
+
+netSI(a)
+
+##is the same as
+
+netSI(a,indicator="all", dist='HIM', adj.method='cor', 
+      method="montecarlo", k=3, h=20)
+
+netSI(a, components=TRUE)

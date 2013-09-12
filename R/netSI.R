@@ -9,18 +9,44 @@ netSI <- function(d,indicator="all", dist='HIM', adj.method='cor',
                    names(Call), nomatch=0)
   if(id.Call[1]==0){
     stop("A dataset must be provided",call.=FALSE)
+  }else{
+    d <- eval(Call$d)
+    if(!(is.matrix(d) | is.data.frame(d))){
+      stop("d must be a matrix or a data frame", call.=FALSE)
+    }
+  }
+    
+  ## Choose the indicators
+  if(id.Call[2]!=0){
+    indicator <- eval(Call$indicator)
+    if(!is.character(indicator))
+      stop("indicator must be one of 'S','SI','Sw','Sd','all'.", call.=FALSE)
   }
   
-  ## Choose the indicators
   INDICATORS <- c('S','SI','Sw','Sd',"all")
   indicator <- pmatch(indicator,INDICATORS)
   
   if(is.na(indicator))
-    stop("invalid indicator")
+    stop("invalid indicator", call. =FALSE)
   if(indicator == -1)
-    stop("ambiguous indicator")
+    stop("ambiguous indicator", call. =FALSE)
   
-  ##check on save and verbose are missing!!!!
+  ##check on save and verbose
+  if(is.null(Call$save)){
+    save <- TRUE
+  }else{
+    save <- eval(Call$save)
+    if(!is.logical(save))
+      stop("save must be TRUE or FALSE",call.=FALSE)
+  }
+  
+  if(is.null(Call$verbose)){
+    verbose <- TRUE
+  }else{
+    verbose <- eval(Call$verbose)
+    if(!is.logical(verbose))
+      stop("verbose must be TRUE or FALSE", call.=FALSE)
+  }
 
   ## It can be passed through ...
   if (is.null(Call$sseed)) sseed <- 0
@@ -28,7 +54,21 @@ netSI <- function(d,indicator="all", dist='HIM', adj.method='cor',
   set.seed(sseed)
 
   ## Pass parameter gamma to netdist functions
-  ga <- Call$ga
+  if(!is.null(ga)){
+    ga <- eval(Call$ga)
+  }
+  
+  ## Pass parameter components to netdist functions
+  if(!is.null(components)){
+    components <- eval(Call$components)
+    if(dist=="HIM" & components==TRUE){
+    warning(paste("component parameter will be ignored. \n
+            The stability indicators will be computed just for",
+                  dist, "distance.\n
+            For computing them for Hamming or Ipsen-Mikhailov 
+            distance use dist=hamming or dist=ipsen", call.=FALSE)
+    components <- FALSE
+  }
 
   ## Get the dimension of the input matrix
   ddim <- nrow(d)
@@ -138,8 +178,8 @@ netsiS <- function(g,H,dist,cl, ...){
   if(type==5L) type <- 1
   
   if(!is.null(cl)){
-    s <- parLapply(cl=cl,X=H,fun=function(x,g,dist,type, ...){
-      res <- nettools:::netdist(g,x,dist, ga)[[type]]
+    s <- parLapply(cl=cl,X=H,fun=function(x,g,dist,type,  ...){
+      res <- nettools:::netdist(g,x,dist, ...)[[type]]
       return(res)
     },g=g,dist=dist,type=type, ...)
   }else{
