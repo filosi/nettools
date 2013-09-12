@@ -11,7 +11,7 @@ netdist <- function(g, h, method="HIM", ga=NULL, components=TRUE, ...){
   ## if number of nodes < nnodes it won't start,
   ## otherwise a 2 process will be launched
   if (is.null(Call$nnodes))
-    nnodes <- 1000 else nnodes <- Call$nnodes
+    nnodes <- 1000 else nnodes <- eval(Call$nnodes)
   
   if(is.na(method))
     stop("invalid distance method")
