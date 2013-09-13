@@ -92,23 +92,22 @@ alpha=0.6, C=15,DP=1, \dots)
       Regulatory Networks, see also package \pkg{minet}}
     \item{\code{CLR}}{Context Likelihood of Relatedness see also
       package \pkg{minet}}
-    \item{\code{TOM} (Topological Overlap Matrix) calculates the
-      topological overlap matrix from a given adjacency matrix.}
-    %% The Adjacency matrix is computed with the method \code{"cor"} using the
-    %% correlation coefficient and the soft thresholding P passed by the user
-    %% (The Defaults are Pearson and P = 6)\cr
-    \item{\code{MINE}}{ methods use a non-linear mutual
-      information coefficient to asses statistical dependency between
-      variables. This method is based on the \pkg{minerva} package
-      implementation.}\cr
   }
-  
+  %% \item{\code{TOM} (Topological Overlap Matrix) calculates the
+  %%   topological overlap matrix from a given adjacency matrix}
+  %% The Adjacency matrix is computed with the method \code{"cor"} using the
+  %% correlation coefficient and the soft thresholding P passed by the user
+  %% (The Defaults are Pearson and P = 6)
+  %% \item{\code{MINE}}{ methods use a non-linear mutual
+  %%   information coefficient to asses statistical dependency between
+  %%   variables. This method is based on the \pkg{minerva} package
+  %%   implementation.}\cr
   For some methods an \code{"FDR"} correction is available, based the
   estimation of the null hypothesis through permutations. Just the links
   with a P-value lower than \code{"FDR"} are inferred. 1/(\code{"FDR"})
   permutations are performed and each link is considered real just if it
   is inferred in all the permutations. The default value is 1e-3
-  
+    
   To clarify the main MINE family statistics let \eqn{D={(x,y)}} be the
   set of \emph{n} ordered pairs of elements of \code{x} and
   \code{y}. The data space is partitioned in an \emph{X-by-Y} grid,

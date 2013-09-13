@@ -62,14 +62,14 @@ netSI <- function(d,indicator="all", dist='HIM', adj.method='cor',
   if(!is.null(components)){
     components <- eval(Call$components)
     if(dist=="HIM" & components==TRUE){
-    warning(paste("component parameter will be ignored. \n
+      warning(paste("component parameter will be ignored. \n
             The stability indicators will be computed just for",
-                  dist, "distance.\n
+                    dist, "distance.\n
             For computing them for Hamming or Ipsen-Mikhailov 
-            distance use dist=hamming or dist=ipsen", call.=FALSE)
-    components <- FALSE
-  }
-
+            distance use dist=hamming or dist=ipsen"), call.=FALSE)
+      components <- FALSE
+    }
+    
   ## Get the dimension of the input matrix
   ddim <- nrow(d)
 

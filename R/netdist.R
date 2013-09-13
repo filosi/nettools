@@ -2,7 +2,6 @@ netdist <- function(g, h, method="HIM", ga=NULL, components=TRUE, ...){
   
   METHODS <- c('HIM','ipsen','hamming')
   method <- pmatch(method, METHODS)
-  
 
   Call <- match.call()
   
@@ -32,7 +31,7 @@ netdist <- function(g, h, method="HIM", ga=NULL, components=TRUE, ...){
     }
   }
   
-  #check on ga passing through ipsen function
+                                        #check on ga passing through ipsen function
   if(is.null(Call$ga)){
     if(method==2){
       warning("The ga parameter will be automatically defined.", call.=FALSE)
@@ -43,7 +42,7 @@ netdist <- function(g, h, method="HIM", ga=NULL, components=TRUE, ...){
       stop("ga must be numeric",call.=FALSE)
   }
   
-    
+  
   ## Create the class
   g1 <- g2adj(g)
   g2 <- g2adj(h)
@@ -56,9 +55,10 @@ netdist <- function(g, h, method="HIM", ga=NULL, components=TRUE, ...){
       myadj <- list(method=METHODS[method],G1=g1$adj,G2=g2$adj,N=g1$N,tag=g1$tag)
     } else {
       stop("Not conformable graph g and h: one is directed while the other is undirected", call.=FALSE)
-    }} else {
-      stop("Not conformable graph g and h: they have different dimensions", call.=FALSE)
     }
+  } else {
+    stop("Not conformable graph g and h: they have different dimensions", call.=FALSE)
+  }
   
   ## Check method for distances
   if (myadj$method=="HIM"){
@@ -100,7 +100,6 @@ transfmat <- function(x){
     warning("Edge weight should be >= 0 and <= 1, scaling has been automatically applied!", call.=FALSE)
     Adj <- (Adj - min(Adj)) / (max(Adj) - min(Adj))
   }
-
   return(list(adj = Adj, tag = tag, N=n))
 }
 
@@ -140,7 +139,7 @@ Lap.default <- function(x,...){
   L <- -x
   diag(L) <- D
   return(L)
-  #return((D * diag(dim(x)[1])) - x)
+                                        #return((D * diag(dim(x)[1])) - x)
 }
 setMethod("Lap","matrix",Lap.default)
 setMethod("Lap","Matrix",Lap.default)
@@ -148,7 +147,7 @@ setMethod("Lap","Matrix",Lap.default)
 ## Ipsen distance
 ##----------------------------------------
 ipsen <- function(object,...) UseMethod("ipsen")
-ipsen.list <- function(object, ..., ga=NULL, nnodes=1000 ){
+ipsen.list <- function(object, ga=NULL, nnodes=1000, ...){
   if (is.null(ga)){
     if (object$tag == "undir"){
       optgamma <- optimal_gamma(object$N)
@@ -165,7 +164,7 @@ ipsen.list <- function(object, ..., ga=NULL, nnodes=1000 ){
     clusterEvalQ(cl,{K <- nettools:::K
                      rho <- nettools:::rho
                      lorentz <- nettools:::lorentz
-    })
+                   })
     ll <- clusterApply(cl,1:2,function(x,mygamma=optgamma,mylist=object,...){
       myomega <- sqrt(abs(round(spec(object[[x]]),5)))
       myk <- K(mygamma,myomega)
@@ -197,7 +196,6 @@ hamming.list <- function(object,...){
     dist <- ham.undir(object, ...)
   } else{
     dist <- ham.dir(object, ...)
-    
   }
   names(dist) <- "H"
   return(dist)
@@ -207,15 +205,15 @@ setMethod("hamming","list",hamming.list)
 ## Him distance
 ##----------------------------------------
 him <- function(object,...) UseMethod("him")
-him.list <- function(object,..., ga=NULL, components=TRUE, nnodes=1000){
-  ipd <- ipsen(object$LAP, ga, ...)
+him.list <- function(object,ga=NULL, components=TRUE, nnodes=1000, ...){
+  ipd <- ipsen(object$LAP, ga, nnodes, ...)
   had <- hamming(object$ADJ)
   gloc <- sqrt(had**2/2+ipd**2/2)
   if(components==TRUE){
     dist <- c(had,ipd,gloc)
     names(dist) <- c("H","IM","HIM")
     return(dist)
-  }else{
+  } else {
     dist <- gloc
     names(dist) <- "HIM"
     return(dist)
