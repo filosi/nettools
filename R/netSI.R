@@ -54,12 +54,12 @@ netSI <- function(d,indicator="all", dist='HIM', adj.method='cor',
   set.seed(sseed)
 
   ## Pass parameter gamma to netdist functions
-  if(!is.null(ga)){
+  if(!is.null(Call$ga)){
     ga <- eval(Call$ga)
   }
   
   ## Pass parameter components to netdist functions
-  if(!is.null(components)){
+  if(!is.null(Call$components)){
       components <- eval(Call$components)
       if(dist=="HIM" & components==TRUE){
           warning(paste("component parameter will be ignored. \n
