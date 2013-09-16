@@ -38,7 +38,7 @@ netdist <- function(g, h, method="HIM", ga=NULL, components=TRUE, ...){
     }
   }else{
     ga <- eval(Call$ga)
-    if(!is.numeric(ga))
+    if(!is.numeric(ga) && !is.null(ga))
       stop("ga must be numeric",call.=FALSE)
   }
   

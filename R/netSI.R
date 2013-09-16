@@ -15,7 +15,7 @@ netSI <- function(d,indicator="all", dist='HIM', adj.method='cor',
       stop("d must be a matrix or a data frame", call.=FALSE)
     }
   }
-    
+  
   ## Choose the indicators
   if(id.Call[2]!=0){
     indicator <- eval(Call$indicator)
@@ -56,19 +56,20 @@ netSI <- function(d,indicator="all", dist='HIM', adj.method='cor',
   ## Pass parameter gamma to netdist functions
   if(!is.null(Call$ga)){
     ga <- eval(Call$ga)
-  }
+  } else {
+    ga <- Call$ga}
   
   ## Pass parameter components to netdist functions
   if(!is.null(Call$components)){
-      components <- eval(Call$components)
-      if(dist=="HIM" & components==TRUE){
-          warning(paste("component parameter will be ignored. \n
+    components <- eval(Call$components)
+    if(dist=="HIM" & components==TRUE){
+      warning(paste("component parameter will be ignored. \n
             The stability indicators will be computed just for",
-                        dist, "distance.\n
+                    dist, "distance.\n
             For computing them for Hamming or Ipsen-Mikhailov 
             distance use dist=hamming or dist=ipsen"), call.=FALSE)
-          components <- FALSE
-      }
+      components <- FALSE
+    }
   }
   ## Get the dimension of the input matrix
   ddim <- nrow(d)
@@ -85,46 +86,46 @@ netSI <- function(d,indicator="all", dist='HIM', adj.method='cor',
   
   ## Check availability of cores, otherwise set a default
   if(is.null(n.cores)){
-      if(detectCores()>=2){
+    if(detectCores()>=2){
+      n.cores <- detectCores()-1
+      cl <- makeCluster(n.cores)
+      warning("The computation has been automatically parallelized", call.=FALSE)
+    } else {
+      cl <- NULL
+    }
+  } else {
+    if (n.cores==1){
+      cl <- NULL
+    } else {
+      if (n.cores<detectCores()){
+        cl <- makeCluster(n.cores)
+      } else {
+        if(detectCores()>=2){
           n.cores <- detectCores()-1
           cl <- makeCluster(n.cores)
           warning("The computation has been automatically parallelized", call.=FALSE)
-      } else {
-          cl <- NULL
+        } 
       }
-  } else {
-      if (n.cores==1){
-          cl <- NULL
-      } else {
-          if (n.cores<detectCores()){
-              cl <- makeCluster(n.cores)
-          } else {
-              if(detectCores()>=2){
-                  n.cores <- detectCores()-1
-                  cl <- makeCluster(n.cores)
-                  warning("The computation has been automatically parallelized", call.=FALSE)
-              } 
-          }
-      }
+    }
   }
   
   if(verbose==TRUE) cat("computing adjacency matrices...\n")
   
   ## Compute the adjacency matrices for each resampling index
   if(!is.null(cl)){
-      ## Parallel computation
-      ADJcv <- parLapply(cl=cl,X=idxs,fun=function(x,d,method,...){
-          ss <- d[x,]
-          tmp <- nettools:::mat2adj(ss, method=method, ...)
-          return(tmp)
-      },d=d,method=adj.method,...)
+    ## Parallel computation
+    ADJcv <- parLapply(cl=cl,X=idxs,fun=function(x,d,method,...){
+      ss <- d[x,]
+      tmp <- nettools:::mat2adj(ss, method=method, ...)
+      return(tmp)
+    },d=d,method=adj.method,...)
   } else {
     ## One core computation
-      ADJcv <- lapply(X=idxs,FUN=function(x,d,method,...){
-          ss <- d[x,]
-          tmp <- mat2adj(ss, method=method, ...)
-          return(tmp)
-      },d=d,method=adj.method,...)
+    ADJcv <- lapply(X=idxs,FUN=function(x,d,method,...){
+      ss <- d[x,]
+      tmp <- mat2adj(ss, method=method, ...)
+      return(tmp)
+    },d=d,method=adj.method,...)
   }
   
   ##computing the adjacency matrix on the whole dataset
@@ -133,181 +134,181 @@ netSI <- function(d,indicator="all", dist='HIM', adj.method='cor',
   ## Compute the stability indicators
   netsi <- list()
   if(indicator==1L | indicator==5L){
-      if(verbose==TRUE) cat("computing stability indicator S...\n")
-      netsi[["S"]] <- netsiS(ADJall, ADJcv, dist=dist, cl=cl, ...)
+    if(verbose==TRUE) cat("computing stability indicator S...\n")
+    netsi[["S"]] <- netsiS(ADJall, ADJcv, dist=dist, cl=cl, ga=ga)
   }
   if(indicator==2L | indicator==5L){
-      if(verbose==TRUE) cat("computing stability indicator SI...\n")
-      netsi[["SI"]] <- netsiSI(ADJcv, dist=dist, cl=cl, ...)
+    if(verbose==TRUE) cat("computing stability indicator SI...\n")
+    netsi[["SI"]] <- netsiSI(ADJcv, dist=dist, cl=cl, ga=ga)
   }
   if(indicator==3L | indicator==5L){
-      if(verbose==TRUE) cat("computing stability indicator Sw...\n")
-      netsi[["Sw"]] <- netsiSw(ADJcv, cl=cl)
+    if(verbose==TRUE) cat("computing stability indicator Sw...\n")
+    netsi[["Sw"]] <- netsiSw(ADJcv, cl=cl)
   }
   if(indicator==4L | indicator==5L){
-      if(verbose==TRUE) cat("computing stability indicator Sd...\n")
-      netsi[["Sd"]] <- netsiSd(ADJcv, cl=cl)
+    if(verbose==TRUE) cat("computing stability indicator Sd...\n")
+    netsi[["Sd"]] <- netsiSd(ADJcv, cl=cl)
   }
   
   if(save==TRUE){
-      results <- list("call"=Call,"ADJlist"=ADJcv,
-                      "S"=netsi[["S"]],
-                      "SI"=netsi[["SI"]],
-                      "Sw"=netsi[["Sw"]],
-                      "Sd"=netsi[["Sd"]])
+    results <- list("call"=Call,"ADJlist"=ADJcv,
+                    "S"=netsi[["S"]],
+                    "SI"=netsi[["SI"]],
+                    "Sw"=netsi[["Sw"]],
+                    "Sd"=netsi[["Sd"]])
   } else {
-      results <- list("S"=mean(netsi[["S"]]),
-                      "SI"=mean(netsi[["SI"]]),
-                      "Sw"=apply(netsi[["Sw"]], 1, mean, na.rm=TRUE),
-                      "Sd"=apply(netsi[["Sd"]], 2, mean, na.rm=TRUE)
-                      )
+    results <- list("S"=mean(netsi[["S"]]),
+                    "SI"=mean(netsi[["SI"]]),
+                    "Sw"=apply(netsi[["Sw"]], 1, mean, na.rm=TRUE),
+                    "Sd"=apply(netsi[["Sd"]], 2, mean, na.rm=TRUE)
+                    )
   }
   
   if (!is.null(cl))
-      stopCluster(cl)
+    stopCluster(cl)
   
   return(results)
 }
 
 
 ## Stability indicator S
-netsiS <- function(g,H,dist,cl, ...){
-    
-    type <- pmatch(dist,c("H","IM","HIM","hamming","ipsen"))
-    if(type==4L) type <- 1
-    if(type==5L) type <- 1
-    
-    if(!is.null(cl)){
-        s <- parLapply(cl=cl,X=H,fun=function(x,g,dist,type,  ...){
-            res <- nettools:::netdist(g,x,dist, ...)[[type]]
-            return(res)
-        },g=g,dist=dist,type=type, ...)
-    }else{
-        s <- lapply(X=H,FUN=function(x,g,dist,type,...){
-            res <- netdist(g,x,dist, ...)[[type]]
-            return(res)
-        },g=g,dist=dist,type=type,...)
-    }
-    return(unlist(s))
+netsiS <- function(g, H, dist, cl, ga){
+  
+  type <- pmatch(dist,c("H","IM","HIM","hamming","ipsen"))
+  if(type==4L) type <- 1
+  if(type==5L) type <- 1
+
+  if(!is.null(cl)){
+    s <- parLapply(cl=cl,X=H,fun=function(x,g,dist,type, ga){
+      res <- nettools:::netdist(g,x,dist, ga)[[type]]
+      return(res)
+    },g=g,dist=dist,type=type, ga=ga)
+  }else{
+    s <- lapply(X=H,FUN=function(x,g,dist,type, ga){
+      res <- netdist(g,x,dist, ga)[[type]]
+      return(res)
+    },g=g,dist=dist,type=type, ga=ga)
+  }
+  return(unlist(s))
 }
 
 ## Stability indicator SI
-netsiSI <- function(H,dist,cl, ...){
-    type <- pmatch(dist,c("H","IM","HIM","hamming","ipsen"))
-    if(type==4L) type <- 1
-    if(type==5L) type <- 1
-    
-    com <- combn(1:length(H), 2)
-    
-    if(!is.null(cl)){
-        ## Parallel computation
-        s <- parLapply(cl=cl,X=1:ncol(com),fun=function(x,com,H,dist,type, ...){
-            res <- nettools:::netdist(H[[com[1,x]]],H[[com[2,x]]],dist, ...)[[type]]
-            return(res)
-        },com=com,H=H,dist=dist,type=type, ...)
-    }else{ ## One core computation
-        s <- lapply(X=1:ncol(com),FUN=function(x,com,H,dist,type, ...){
-            res <- netdist(H[[com[1,x]]],H[[com[2,x]]],dist, ...)[[type]]
-            return(res)
-        },com=com,H=H,dist=dist,type=type, ...)
-    }
-    return(unlist(s))
+netsiSI <- function(H, dist, cl, ga){
+  type <- pmatch(dist,c("H","IM","HIM","hamming","ipsen"))
+  if(type==4L) type <- 1
+  if(type==5L) type <- 1
+  
+  com <- combn(1:length(H), 2)
+  
+  if(!is.null(cl)){
+    ## Parallel computation
+    s <- parLapply(cl=cl,X=1:ncol(com),fun=function(x,com,H,dist,type, ga){
+      res <- nettools:::netdist(H[[com[1,x]]],H[[com[2,x]]],dist,ga)[[type]]
+      return(res)
+    },com=com,H=H,dist=dist,type=type, ga=ga)
+  }else{ ## One core computation
+    s <- lapply(X=1:ncol(com),FUN=function(x,com,H,dist,type, ga){
+      res <- netdist(H[[com[1,x]]],H[[com[2,x]]],dist, ga)[[type]]
+      return(res)
+    },com=com,H=H,dist=dist,type=type, ga=ga)
+  }
+  return(unlist(s))
 }
 
 ## Degree stability
 netsiSd <- function(H,cl){
-    if (length(H))
-        n <- ncol(H[[1]]) else stop("No adjacency matrix computed",call.=FALSE)
-    
-    if (!is.null(cl)){
-        ## Parallel computation
-        dd <- parLapply(cl=cl, X=H, rowSums)
-    } else {
-        ## One core computation
-        dd <- lapply(H, rowSums)
-    }
-    dd <- matrix(unlist(dd),ncol=n)
-    return(dd)
+  if (length(H))
+    n <- ncol(H[[1]]) else stop("No adjacency matrix computed",call.=FALSE)
+  
+  if (!is.null(cl)){
+    ## Parallel computation
+    dd <- parLapply(cl=cl, X=H, rowSums)
+  } else {
+    ## One core computation
+    dd <- lapply(H, rowSums)
+  }
+  dd <- matrix(unlist(dd),ncol=n)
+  return(dd)
 }
 
 ## Edges stability
 netsiSw <- function(H,cl){
-    if (length(H))
-        n <- nrow(H[[1]]) else stop("List of adjacency matrices do not exist")
-    
-    com <- combn(1:n, 2)
-    
-    if (!is.null(cl)){
-        ## Parallel computation
-        tmp <- parLapply(cl, H,
-                         function(x,com){
-                             sapply(1:ncol(com),
-                                    function(y, x, allcom){
-                                        x[allcom[1,y],allcom[2,y]]},
-                                    x=x, allcom=com)
-                         },
-                         com=com)
-    } else {
-        ## One core computation
-        tmp <- lapply(H,
-                      function(x,com){
-                          sapply(1:ncol(com),
-                                 function(y, x, allcom){
-                                     x[allcom[1,y],allcom[2,y]]},
-                                 x=x, allcom=com)
-                      },
-                      com=com)
-    }
-    
-    ## Set up the results in a matrix
-    m <- matrix(unlist(tmp), ncol=length(H))
-    rownames(m) <- paste(com[1,],com[2,],sep="-")
-    colnames(m) <- names(H)
-    
-    return(m)
+  if (length(H))
+    n <- nrow(H[[1]]) else stop("List of adjacency matrices do not exist")
+  
+  com <- combn(1:n, 2)
+  
+  if (!is.null(cl)){
+    ## Parallel computation
+    tmp <- parLapply(cl, H,
+                     function(x,com){
+                       sapply(1:ncol(com),
+                              function(y, x, allcom){
+                                x[allcom[1,y],allcom[2,y]]},
+                              x=x, allcom=com)
+                     },
+                     com=com)
+  } else {
+    ## One core computation
+    tmp <- lapply(H,
+                  function(x,com){
+                    sapply(1:ncol(com),
+                           function(y, x, allcom){
+                             x[allcom[1,y],allcom[2,y]]},
+                           x=x, allcom=com)
+                  },
+                  com=com)
+  }
+  
+  ## Set up the results in a matrix
+  m <- matrix(unlist(tmp), ncol=length(H))
+  rownames(m) <- paste(com[1,],com[2,],sep="-")
+  colnames(m) <- names(H)
+  
+  return(m)
 }
 
 ## Function for the computation of resampling indexes
 resamplingIDX <- function(N,method="montecarlo", k=3, h=20){
-    
-    ## Check of resampling methods
-    METHODS <- c('montecarlo','LOO','kCV')
-    method <- pmatch(method, METHODS)
-    
-    if(is.na(method))
-        stop("invalid distance method")
-    if(method == -1)
-        stop("ambiguous distance method")
-    
-    ## Montecarlo
-    if (method==1L)
-        take <- lapply(1:h,function(x){tmp <- sample(seq(N),floor(N*(1-(1/k)))) 
-                                       return(tmp)})
-    
-    ## Leave One Out
-    if (method==2L){
-        if (k!=1)
-            warning("h is different than 1 but method is set to LOO (Leave One Out cross-validation schema).\nh will be ignored.")
-        h <- N
-        take <- lapply(1:N,function(x,allid){return(allid[which(allid!=x)])},allid=1:N)
-    }
   
-    ## K-fold cross-validation
-    if (method==3L){
-        if (k>=N){
-            stop("Number of fold bigger than samples in the dataset!!!")
-        }else{
-            take <- list()
-            for (H in seq(h)){
-                tmpcv <- sample(seq(N),N)
-                s <- split(tmpcv,cut(seq(N),k))
-                names(s) <- NULL
-                take <- c(take,lapply(s,function(x,idx){tmp <- idx[!is.element(idx,x)]
-                                                        return(tmp)},idx=tmpcv))
-            }
-        }
+  ## Check of resampling methods
+  METHODS <- c('montecarlo','LOO','kCV')
+  method <- pmatch(method, METHODS)
+  
+  if(is.na(method))
+    stop("invalid distance method")
+  if(method == -1)
+    stop("ambiguous distance method")
+  
+  ## Montecarlo
+  if (method==1L)
+    take <- lapply(1:h,function(x){tmp <- sample(seq(N),floor(N*(1-(1/k)))) 
+                                   return(tmp)})
+  
+  ## Leave One Out
+  if (method==2L){
+    if (k!=1)
+      warning("h is different than 1 but method is set to LOO (Leave One Out cross-validation schema).\nh will be ignored.")
+    h <- N
+    take <- lapply(1:N,function(x,allid){return(allid[which(allid!=x)])},allid=1:N)
+  }
+  
+  ## K-fold cross-validation
+  if (method==3L){
+    if (k>=N){
+      stop("Number of fold bigger than samples in the dataset!!!")
+    }else{
+      take <- list()
+      for (H in seq(h)){
+        tmpcv <- sample(seq(N),N)
+        s <- split(tmpcv,cut(seq(N),k))
+        names(s) <- NULL
+        take <- c(take,lapply(s,function(x,idx){tmp <- idx[!is.element(idx,x)]
+                                                return(tmp)},idx=tmpcv))
+      }
     }
-    
-    ## return a list with indexes
-    return(take)
+  }
+  
+  ## return a list with indexes
+  return(take)
 }
