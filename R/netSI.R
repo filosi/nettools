@@ -151,7 +151,9 @@ netSI <- function(d,indicator="all", dist='HIM', adj.method='cor',
   }
   
   if(save==TRUE){
-    results <- list("call"=Call,"ADJlist"=ADJcv,
+    results <- list("call"=Call,
+                    "ADJ"=ADJall,
+                    "ADJlist"=ADJcv,
                     "S"=netsi[["S"]],
                     "SI"=netsi[["SI"]],
                     "Sw"=netsi[["Sw"]],
@@ -216,20 +218,20 @@ netsiSI <- function(H, dist, cl, ga){
 }
 
 ## Degree stability
-netsiSd <- function(H,cl){
-  if (length(H))
-    n <- ncol(H[[1]]) else stop("No adjacency matrix computed",call.=FALSE)
-  
-  if (!is.null(cl)){
-    ## Parallel computation
-    dd <- parLapply(cl=cl, X=H, rowSums)
-  } else {
-    ## One core computation
-    dd <- lapply(H, rowSums)
+  netsiSd <- function(H,cl){
+    if (length(H))
+      n <- ncol(H[[1]]) else stop("No adjacency matrix computed",call.=FALSE)
+    
+    if (!is.null(cl)){
+      ## Parallel computation
+      dd <- parLapply(cl=cl, X=H, rowSums)
+    } else {
+      ## One core computation
+      dd <- lapply(H, rowSums)
+    }
+    dd <- matrix(unlist(dd),ncol=n)
+    return(dd)
   }
-  dd <- matrix(unlist(dd),ncol=n)
-  return(dd)
-}
 
 ## Edges stability
 netsiSw <- function(H,cl){
