@@ -133,21 +133,21 @@ setMethod("g2adj","Matrix",g2adj.matrix)
 
 ## Generical Laplacian
 ##----------------------------------------
-Lap <- function(x,...) UseMethod("Lap")
-Lap.default <- function(x,...){
+## Lap <- function(x,...) UseMethod("Lap")
+## Lap.default <- function(x,...){
+Lap <- function(x,...){
   D <- apply(x,2,sum)
   L <- -x
   diag(L) <- D
   return(L)
-                                        #return((D * diag(dim(x)[1])) - x)
 }
-setMethod("Lap","matrix",Lap.default)
-setMethod("Lap","Matrix",Lap.default)
+## setMethod("Lap","matrix",Lap.default)
+## setMethod("Lap","Matrix",Lap.default)
 
 ## Ipsen distance
 ##----------------------------------------
-ipsen <- function(object,...) UseMethod("ipsen")
-ipsen.list <- function(object, ga=NULL, nnodes=1000, ...){
+ipsen <- function(object, ga=NULL, nnodes=1000, ...){ ## UseMethod("ipsen")
+## ipsen.list <- function(object, ga=NULL, nnodes=1000, ...){
   if (is.null(ga)){
     if (object$tag == "undir"){
       optgamma <- optimal_gamma(object$N)
@@ -185,12 +185,12 @@ ipsen.list <- function(object, ga=NULL, nnodes=1000, ...){
   names(dist) <- "IM"
   return(dist)
 }
-setMethod("ipsen","list",ipsen.list)
+## setMethod("ipsen","list",ipsen.list)
 
 ## Hamming distance
 ##----------------------------------------
-hamming <- function(object,...) UseMethod("hamming")
-hamming.list <- function(object,...){
+hamming <- function(object,...) {## UseMethod("hamming")
+## hamming.list <- function(object,...){
   ## for weighted networks, weights must be in [0,1]
   if (object$tag == "undir"){
     dist <- ham.undir(object, ...)
@@ -200,12 +200,12 @@ hamming.list <- function(object,...){
   names(dist) <- "H"
   return(dist)
 }
-setMethod("hamming","list",hamming.list)
+## setMethod("hamming","list",hamming.list)
 
 ## Him distance
 ##----------------------------------------
-him <- function(object,...) UseMethod("him")
-him.list <- function(object,ga=NULL, components=TRUE, nnodes=1000, ...){
+him <- function(object, ga = NULL, components=TRUE, nnodes=1000, ...){ ## UseMethod("him")
+## him.list <- function(object,ga=NULL, components=TRUE, nnodes=1000, ...){
   ipd <- ipsen(object$LAP, ga, nnodes, ...)
   had <- hamming(object$ADJ)
   gloc <- sqrt(had**2/2+ipd**2/2)
@@ -219,4 +219,4 @@ him.list <- function(object,ga=NULL, components=TRUE, nnodes=1000, ...){
     return(dist)
   }
 }
-setMethod("him","list",him.list)
+## setMethod("him","list",him.list)

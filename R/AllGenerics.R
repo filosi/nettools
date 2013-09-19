@@ -13,12 +13,12 @@ setGeneric("mat2adj",mat2adj.default)
 ## setGeneric("g2adj",g2adj.default)
 
 
-Lap.default <- function(x,...){
-  D <- apply(x,2,sum)
-  L <- -x
-  diag(L) <- D
-  return(L)
-}
+## Lap.default <- function(x,...){
+##   D <- apply(x,2,sum)
+##   L <- -x
+##   diag(L) <- D
+##   return(L)
+## }
 ## setGeneric("Lap",Lap.default)
 
 ## Lap.default <- function(x,...){
