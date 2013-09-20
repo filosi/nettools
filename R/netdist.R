@@ -1,9 +1,28 @@
-netdist <- function(g, h, method="HIM", ga=NULL, components=TRUE, ...){
+netdist <- function(g, h, d="HIM", ga=NULL, components=TRUE, ...){
   
-  METHODS <- c('HIM','ipsen','hamming')
-  method <- pmatch(method, METHODS)
-
+  DISTANCE <- c("HIM","IM","H",
+                "ipsen","Ipsen","IpsenMikhailov","Ipsen-Mikhailov",
+                "hamming","Hamming")
+  d <- pmatch(d, DISTANCE)
+  if(d==2L | (d>=4  & d<=7L))
+    d <- 2L
+  if(d==3L |(d>=8L & d<=9L))
+    d <- 3L
+  
   Call <- match.call()
+  
+  #add a check so that an unexisting parameter cannot be passed
+  id.Call <- match( names(Call),c("g", "h", "d", "ga","components","nnodes"), nomatch=0)
+  if(sum(id.Call[-1]==0)==1){
+    warning("The parameter '",names(Call)[which(id.Call==0)[2]],"' will be ignored",call.=FALSE)
+  }
+  if(sum(id.Call[-1]==0)>1){
+    msg <- "The following parameters will be ignored:\n"
+    for(i in which(id.Call==0)[-1]){
+      msg <- paste(msg,"'",names(Call)[i],"'\n",sep="")
+    }
+    warning(msg,call.=FALSE)
+  }
   
   ## nnodes (1000 by default) number of nodes where to start parallel computation for
   ## ipsen and him distance
@@ -12,28 +31,32 @@ netdist <- function(g, h, method="HIM", ga=NULL, components=TRUE, ...){
   if (is.null(Call$nnodes))
     nnodes <- 1000 else nnodes <- eval(Call$nnodes)
   
-  if(is.na(method))
-    stop("invalid distance method")
-  if(method == -1)
-    stop("ambiguous distance method")
+  if(is.na(d))
+    stop("invalid distance")
+  if(d == -1)
+    stop("ambiguous distance")
   
   ##check on components argument
   if(is.null(Call$components)){
-    if(method==1)
+    if(d==1){
       comp <- TRUE
+    }else{
+      comp <- FALSE
+    }
   }else{
     comp <- eval(Call$components)
-    if(method==1){
+    if(d==1){
       if(!is.logical(comp))
         stop("components must be TRUE or FALSE")
     }else{
+      comp <- FALSE
       warning("components parameter will be ignored", call. = FALSE)
     }
   }
   
-                                        #check on ga passing through ipsen function
+  ##check on ga passing through ipsen function
   if(is.null(Call$ga)){
-    if(method==2){
+    if(d==2){
       warning("The ga parameter will be automatically defined.", call.=FALSE)
     }
   }else{
@@ -52,7 +75,7 @@ netdist <- function(g, h, method="HIM", ga=NULL, components=TRUE, ...){
   if ((g1$N == g2$N)){
     if((g1$tag == g2$tag)){
       ## Create the list of adjacency matrix
-      myadj <- list(method=METHODS[method],G1=g1$adj,G2=g2$adj,N=g1$N,tag=g1$tag)
+      myadj <- list(d=DISTANCE[d],G1=g1$adj,G2=g2$adj,N=g1$N,tag=g1$tag)
     } else {
       stop("Not conformable graph g and h: one is directed while the other is undirected", call.=FALSE)
     }
@@ -60,16 +83,16 @@ netdist <- function(g, h, method="HIM", ga=NULL, components=TRUE, ...){
     stop("Not conformable graph g and h: they have different dimensions", call.=FALSE)
   }
   
-  ## Check method for distances
-  if (myadj$method=="HIM"){
+  ## Check the distance chosen
+  if (myadj$d=="HIM"){
     mylap <- list(L1=Lap(g1$adj),L2=Lap(g2$adj),N=g1$N, tag=g1$tag)
     dd <- him(list(ADJ=myadj,LAP=mylap), nnodes, ga=ga,  components=comp, ...)
   }
-  if (myadj$method=="ipsen"){
+  if (myadj$d=="IM"){
     mylap <- list(L1=Lap(g1$adj),L2=Lap(g2$adj),N=g1$N, tag=g1$tag)
     dd <- ipsen(mylap,ga=ga, nnodes, ...)
   }
-  if (myadj$method=="hamming"){
+  if (myadj$d=="H"){
     dd <- hamming(myadj)
   }
   
@@ -133,21 +156,21 @@ setMethod("g2adj","Matrix",g2adj.matrix)
 
 ## Generical Laplacian
 ##----------------------------------------
-## Lap <- function(x,...) UseMethod("Lap")
-## Lap.default <- function(x,...){
-Lap <- function(x,...){
+Lap <- function(x,...) UseMethod("Lap")
+Lap.default <- function(x,...){
   D <- apply(x,2,sum)
   L <- -x
   diag(L) <- D
   return(L)
+                                        #return((D * diag(dim(x)[1])) - x)
 }
-## setMethod("Lap","matrix",Lap.default)
-## setMethod("Lap","Matrix",Lap.default)
+setMethod("Lap","matrix",Lap.default)
+setMethod("Lap","Matrix",Lap.default)
 
 ## Ipsen distance
 ##----------------------------------------
-ipsen <- function(object, ga=NULL, nnodes=1000, ...){ ## UseMethod("ipsen")
-## ipsen.list <- function(object, ga=NULL, nnodes=1000, ...){
+ipsen <- function(object,...) UseMethod("ipsen")
+ipsen.list <- function(object, ga=NULL, nnodes=1000, ...){
   if (is.null(ga)){
     if (object$tag == "undir"){
       optgamma <- optimal_gamma(object$N)
@@ -185,12 +208,12 @@ ipsen <- function(object, ga=NULL, nnodes=1000, ...){ ## UseMethod("ipsen")
   names(dist) <- "IM"
   return(dist)
 }
-## setMethod("ipsen","list",ipsen.list)
+setMethod("ipsen","list",ipsen.list)
 
 ## Hamming distance
 ##----------------------------------------
-hamming <- function(object,...) {## UseMethod("hamming")
-## hamming.list <- function(object,...){
+hamming <- function(object,...) UseMethod("hamming")
+hamming.list <- function(object,...){
   ## for weighted networks, weights must be in [0,1]
   if (object$tag == "undir"){
     dist <- ham.undir(object, ...)
@@ -200,12 +223,12 @@ hamming <- function(object,...) {## UseMethod("hamming")
   names(dist) <- "H"
   return(dist)
 }
-## setMethod("hamming","list",hamming.list)
+setMethod("hamming","list",hamming.list)
 
 ## Him distance
 ##----------------------------------------
-him <- function(object, ga = NULL, components=TRUE, nnodes=1000, ...){ ## UseMethod("him")
-## him.list <- function(object,ga=NULL, components=TRUE, nnodes=1000, ...){
+him <- function(object,...) UseMethod("him")
+him.list <- function(object,ga=NULL, components=TRUE, nnodes=1000, ...){
   ipd <- ipsen(object$LAP, ga, nnodes, ...)
   had <- hamming(object$ADJ)
   gloc <- sqrt(had**2/2+ipd**2/2)
@@ -219,4 +242,4 @@ him <- function(object, ga = NULL, components=TRUE, nnodes=1000, ...){ ## UseMet
     return(dist)
   }
 }
-## setMethod("him","list",him.list)
+setMethod("him","list",him.list)

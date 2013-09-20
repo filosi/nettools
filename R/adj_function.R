@@ -118,6 +118,7 @@ AdjCLR <- function(x,...){
 
 ## MINE
 AdjMINE <- function(x,measure,alpha,C,...){
+<<<<<<< HEAD
   Adj <- mine(x,alpha=alpha, C=C, ...)[[measure]]
   if (!is.null(Adj)){
     diag(Adj) <- 0
@@ -126,6 +127,16 @@ AdjMINE <- function(x,measure,alpha,C,...){
     stop("Invalid measure for method MINE")
   }
   
+=======
+    Adj <- mine(x,alpha=alpha, C=C, ...)[[measure]]
+    if (!is.null(Adj)){
+      diag(Adj) <- 0
+      return(Adj)
+    } else {
+      stop("Invalid measure for method MINE")
+    }
+    
+>>>>>>> 0f66be305ca0335d520664cdc307303de2a5a262
 }
 
 ## MINEFDR
