@@ -1,17 +1,17 @@
-netSI <- function(d,indicator="all", dist='HIM', adj.method='cor', 
+netSI <- function(x,indicator="all", d='HIM', adj.method='cor', 
                   method="montecarlo", k=3, h=20, n.cores,save=TRUE,
                   verbose=TRUE, ...){
 
   ## Get the function call parameters
   ## NB the parameters should be evaluated with eval()
   Call <- match.call()
-  id.Call <- match(c("d", "indicator", "dist", "adj.method","method","k","h","n.cores"), 
+  id.Call <- match(c("x", "indicator", "d", "adj.method","method","k","h","n.cores"), 
                    names(Call), nomatch=0)
   if(id.Call[1]==0){
     stop("A dataset must be provided",call.=FALSE)
   }else{
-    d <- eval(Call$d)
-    if(!(is.matrix(d) | is.data.frame(d))){
+    d <- eval(Call$x)
+    if(!(is.matrix(x) | is.data.frame(x))){
       stop("d must be a matrix or a data frame", call.=FALSE)
     }
   }
@@ -30,6 +30,22 @@ netSI <- function(d,indicator="all", dist='HIM', adj.method='cor',
     stop("invalid indicator", call. =FALSE)
   if(indicator == -1)
     stop("ambiguous indicator", call. =FALSE)
+  
+  DISTANCE <- c("HIM","IM","H",
+                "ipsen","Ipsen","IpsenMikhailov","Ipsen-Mikhailov",
+                "hamming","Hamming")
+  
+  d <- pmatch(d, DISTANCE)
+  if(d==2L | (d>=4  & d<=7L))
+    d <- 2L
+  if(d==3L |(d>=8L & d<=9L))
+    d <- 3L
+  
+  if(is.na(d))
+    stop("invalid distance", call. =FALSE)
+  if(d == -1)
+    stop("ambiguous distance", call. =FALSE)
+  
   
   ##check on save and verbose
   if(is.null(Call$save)){
@@ -62,17 +78,17 @@ netSI <- function(d,indicator="all", dist='HIM', adj.method='cor',
   ## Pass parameter components to netdist functions
   if(!is.null(Call$components)){
     components <- eval(Call$components)
-    if(dist=="HIM" & components==TRUE){
-      warning(paste("component parameter will be ignored. \n
-            The stability indicators will be computed just for",
-                    dist, "distance.\n
-            For computing them for Hamming or Ipsen-Mikhailov 
-            distance use dist=hamming or dist=ipsen"), call.=FALSE)
+    if(d=="HIM" & components==TRUE){
+      warning(paste("component parameter will be ignored. \n",
+                    "The stability indicators will be computed just for",
+                    dist, "distance.\n",
+            "For computing them for Hamming or Ipsen-Mikhailov", 
+            "distance use dist=hamming or dist=ipsen"), call.=FALSE)
       components <- FALSE
     }
   }
   ## Get the dimension of the input matrix
-  ddim <- nrow(d)
+  ddim <- nrow(x)
 
   ## Get the resampling indexes
   if(verbose==TRUE) cat("computing resampling...\n")
@@ -114,32 +130,32 @@ netSI <- function(d,indicator="all", dist='HIM', adj.method='cor',
   ## Compute the adjacency matrices for each resampling index
   if(!is.null(cl)){
     ## Parallel computation
-    ADJcv <- parLapply(cl=cl,X=idxs,fun=function(x,d,method,...){
-      ss <- d[x,]
+    ADJcv <- parLapply(cl=cl,Y=idxs,fun=function(y,x,method,...){
+      ss <- x[y,]
       tmp <- nettools:::mat2adj(ss, method=method, ...)
       return(tmp)
-    },d=d,method=adj.method,...)
+    },x=x,method=adj.method,...)
   } else {
     ## One core computation
-    ADJcv <- lapply(X=idxs,FUN=function(x,d,method,...){
-      ss <- d[x,]
+    ADJcv <- lapply(Y=idxs,FUN=function(y,x,method,...){
+      ss <- x[y,]
       tmp <- mat2adj(ss, method=method, ...)
       return(tmp)
-    },d=d,method=adj.method,...)
+    },x=x,method=adj.method,...)
   }
   
   ##computing the adjacency matrix on the whole dataset
-  ADJall <- mat2adj(x=d,method=adj.method,...)
+  ADJall <- mat2adj(x=x,method=adj.method,...)
   
   ## Compute the stability indicators
   netsi <- list()
   if(indicator==1L | indicator==5L){
     if(verbose==TRUE) cat("computing stability indicator S...\n")
-    netsi[["S"]] <- netsiS(ADJall, ADJcv, dist=dist, cl=cl, ga=ga)
+    netsi[["S"]] <- netsiS(ADJall, ADJcv, d=d, cl=cl, ga=ga)
   }
   if(indicator==2L | indicator==5L){
     if(verbose==TRUE) cat("computing stability indicator SI...\n")
-    netsi[["SI"]] <- netsiSI(ADJcv, dist=dist, cl=cl, ga=ga)
+    netsi[["SI"]] <- netsiSI(ADJcv, d=d, cl=cl, ga=ga)
   }
   if(indicator==3L | indicator==5L){
     if(verbose==TRUE) cat("computing stability indicator Sw...\n")
@@ -174,31 +190,30 @@ netSI <- function(d,indicator="all", dist='HIM', adj.method='cor',
 
 
 ## Stability indicator S
-netsiS <- function(g, H, dist, cl, ga){
-  
-  type <- pmatch(dist,c("H","IM","HIM","hamming","ipsen"))
-  if(type==4L) type <- 1
-  if(type==5L) type <- 1
+netsiS <- function(g, H, d, cl, ga){
+  DIST <- c("HIM","IM","H")
+  type <- pmatch(d,DIST)
+  type <- DIST[type]
 
   if(!is.null(cl)){
-    s <- parLapply(cl=cl,X=H,fun=function(x,g,dist,type, ga){
-      res <- nettools:::netdist(g,x,dist, ga)[[type]]
+    s <- parLapply(cl=cl,X=H,fun=function(x,g,d,type, ga){
+      res <- nettools:::netdist(g,x,d, ga)[[type]
       return(res)
-    },g=g,dist=dist,type=type, ga=ga)
+    },g=g,d=d,type=type, ga=ga)
   }else{
-    s <- lapply(X=H,FUN=function(x,g,dist,type, ga){
-      res <- netdist(g,x,dist, ga)[[type]]
+    s <- lapply(X=H,FUN=function(x,g,d,type, ga){
+      res <- netdist(g,x,d, ga)[[type]]
       return(res)
-    },g=g,dist=dist,type=type, ga=ga)
+    },g=g,d=d,type=type, ga=ga)
   }
   return(unlist(s))
 }
 
 ## Stability indicator SI
-netsiSI <- function(H, dist, cl, ga){
-  type <- pmatch(dist,c("H","IM","HIM","hamming","ipsen"))
-  if(type==4L) type <- 1
-  if(type==5L) type <- 1
+netsiSI <- function(H, d, cl, ga){
+  DIST <- c("HIM","IM","H")
+  type <- pmatch(d,DIST)
+  type <- DIST[type]
   
   com <- combn(1:length(H), 2)
   
@@ -218,20 +233,20 @@ netsiSI <- function(H, dist, cl, ga){
 }
 
 ## Degree stability
-  netsiSd <- function(H,cl){
-    if (length(H))
-      n <- ncol(H[[1]]) else stop("No adjacency matrix computed",call.=FALSE)
-    
-    if (!is.null(cl)){
-      ## Parallel computation
-      dd <- parLapply(cl=cl, X=H, rowSums)
-    } else {
-      ## One core computation
-      dd <- lapply(H, rowSums)
-    }
-    dd <- matrix(unlist(dd),ncol=n)
-    return(dd)
+netsiSd <- function(H,cl){
+  if (length(H))
+    n <- ncol(H[[1]]) else stop("No adjacency matrix computed",call.=FALSE)
+  
+  if (!is.null(cl)){
+    ## Parallel computation
+    dd <- parLapply(cl=cl, X=H, rowSums)
+  } else {
+    ## One core computation
+    dd <- lapply(H, rowSums)
   }
+  dd <- matrix(unlist(dd),ncol=n)
+  return(dd)
+}
 
 ## Edges stability
 netsiSw <- function(H,cl){
