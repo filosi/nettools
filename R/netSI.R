@@ -10,7 +10,7 @@ netSI <- function(x,indicator="all", d='HIM', adj.method='cor',
   if(id.Call[1]==0){
     stop("A dataset must be provided",call.=FALSE)
   }else{
-    d <- eval(Call$x)
+    x <- eval(Call$x)
     if(!(is.matrix(x) | is.data.frame(x))){
       stop("d must be a matrix or a data frame", call.=FALSE)
     }
@@ -143,7 +143,7 @@ netSI <- function(x,indicator="all", d='HIM', adj.method='cor',
       return(tmp)
     },x=x,method=adj.method,...)
   }
-  
+
   ##computing the adjacency matrix on the whole dataset
   ADJall <- mat2adj(x=x,method=adj.method,...)
   
