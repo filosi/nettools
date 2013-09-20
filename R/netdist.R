@@ -9,6 +9,11 @@ netdist <- function(g, h, d="HIM", ga=NULL, components=TRUE, ...){
   if(d==3L |(d>=8L & d<=9L))
     d <- 3L
   
+  if(is.na(d))
+    stop("invalid distance", call. =FALSE)
+  if(d == -1)
+    stop("ambiguous distance", call. =FALSE)
+  
   Call <- match.call()
   
   #add a check so that an unexisting parameter cannot be passed
