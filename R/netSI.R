@@ -10,7 +10,7 @@ netSI <- function(x,indicator="all", d='HIM', adj.method='cor',
   id.Call <- match( names(Call),c("x", "indicator", "d", "adj.method" , 
                                   "method","k","h","n.cores","save","verbose",
                                   "FDR","P","measure","alpha","C","DP","var.thr",
-                                  "components","n.nodes","ga",), nomatch=0)
+                                  "components","n.nodes","ga"), nomatch=0)
   if(sum(id.Call[-1]==0)==1){
     warning("The parameter '",names(Call)[which(id.Call==0)[2]],"' will be ignored",call.=FALSE)
   }
