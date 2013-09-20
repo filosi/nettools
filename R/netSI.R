@@ -114,20 +114,20 @@ netSI <- function(d,indicator="all", dist='HIM', adj.method='cor',
   ## Compute the adjacency matrices for each resampling index
   if(!is.null(cl)){
     ## Parallel computation
-    ADJcv <- parLapply(cl=cl,X=idxs,fun=function(x,d,method,...){
+    ADJcv <- parLapply(cl=cl,X=idxs,fun=function(x,d,method, ...){
       ss <- d[x,]
       tmp <- nettools:::mat2adj(ss, method=method, ...)
       return(tmp)
-    },d=d,method=adj.method,...)
+    },d=d,method=adj.method, ...)
   } else {
     ## One core computation
-    ADJcv <- lapply(X=idxs,FUN=function(x,d,method,...){
+    ADJcv <- lapply(X=idxs,FUN=function(x,d,method, ...){
       ss <- d[x,]
       tmp <- mat2adj(ss, method=method, ...)
       return(tmp)
-    },d=d,method=adj.method,...)
+    },d=d,method=adj.method, ...)
   }
-  
+
   ##computing the adjacency matrix on the whole dataset
   ADJall <- mat2adj(x=d,method=adj.method,...)
   
