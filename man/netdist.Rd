@@ -39,9 +39,9 @@ netdist(g, h, d = "HIM", ga = NULL, components=TRUE, ...)
     processed by the functions which compute the distance. Not all
     parameters are used by all functions.
     \describe{
-      \item{nnodes:}{parameter used only when method is \code{ipsen} or
+      \item{n.nodes:}{parameter used only when method is \code{ipsen} or
     	\code{HIM}.  If the number of nodes of \code{g} and \code{h} is
-    	bigger than \code{nnodes} the computation of the distance is
+    	bigger than \code{n.nodes} the computation of the distance is
     	parallelized on 2 cores, otherwise only one core will be used.
       }
     }

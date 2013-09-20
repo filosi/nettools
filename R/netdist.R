@@ -17,7 +17,7 @@ netdist <- function(g, h, d="HIM", ga=NULL, components=TRUE, ...){
   Call <- match.call()
   
   #add a check so that an unexisting parameter cannot be passed
-  id.Call <- match( names(Call),c("g", "h", "d", "ga","components","nnodes"), nomatch=0)
+  id.Call <- match( names(Call),c("g", "h", "d", "ga","components","n.nodes"), nomatch=0)
   if(sum(id.Call[-1]==0)==1){
     warning("The parameter '",names(Call)[which(id.Call==0)[2]],"' will be ignored",call.=FALSE)
   }
@@ -29,12 +29,12 @@ netdist <- function(g, h, d="HIM", ga=NULL, components=TRUE, ...){
     warning(msg,call.=FALSE)
   }
   
-  ## nnodes (1000 by default) number of nodes where to start parallel computation for
+  ## n.nodes (1000 by default) number of nodes where to start parallel computation for
   ## ipsen and him distance
-  ## if number of nodes < nnodes it won't start,
+  ## if number of nodes < n.nodes it won't start,
   ## otherwise a 2 process will be launched
-  if (is.null(Call$nnodes))
-    nnodes <- 1000 else nnodes <- eval(Call$nnodes)
+  if (is.null(Call$n.nodes))
+    n.nodes <- 1000 else n.nodes <- eval(Call$n.nodes)
   
   if(is.na(d))
     stop("invalid distance")
@@ -91,11 +91,11 @@ netdist <- function(g, h, d="HIM", ga=NULL, components=TRUE, ...){
   ## Check the distance chosen
   if (myadj$d=="HIM"){
     mylap <- list(L1=Lap(g1$adj),L2=Lap(g2$adj),N=g1$N, tag=g1$tag)
-    dd <- him(list(ADJ=myadj,LAP=mylap), nnodes, ga=ga,  components=comp, ...)
+    dd <- him(list(ADJ=myadj,LAP=mylap), n.nodes, ga=ga,  components=comp, ...)
   }
   if (myadj$d=="IM"){
     mylap <- list(L1=Lap(g1$adj),L2=Lap(g2$adj),N=g1$N, tag=g1$tag)
-    dd <- ipsen(mylap,ga=ga, nnodes, ...)
+    dd <- ipsen(mylap,ga=ga, n.nodes, ...)
   }
   if (myadj$d=="H"){
     dd <- hamming(myadj)
@@ -175,7 +175,7 @@ setMethod("Lap","Matrix",Lap.default)
 ## Ipsen distance
 ##----------------------------------------
 ipsen <- function(object,...) UseMethod("ipsen")
-ipsen.list <- function(object, ga=NULL, nnodes=1000, ...){
+ipsen.list <- function(object, ga=NULL, n.nodes=1000, ...){
   if (is.null(ga)){
     if (object$tag == "undir"){
       optgamma <- optimal_gamma(object$N)
@@ -187,7 +187,7 @@ ipsen.list <- function(object, ga=NULL, nnodes=1000, ...){
   }
   
   ## Check if network is directed or not
-  if(object$N>nnodes && detectCores() >= 2){
+  if(object$N>n.nodes && detectCores() >= 2){
     cl <- makeCluster(getOption("cl.cores",2))
     clusterEvalQ(cl,{K <- nettools:::K
                      rho <- nettools:::rho
@@ -233,8 +233,8 @@ setMethod("hamming","list",hamming.list)
 ## Him distance
 ##----------------------------------------
 him <- function(object,...) UseMethod("him")
-him.list <- function(object,ga=NULL, components=TRUE, nnodes=1000, ...){
-  ipd <- ipsen(object$LAP, ga, nnodes, ...)
+him.list <- function(object,ga=NULL, components=TRUE, n.nodes=1000, ...){
+  ipd <- ipsen(object$LAP, ga, n.nodes, ...)
   had <- hamming(object$ADJ)
   gloc <- sqrt(had**2/2+ipd**2/2)
   if(components==TRUE){

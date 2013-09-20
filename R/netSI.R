@@ -5,6 +5,23 @@ netSI <- function(x,indicator="all", d='HIM', adj.method='cor',
   ## Get the function call parameters
   ## NB the parameters should be evaluated with eval()
   Call <- match.call()
+  
+#   #add a check so that an unexisting parameter cannot be passed
+  id.Call <- match( names(Call),c("x", "indicator", "d", "adj.method" , 
+                                  "method","k","h","n.cores","save","verbose",
+                                  "FDR","P","measure","alpha","C","DP","var.thr",
+                                  "components","n.nodes","ga",), nomatch=0)
+  if(sum(id.Call[-1]==0)==1){
+    warning("The parameter '",names(Call)[which(id.Call==0)[2]],"' will be ignored",call.=FALSE)
+  }
+  if(sum(id.Call[-1]==0)>1){
+    msg <- "The following parameters will be ignored:\n"
+    for(i in which(id.Call==0)[-1]){
+      msg <- paste(msg,"'",names(Call)[i],"'\n",sep="")
+    }
+    warning(msg,call.=FALSE)
+  }
+  
   id.Call <- match(c("x", "indicator", "d", "adj.method","method","k","h","n.cores"), 
                    names(Call), nomatch=0)
   if(id.Call[1]==0){
@@ -81,7 +98,7 @@ netSI <- function(x,indicator="all", d='HIM', adj.method='cor',
     if(d=="HIM" & components==TRUE){
       warning(paste("component parameter will be ignored. \n",
                     "The stability indicators will be computed just for",
-                    dist, "distance.\n",
+                    d, "distance.\n",
             "For computing them for Hamming or Ipsen-Mikhailov", 
             "distance use dist=hamming or dist=ipsen"), call.=FALSE)
       components <- FALSE
@@ -197,7 +214,7 @@ netsiS <- function(g, H, d, cl, ga){
 
   if(!is.null(cl)){
     s <- parLapply(cl=cl,X=H,fun=function(x,g,d,type, ga){
-      res <- nettools:::netdist(g,x,d, ga)[[type]
+      res <- nettools:::netdist(g,x,d, ga)[[type]]
       return(res)
     },g=g,d=d,type=type, ga=ga)
   }else{
@@ -293,9 +310,9 @@ resamplingIDX <- function(N,method="montecarlo", k=3, h=20){
   method <- pmatch(method, METHODS)
   
   if(is.na(method))
-    stop("invalid distance method")
+    stop("invalid resampling method")
   if(method == -1)
-    stop("ambiguous distance method")
+    stop("ambiguous resampling method")
   
   ## Montecarlo
   if (method==1L)

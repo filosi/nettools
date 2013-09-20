@@ -8,16 +8,16 @@ Network Stability Indicators
 Family NetSI of stability indicators for network inference methods
 }
 \usage{
-netSI(d,indicator="all", dist='HIM', adj.method='cor',
+netSI(x,indicator="all", d='HIM', adj.method='cor',
 method="montecarlo", k=3, h=20, n.cores, save=TRUE, verbose=TRUE, ...)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
-  \item{d}{numerical matrix or data.frame to be used for network inference.}
+  \item{x}{numerical matrix or data.frame to be used for network inference.}
   \item{indicator}{\code{all} (default) character string. Indicating all or
     one of the four indicators available. This must be on of the strings
     \code{"S"},\code{"SI"}, \code{"Sw"} or \code{"Sd"}.}
-  \item{dist}{\code{HIM} (default), character string indicating the
+  \item{d}{\code{HIM} (default), character string indicating the
     distance to be used for the stability computation in case of
     indicators S and SI.}
   \item{adj.method}{\code{"cor"} (default), optional character string
