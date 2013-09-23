@@ -46,7 +46,11 @@ method="montecarlo", k=3, h=20, n.cores, save=TRUE, verbose=TRUE, ...)
     information about the computation. If \code{FALSE} messages will be suppressed.}
   \item{\dots}{Additional arguments to be passed to the downstream
     functions. Not all parameters are used by all functions. See
-    function \code{\link{netdist}} and \code{\link{mat2adj}}.}
+    function \code{\link{netdist}} and \code{\link{mat2adj}}.
+    \describe{
+      \item{sseed:}{random number generation seed}
+    }
+  }
 }
   
   \details{
