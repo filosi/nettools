@@ -10,7 +10,7 @@ netSI <- function(x,indicator="all", d='HIM', adj.method='cor',
   id.Call <- match( names(Call),c("x", "indicator", "d", "adj.method" , 
                                   "method","k","h","n.cores","save","verbose",
                                   "FDR","P","measure","alpha","C","DP","var.thr",
-                                  "components","n.nodes","ga"), nomatch=0)
+                                  "components","n.nodes","ga","sseed"), nomatch=0)
   if(sum(id.Call[-1]==0)==1){
     warning("The parameter '",names(Call)[which(id.Call==0)[2]],"' will be ignored",call.=FALSE)
   }
@@ -63,6 +63,7 @@ netSI <- function(x,indicator="all", d='HIM', adj.method='cor',
   if(d == -1)
     stop("ambiguous distance", call. =FALSE)
   
+  d <- c("HIM","IM","H")[d]
   
   ##check on save and verbose
   if(is.null(Call$save)){
@@ -96,11 +97,11 @@ netSI <- function(x,indicator="all", d='HIM', adj.method='cor',
   if(!is.null(Call$components)){
     components <- eval(Call$components)
     if(d=="HIM" & components==TRUE){
-      warning(paste("component parameter will be ignored. \n",
+      warning(paste("components parameter will be ignored. \n",
                     "The stability indicators will be computed just for",
                     d, "distance.\n",
             "For computing them for Hamming or Ipsen-Mikhailov", 
-            "distance use dist=hamming or dist=ipsen"), call.=FALSE)
+            "distance use dist=H or dist=IM"), call.=FALSE)
       components <- FALSE
     }
   }
@@ -147,18 +148,18 @@ netSI <- function(x,indicator="all", d='HIM', adj.method='cor',
   ## Compute the adjacency matrices for each resampling index
   if(!is.null(cl)){
     ## Parallel computation
-    ADJcv <- parLapply(cl=cl,Y=idxs,fun=function(y,x,method,...){
-      ss <- x[y,]
+    ADJcv <- parLapply(cl=cl,X=idxs,fun=function(x,DAT,method,...){
+      ss <- DAT[x,]
       tmp <- nettools:::mat2adj(ss, method=method, ...)
       return(tmp)
-    },x=x,method=adj.method,...)
+    },DAT=x,method=adj.method,...)
   } else {
     ## One core computation
-    ADJcv <- lapply(Y=idxs,FUN=function(y,x,method,...){
-      ss <- x[y,]
+    ADJcv <- lapply(X=idxs,FUN=function(x,DAT,method,...){
+      ss <- DAT[x,]
       tmp <- mat2adj(ss, method=method, ...)
       return(tmp)
-    },x=x,method=adj.method,...)
+    },DAT=x,method=adj.method,...)
   }
 
   ##computing the adjacency matrix on the whole dataset
@@ -213,15 +214,15 @@ netsiS <- function(g, H, d, cl, ga){
   type <- DIST[type]
 
   if(!is.null(cl)){
-    s <- parLapply(cl=cl,X=H,fun=function(x,g,d,type, ga){
-      res <- nettools:::netdist(g,x,d, ga)[[type]]
+    s <- parLapply(cl=cl,X=H,fun=function(x,g,type, ga){
+      res <- nettools:::netdist(g,x,d=type, ga)[[type]]
       return(res)
-    },g=g,d=d,type=type, ga=ga)
+    },g=g,type=type, ga=ga)
   }else{
-    s <- lapply(X=H,FUN=function(x,g,d,type, ga){
-      res <- netdist(g,x,d, ga)[[type]]
+    s <- lapply(X=H,FUN=function(x,g,type, ga){
+      res <- netdist(g,x,d=type, ga)[[type]]
       return(res)
-    },g=g,d=d,type=type, ga=ga)
+    },g=g,type=type, ga=ga)
   }
   return(unlist(s))
 }
@@ -236,15 +237,15 @@ netsiSI <- function(H, d, cl, ga){
   
   if(!is.null(cl)){
     ## Parallel computation
-    s <- parLapply(cl=cl,X=1:ncol(com),fun=function(x,com,H,dist,type, ga){
-      res <- nettools:::netdist(H[[com[1,x]]],H[[com[2,x]]],dist,ga)[[type]]
+    s <- parLapply(cl=cl,X=1:ncol(com),fun=function(x,com,H,type, ga){
+      res <- nettools:::netdist(H[[com[1,x]]],H[[com[2,x]]],d=type,ga)[[type]]
       return(res)
-    },com=com,H=H,dist=dist,type=type, ga=ga)
+    },com=com,H=H,type=type, ga=ga)
   }else{ ## One core computation
-    s <- lapply(X=1:ncol(com),FUN=function(x,com,H,dist,type, ga){
-      res <- netdist(H[[com[1,x]]],H[[com[2,x]]],dist, ga)[[type]]
+    s <- lapply(X=1:ncol(com),FUN=function(x,com,H,type, ga){
+      res <- netdist(H[[com[1,x]]],H[[com[2,x]]],d=type, ga)[[type]]
       return(res)
-    },com=com,H=H,dist=dist,type=type, ga=ga)
+    },com=com,H=H,type=type, ga=ga)
   }
   return(unlist(s))
 }
