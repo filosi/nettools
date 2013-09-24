@@ -21,32 +21,61 @@ AdjWGCNA <- function(x,P,...){
 }
 
 ## Function for computing the FDR value on the null hypothesis
-fdrrun <- function(Data,idx,FUN='cor',...){
+fdrrun <- function(x,idx,FUN='cor', cl=NULL, ...){
+
   FUN <- match.fun(FUN)
   measure <- 1
-  if (!is.na(match('measure',names(list(...)))))
-      measure <- list(...)[['measure']]
-  cormat <- matrix(Inf,ncol=dim(Data)[2],nrow=dim(Data)[2])
-  if(dim(idx)[1]>0){
-      for (i in seq(dim(idx)[1])){
-          idi <- idx[i,]
-          if (idi[1]>idi[2])
-              cormat[idi[1],idi[2]] <- cormat[idi[2],idi[1]] <- abs(FUN(sample(Data[,idi[2]]),Data[,idi[1]])[[measure]])
-      }
-
+  if (!is.na(match("measure",names(list(...)))))
+    measure <- list(...)[["measure"]]
+  
+  cormat <- matrix(Inf,ncol=dim(x)[2],nrow=dim(x)[2])
+  myfun <- function(x, y, idx, tmpfun, measure){
+    idi <- idx[x,]
+    if (idi[1]>idi[2]){
+      ## cat(idi, "\n")
+      return(abs(tmpfun(sample(y[,idi[2]]),y[,idi[1]])[[measure]]))
+      }else{return(NA)}
   }
+  if(dim(idx)[1]>0){
+    if (is.null(cl)){
+      aa <- sapply(seq(dim(idx)[1]),myfun, y=x, idx=idx, tmpfun=FUN, measure)
+    } else {
+      ## NB need to load package on all the cores?!??!?!
+      aa <- parSapply(cl, seq(dim(idx)[1]),myfun, y=x, idx=idx, tmpfun=FUN, measure)
+    }
+  }
+  
+  idx <- cbind(idx,aa)
+  tmpid <- subset(idx,!is.na(idx[,3]))
+  cormat[tmpid[,c(1,2)]] <- cormat[tmpid[,c(2,1)]] <- tmpid[,3]
+  
   invisible(cormat)
 }
 
 ## WGCNA FDR
 AdjWGCNAFDR <- function(x,FDR,P,...){
-    Adj <- AdjWGCNA(x,P=P)
-    idx <- as.matrix(expand.grid(seq(dim(Adj)[1]),seq(dim(Adj)[2])))
-    for (i in seq(1/FDR)){
-        cormat <- fdrrun(x,idx,FUN=cor)
-        idx <- which(Adj>cormat,arr.ind=TRUE)
+  Adj <- AdjWGCNA(x,P=P)
+  idx <- as.matrix(expand.grid(seq(dim(Adj)[1]),seq(dim(Adj)[2])))
+  
+  ## check for multicore
+  if (!is.na(match("n.cores", names(list(...))))){
+    n.cores <- list(...)[["n.cores"]]
+    if (is.numeric(n.cores) && n.cores > 1 && detectCores()>1){
+      if (n.cores > detectCores())
+        n.cores <- detectCores() - 1
+      cl <- makeCluster(n.cores)
+    } else {
+      cl <- NULL
     }
-    adjfinal <- matrix(0,ncol=dim(Adj)[2],nrow=dim(Adj)[1],
+  } else {
+    cl <- NULL
+  }
+  
+  for (i in seq(1/FDR)){
+    cormat <- fdrrun(x,idx,FUN=cor,cl)
+    idx <- which(Adj>cormat,arr.ind=TRUE)
+  }
+  adjfinal <- matrix(0,ncol=dim(Adj)[2],nrow=dim(Adj)[1],
                        dimnames=list(rownames(Adj),colnames(Adj)))
     if(dim(idx)[1]>0){
         for (i in seq(dim(idx)[1])){
@@ -68,9 +97,24 @@ Adjbicor <- function(x,...){
 AdjbicorFDR <- function(x,FDR,P,...){
     Adj <- Adjbicor(x)
     idx <- as.matrix(expand.grid(seq(dim(Adj)[1]),seq(dim(Adj)[2])))
+
+    ## Check for multicore
+    if (!is.na(match("n.cores", names(list(...))))){
+      n.cores <- list(...)[["n.cores"]]
+      if (is.numeric(n.cores) && n.cores > 1 && detectCores()>1){
+        if (n.cores > detectCores())
+          n.cores <- detectCores() - 1
+        cl <- makeCluster(n.cores)
+      } else {
+        cl <- NULL
+      }
+    } else {
+      cl <- NULL
+    }
+    
     for (i in seq(1/FDR)){
-        cormat <- fdrrun(x,idx,FUN='bicor')
-        idx <- which(Adj>cormat,arr.ind=TRUE)
+      cormat <- fdrrun(x,idx,FUN='bicor', cl, ...)
+      idx <- which(Adj>cormat,arr.ind=TRUE)
     }
     adjfinal <- matrix(0,ncol=dim(Adj)[2],nrow=dim(Adj)[1],
                        dimnames=list(rownames(Adj),colnames(Adj)))
@@ -132,9 +176,24 @@ AdjMINE <- function(x,measure,alpha,C,...){
 AdjMINEFDR <- function(x,measure,alpha,C,FDR,...){
     Adj <- AdjMINE(x,measure,alpha,C,...)
     idx <- as.matrix(expand.grid(seq(dim(Adj)[1]),seq(dim(Adj)[2])))
+
+    ## check for multicore
+    if (!is.na(match("n.cores", names(list(...))))){
+      n.cores <- list(...)[["n.cores"]]
+      if (is.numeric(n.cores) && n.cores > 1 && detectCores()>1){
+        if (n.cores > detectCores())
+          n.cores <- detectCores() - 1
+        cl <- makeCluster(n.cores)
+      } else {
+        cl <- NULL
+      }
+    } else {
+      cl <- NULL
+    }
+    
     for (i in seq(1/FDR)){
-        cormat <- fdrrun(x,idx,FUN='mine',measure=measure)
-        idx <- which(Adj>cormat,arr.ind=TRUE)
+      cormat <- fdrrun(x,idx,FUN='mine',measure=measure, cl,...)
+      idx <- which(Adj>cormat,arr.ind=TRUE)
     }
     adjfinal <- matrix(0,ncol=dim(Adj)[2],nrow=dim(Adj)[1],
                        dimnames=list(rownames(Adj),colnames(Adj)))
