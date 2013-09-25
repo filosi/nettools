@@ -34,7 +34,7 @@ fdrrun <- function(x,idx,FUN='cor', cl=NULL, ...){
     if (idi[1]>idi[2]){
       ## cat(idi, "\n")
       return(abs(tmpfun(sample(y[,idi[2]]),y[,idi[1]])[[measure]]))
-      }else{return(NA)}
+    }else{return(NA)}
   }
   if(dim(idx)[1]>0){
     if (is.null(cl)){
@@ -97,7 +97,7 @@ Adjbicor <- function(x,...){
 AdjbicorFDR <- function(x,FDR,P,...){
     Adj <- Adjbicor(x)
     idx <- as.matrix(expand.grid(seq(dim(Adj)[1]),seq(dim(Adj)[2])))
-
+    
     ## Check for multicore
     if (!is.na(match("n.cores", names(list(...))))){
       n.cores <- list(...)[["n.cores"]]
