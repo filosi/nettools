@@ -19,7 +19,7 @@
   \tabular{ll}{
     Package: \tab nettools\cr
     Type: \tab Package\cr
-    Version: \tab 0.9\cr
+    Version: \tab 0.9.3\cr
     Date: \tab \cr
     Depends: R (>= 2.14.1), methods
     Imports: WGCNA, minet, rootSolve, dtw, Matrix, parallel, minerva,

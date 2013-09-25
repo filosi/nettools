@@ -1,7 +1,7 @@
 Package: nettools
 Type: Package
 Title: A comprehensive network analysis tool: from inference method to distances between networks and network stability 
-Version: 0.9
+Version: 0.9.3
 Date: 2013-08-08
 Authors@R: c(person("Michele","Filosi",role=c("aut","cre"), email = "filosi@fbk.eu"),
 	   person("Roberto", "Visintainer", role = "aut", email = "visintainer@fbk.eu"),
