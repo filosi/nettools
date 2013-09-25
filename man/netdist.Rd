@@ -5,6 +5,14 @@
 \alias{Ipsen}
 \alias{hamming}
 \alias{Hamming}
+\alias{netdist,matrix-method}
+\alias{netdist,data.frame-method}
+\alias{netdist,Matrix-method}
+\alias{netdist,list-method}
+\alias{netdist.matrix}
+\alias{netdist.Matrix}
+\alias{netdist.list}
+
 %- Also NEED an '\alias' for EACH other topic documented here.
 \title{Distances between network}
 \description{
@@ -14,11 +22,25 @@
 
 %- maybe also 'usage' for other objects documented here.
 \usage{
-netdist(g, h, d = "HIM", ga = NULL, components=TRUE, ...)
+netdist(x,\dots)
+\method{netdist}{matrix}(x, h, d = "HIM", ga = NULL, components=TRUE, ...)
+\method{netdist}{Matrix}(x, h, d = "HIM", ga = NULL, components=TRUE, ...)
+\method{netdist}{list}(x, d = "HIM", ga = NULL, components=TRUE, ...)
+
+}
+
+\section{Methods}{
+  \describe{
+    \item{\code{signature(object = "matrix")}}{Function for matrix}
+    \item{\code{signature(object = "Matrix")}}{Function working on
+      sparse Matrix objects from Matrix package}
+    \item{\code{signature(object = "list")}}{Function working on list of
+      adjacecncy matrices}
+  }
 }
 
 \arguments{
-  \item{g}{Adjacency matrix or igraph object}
+  \item{x}{Adjacency matrix or igraph object}
   \item{h}{Adjacency matrix or igraph object}
   \item{d}{\code{HIM}
     (default), or character string containing a valid method
