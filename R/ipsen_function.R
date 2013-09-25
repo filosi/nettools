@@ -1,3 +1,88 @@
+
+## Ipsen distance
+##----------------------------------------
+## ipsen <- function(object,...) UseMethod("ipsen")
+ipsen <- function(object, ga=NULL, ...){
+  if (is.null(ga)){
+    if (object$tag == "undir"){
+      optgamma <- optimal_gamma(object$N)
+    } else {
+      optgamma <- optimal_gamma_dir(object$N)
+    }
+  } else {
+    optgamma <- ga
+  }
+
+  laplist <- object$L
+
+  ## Check for parallelization
+  n.cores <- NULL
+  if (!is.na(match("n.cores",names(list(...)))))
+    n.cores <- list(...)[["n.cores"]]
+
+  ## Should I use multiple cores or not?
+  if(detectCores() >= 2 && (is.null(n.cores) || n.cores>1)){
+    if (is.null(n.cores) || n.cores >= detectCores()){
+      if (length(laplist) < detectCores()){
+        n.cores <- length(laplist)
+      } else {
+        n.cores <- detectCores() - 1
+      }
+    }
+    cl <- makeCluster(n.cores)
+    ## Eval needed function on nodes
+    clusterEvalQ(cl,{K <- nettools:::K
+                     rho <- nettools:::rho
+                     lorentz <- nettools:::lorentz
+                   })
+
+    cat("Start computing eigenvalues with ",n.cores, "cores\n")
+    ## Actual computation of eigen-values/vectors
+    ll <- clusterApply(cl,laplist,function(x,mygamma=optgamma,...){
+      myomega <- sqrt(abs(round(spec(x),5)))
+      myk <- K(mygamma,myomega)
+      return(list(myomega,myk))
+    })
+    stopCluster(cl)
+  } else {
+    ## Computation on 1 CPU
+    ll <- lapply(1:length(laplist),function(x,mygamma,laplist, ...){
+      print(paste("Computing eigen for ",x))
+      aa <- laplist[[x]]
+      myomega <- sqrt(abs(round(spec(aa),5)))
+      myk <- K(mygamma,myomega)
+      return(list(myomega,myk))
+    }, mygamma=optgamma, laplist=laplist, ...)
+  }
+  mydistfun <- function(a,b, optgamma){
+    integrand <- function(omega, mygamma, given_omega_G, given_omega_H){
+      (rho(omega, optgamma,a)-rho(omega,optgamma,b))**2
+    }
+    tmp <- sqrt(integrate(integrand,lower=0,upper=Inf,mygamma=optgamma,given_omega_G=a[[1]],given_omega_H=b[[1]], stop.on.error=FALSE,rel.tol=.Machine$double.eps,subdivisions=1e4)$value)
+    return(tmp)
+  }
+  cat("Start computing mutual distances")
+  if (length(laplist) == 2){
+    ## Compute distance between 2 adjacency matrices
+    dist <- mydistfun(ll[[1]], ll[[2]], optgamma=optgamma)
+    names(dist) <- "IM"
+  } else {
+    ## Compute mutual distances between all the matrices in the list
+    idx <- combn(length(ll),2)
+    tmpdist <- sapply(1:dim(idx)[2], function(x,ll,optgamma, idx){
+      print(paste("Distance",idx[1,x],"vs", idx[2,x]))
+      mydistfun(ll[[idx[1,x]]], ll[[idx[2,x]]], optgamma)
+    }, ll=ll, optgamma=optgamma, idx=idx)
+    dist <- matrix(NA,ncol=length(ll), nrow=length(ll))
+    dist[t(idx)] <- dist[t(idx)[,c(2,1)]] <- tmpdist
+    diag(dist) <- 0
+  }
+  return(dist)
+}
+
+
+## Useful function for computing Ipsen distance
+##--------------------------------------------------
 spec <- function(mm){
   sort(eigen(mm)$values)
 }
@@ -68,45 +153,5 @@ WW  <- function(N,g){
 WWp  <- function(N,g){
   return(WW(N,g)/(N-1))
 }
-
-
-
-
-
-
-
-
-
-
-## NB to develop
-
-## HIM Distance for directed graphs
-## undir  <- function(A){
-##   n  <- dim(A)
-##   zero  <- matrix(0,nrow=n,ncol=n)
-##   return(rbind(cbind(zero,t(A)),cbind(A,zero)))
-## }
-
-## d2w_dir <- function(G,H,gamma){
-##   return(d2w(undir(G),undir(H),gamma))
-## }
-
-## hamming_as_edit_dir <- function(G,H){
-##   ## for weighted networks, weights must be in [0,1]
-##   n=dim(G)[1]
-##   return(sum(abs(undir(G)-undir(H)))/(2*n*(n-1)))
-## }
-
-
-## him_dir <- function(G,H){
-##   n<-dim(G)[1]
-##   ipsen <- d2w_dir(G,H,optimal_gamma_dir(n))
-##   edit <- hamming_as_edit_dir(G,H)
-##   glocal_dist <- sqrt(edit**2/2+ipsen**2/2)
-##   return(c("H"=edit,"IM"=ipsen,"HIM"=glocal_dist))
-## }
-
-
-
 
 

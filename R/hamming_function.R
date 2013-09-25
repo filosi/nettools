@@ -1,5 +1,23 @@
-## Hamming distance for undirected graph
+## Hamming distance
+##----------------------------------------
+hamming <- function(object,...){
+  
+  adjlist <- object$G
+  
+  ## for weighted networks, weights must be in [0,1]
+  if (object$tag == "undir"){
+    dist <- ham.undir(adjlist, object$N, ...)
+  } else{
+    dist <- ham.dir(adjlist, object$N, ...)
+  }
+  return(dist)
+}
 
+
+## Useful function for computing Hamming distance
+## --------------------------------------------------
+
+## Hamming distance for undirected graph
 ham.undir <- function(adjlist, n, ...){
   if (length(adjlist) == 2){
     dist <- sum(abs(adjlist[[1]]-adjlist[[2]]))/(n*(n-1))
