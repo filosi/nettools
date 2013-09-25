@@ -1,5 +1,5 @@
-spec <- function(matrix){
-  sort(eigen(matrix)$values)
+spec <- function(mm){
+  sort(eigen(mm)$values)
 }
 
 ## D2 - ipsen02evolutionary
