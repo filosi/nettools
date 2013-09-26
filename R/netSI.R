@@ -114,34 +114,6 @@ netSI <- function(x,indicator="all", d='HIM', adj.method='cor',
   
   ## length of the list for optimization purposes
   ADJcv <- vector("list",length=length(idxs))
-
-  ## evaluate the number of cores to be used (Call$n.cores)
-  n.cores <- eval(Call$n.cores)
-  
-  ## Check availability of cores, otherwise set a default
-  if(is.null(n.cores)){
-    if(detectCores()>=2){
-      n.cores <- detectCores()-1
-      cl <- makeCluster(n.cores)
-      warning("The computation has been automatically parallelized", call.=FALSE)
-    } else {
-      cl <- NULL
-    }
-  } else {
-    if (n.cores==1){
-      cl <- NULL
-    } else {
-      if (n.cores<detectCores()){
-        cl <- makeCluster(n.cores)
-      } else {
-        if(detectCores()>=2){
-          n.cores <- detectCores()-1
-          cl <- makeCluster(n.cores)
-          warning("The computation has been automatically parallelized", call.=FALSE)
-        } 
-      }
-    }
-  }
   
   if(verbose==TRUE) cat("computing adjacency matrices...\n")
   
@@ -200,24 +172,47 @@ netSI <- function(x,indicator="all", d='HIM', adj.method='cor',
                     )
   }
   
-  if (!is.null(cl))
-    stopCluster(cl)
-  
   return(results)
 }
 
 
 ## Stability indicator S
-netsiS <- function(g, H, d, cl, ga, ...){
+netsiS <- function(g, H, d, n.cores, ga, ...){
   DIST <- c("HIM","IM","H")
   type <- pmatch(d,DIST)
   type <- DIST[type]
-  
+
+  ## Check availability of cores, otherwise set a default
+  if(is.null(n.cores)){
+    if(detectCores()>=2){
+      n.cores <- detectCores()-1
+      cl <- makeCluster(n.cores)
+      warning("The computation has been automatically parallelized", call.=FALSE)
+    } else {
+      cl <- NULL
+    }
+  } else {
+    if (n.cores==1){
+      cl <- NULL
+    } else {
+      if (n.cores<detectCores()){
+        cl <- makeCluster(n.cores)
+      } else {
+        if(detectCores()>=2){
+          n.cores <- detectCores()-1
+          cl <- makeCluster(n.cores)
+          warning("The computation has been automatically parallelized", call.=FALSE)
+        } 
+      }
+    }
+  }
+
   if(!is.null(cl)){
     s <- parLapply(cl=cl,X=H,fun=function(x,g,type,ga, ...){
       res <- nettools:::netdist(g,x,d=type, ga=ga, n.cores=1, ...)[[type]]
       return(res)
     },g=g,type=type, ga=ga, ...)
+    stopCluster(cl)
   }else{
     s <- lapply(X=H,FUN=function(x,g,type, ga, ...){
       res <- netdist(g,x,d=type, ga=ga, n.cores=1, ...)[[type]]
