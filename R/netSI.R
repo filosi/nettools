@@ -105,9 +105,42 @@ netSI <- function(x,indicator="all", d='HIM', adj.method='cor',
       components <- FALSE
     }
   }
+
+  ## n.cores parameter 
+  n.cores <- eval(Call$n.cores)
+
+  ## Check availability of cores, otherwise set a default
+  if(is.null(n.cores)){
+    if(detectCores()>=2){
+      n.cores <- detectCores()-1
+      cl <- makeCluster(n.cores)
+      warning("The computation has been automatically parallelized", call.=FALSE)
+    } else {
+      cl <- NULL
+    }
+  } else {
+    if (n.cores==1){
+      cl <- NULL
+    } else {
+      if (n.cores<detectCores()){
+        cl <- makeCluster(n.cores)
+      } else {
+        if(detectCores()>=2){
+          n.cores <- detectCores()-1
+          cl <- makeCluster(n.cores)
+          warning("The computation has been automatically parallelized", call.=FALSE)
+        } 
+      }
+    }
+  }
+
+  
+
+
+  
   ## Get the dimension of the input matrix
   ddim <- nrow(x)
-
+  
   ## Get the resampling indexes
   if(verbose==TRUE) cat("computing resampling...\n")
   idxs <-  resamplingIDX(ddim,method=method, k=k, h=h)
@@ -143,10 +176,6 @@ netSI <- function(x,indicator="all", d='HIM', adj.method='cor',
     if(verbose==TRUE) cat("computing stability indicator S...\n")
     netsi[["S"]] <- netsiS(ADJall, ADJcv, d=d, cl=cl, ga=ga)
   }
-  if(indicator==2L | indicator==5L){
-    if(verbose==TRUE) cat("computing stability indicator SI...\n")
-    netsi[["SI"]] <- netsiSI(ADJcv, d=d, ga=ga, n.cores=n.cores)
-  }
   if(indicator==3L | indicator==5L){
     if(verbose==TRUE) cat("computing stability indicator Sw...\n")
     netsi[["Sw"]] <- netsiSw(ADJcv, cl=cl)
@@ -155,6 +184,14 @@ netSI <- function(x,indicator="all", d='HIM', adj.method='cor',
     if(verbose==TRUE) cat("computing stability indicator Sd...\n")
     netsi[["Sd"]] <- netsiSd(ADJcv, cl=cl)
   }
+  if (!is.null(cl))
+    stopCluster(cl)
+
+  if(indicator==2L | indicator==5L){
+    if(verbose==TRUE) cat("computing stability indicator SI...\n")
+    netsi[["SI"]] <- netsiSI(ADJcv, d=d, ga=ga, n.cores=n.cores)
+  }
+
   
   if(save==TRUE){
     results <- list("call"=Call,
@@ -177,42 +214,17 @@ netSI <- function(x,indicator="all", d='HIM', adj.method='cor',
 
 
 ## Stability indicator S
-netsiS <- function(g, H, d, n.cores, ga, ...){
+netsiS <- function(g, H, d, cl, ga, ...){
   DIST <- c("HIM","IM","H")
   type <- pmatch(d,DIST)
   type <- DIST[type]
-
-  ## Check availability of cores, otherwise set a default
-  if(is.null(n.cores)){
-    if(detectCores()>=2){
-      n.cores <- detectCores()-1
-      cl <- makeCluster(n.cores)
-      warning("The computation has been automatically parallelized", call.=FALSE)
-    } else {
-      cl <- NULL
-    }
-  } else {
-    if (n.cores==1){
-      cl <- NULL
-    } else {
-      if (n.cores<detectCores()){
-        cl <- makeCluster(n.cores)
-      } else {
-        if(detectCores()>=2){
-          n.cores <- detectCores()-1
-          cl <- makeCluster(n.cores)
-          warning("The computation has been automatically parallelized", call.=FALSE)
-        } 
-      }
-    }
-  }
-
+  
   if(!is.null(cl)){
     s <- parLapply(cl=cl,X=H,fun=function(x,g,type,ga, ...){
       res <- nettools:::netdist(g,x,d=type, ga=ga, n.cores=1, ...)[[type]]
       return(res)
     },g=g,type=type, ga=ga, ...)
-    stopCluster(cl)
+  
   }else{
     s <- lapply(X=H,FUN=function(x,g,type, ga, ...){
       res <- netdist(g,x,d=type, ga=ga, n.cores=1, ...)[[type]]
