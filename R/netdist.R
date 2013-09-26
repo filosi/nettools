@@ -1,7 +1,10 @@
 netdist <- function(x, ...) UseMethod("netdist")
 
 ## Method netdist for matrix
-netdist.matrix <- function(x, h, d="HIM", ga=NULL, components=TRUE, ...){
+netdist.matrix <- function(x, h=NULL, d="HIM", ga=NULL, components=TRUE, ...){
+
+  if (is.null(h))
+    stop("Need to provide a second matrix to compute the distance")
   
   DISTANCE <- c("HIM","IM","H",
                 "ipsen","Ipsen","IpsenMikhailov","Ipsen-Mikhailov",
@@ -19,7 +22,7 @@ netdist.matrix <- function(x, h, d="HIM", ga=NULL, components=TRUE, ...){
   
   Call <- match.call()
   
-  #add a check so that an unexisting parameter cannot be passed
+  ##add a check so that an unexisting parameter cannot be passed
   id.Call <- match( names(Call),c("x", "h", "d", "ga","components","n.cores"), nomatch=0)
   if(sum(id.Call[-1]==0)==1){
     warning("The parameter '",names(Call)[which(id.Call==0)[2]],"' will be ignored",call.=FALSE)
@@ -38,14 +41,14 @@ netdist.matrix <- function(x, h, d="HIM", ga=NULL, components=TRUE, ...){
     stop("ambiguous distance")
   
   ##check on components argument
-  if(is.null(Call$components)){
+  if(is.null(components)){
     if(d==1){
       comp <- TRUE
     }else{
       comp <- FALSE
     }
   }else{
-    comp <- eval(Call$components)
+    comp <- components
     if(d==1){
       if(!is.logical(comp))
         stop("components must be TRUE or FALSE")
@@ -56,12 +59,11 @@ netdist.matrix <- function(x, h, d="HIM", ga=NULL, components=TRUE, ...){
   }
   
   ##check on ga passing through ipsen function
-  if(is.null(Call$ga)){
+  if(is.null(ga)){
     if(d==2){
       warning("The ga parameter will be automatically defined.", call.=FALSE)
     }
   }else{
-    ga <- eval(Call$ga)
     if(!is.numeric(ga) && !is.null(ga))
       stop("ga must be numeric",call.=FALSE)
   }
@@ -147,14 +149,14 @@ netdist.list <- function(x, d="HIM", ga=NULL, components=TRUE, ...){
     stop("ambiguous distance")
   
   ##check on components argument
-  if(is.null(Call$components)){
+  if(is.null(components)){
     if(d==1){
       comp <- TRUE
     }else{
       comp <- FALSE
     }
   }else{
-    comp <- eval(Call$components)
+    comp <- components
     if(d==1){
       if(!is.logical(comp))
         stop("components must be TRUE or FALSE")
@@ -165,12 +167,11 @@ netdist.list <- function(x, d="HIM", ga=NULL, components=TRUE, ...){
   }
   
   ##check on ga passing through ipsen function
-  if(is.null(Call$ga)){
+  if(is.null(ga)){
     if(d==2){
       warning("The ga parameter will be automatically defined.", call.=FALSE)
     }
   }else{
-    ga <- eval(Call$ga)
     if(!is.numeric(ga) && !is.null(ga))
       stop("ga must be numeric",call.=FALSE)
   }
@@ -192,7 +193,7 @@ netdist.list <- function(x, d="HIM", ga=NULL, components=TRUE, ...){
           laplist[[i]] <- Lap(g$adj)
         adjlist[[i]] <- g$adj
     } else {
-      stop("Not the same length!")
+      stop(paste("Element",i,"not of the same length!"), call.=FALSE)
     }
     myadj <- list(d=DISTANCE[d],G=adjlist,N=N,tag=tag)
   }

@@ -12,14 +12,18 @@ ipsen <- function(object, ga=NULL, ...){
   } else {
     optgamma <- ga
   }
-
+  
   laplist <- object$L
-
+  
   ## Check for parallelization
   n.cores <- NULL
   if (!is.na(match("n.cores",names(list(...)))))
     n.cores <- list(...)[["n.cores"]]
 
+  verbose <- FALSE
+  if (!is.na(match("verbose", names(list(...)))))
+    verbose <- list(...)[["verbose"]]
+  
   ## Should I use multiple cores or not?
   if(detectCores() >= 2 && (is.null(n.cores) || n.cores>1)){
     if (is.null(n.cores) || n.cores >= detectCores()){
@@ -30,24 +34,26 @@ ipsen <- function(object, ga=NULL, ...){
       }
     }
     cl <- makeCluster(n.cores)
+    
     ## Eval needed function on nodes
     clusterEvalQ(cl,{K <- nettools:::K
                      rho <- nettools:::rho
                      lorentz <- nettools:::lorentz
                    })
-
-    cat("Start computing eigenvalues with ",n.cores, "cores\n")
+    
+    if (verbose)
+      cat("Start computing eigenvalues with multiple cores\n")
     ## Actual computation of eigen-values/vectors
     ll <- clusterApply(cl,laplist,function(x,mygamma=optgamma,...){
       myomega <- sqrt(abs(round(spec(x),5)))
       myk <- K(mygamma,myomega)
       return(list(myomega,myk))
     })
-    stopCluster(cl)
+    
   } else {
     ## Computation on 1 CPU
     ll <- lapply(1:length(laplist),function(x,mygamma,laplist, ...){
-      print(paste("Computing eigen for ",x))
+      cat("Computing eigen for ",x,"\n")
       aa <- laplist[[x]]
       myomega <- sqrt(abs(round(spec(aa),5)))
       myk <- K(mygamma,myomega)
@@ -61,7 +67,8 @@ ipsen <- function(object, ga=NULL, ...){
     tmp <- sqrt(integrate(integrand,lower=0,upper=Inf,mygamma=optgamma,given_omega_G=a[[1]],given_omega_H=b[[1]], stop.on.error=FALSE,rel.tol=.Machine$double.eps,subdivisions=1e4)$value)
     return(tmp)
   }
-  cat("Start computing mutual distances")
+  if (verbose)
+    cat("Start computing mutual distances\n")
   if (length(laplist) == 2){
     ## Compute distance between 2 adjacency matrices
     dist <- mydistfun(ll[[1]], ll[[2]], optgamma=optgamma)
@@ -70,7 +77,7 @@ ipsen <- function(object, ga=NULL, ...){
     ## Compute mutual distances between all the matrices in the list
     idx <- combn(length(ll),2)
     tmpdist <- sapply(1:dim(idx)[2], function(x,ll,optgamma, idx){
-      print(paste("Distance",idx[1,x],"vs", idx[2,x]))
+      cat("Distance",idx[1,x],"vs", idx[2,x],"\n")
       mydistfun(ll[[idx[1,x]]], ll[[idx[2,x]]], optgamma)
     }, ll=ll, optgamma=optgamma, idx=idx)
     dist <- matrix(NA,ncol=length(ll), nrow=length(ll))

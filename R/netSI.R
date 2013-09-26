@@ -173,7 +173,7 @@ netSI <- function(x,indicator="all", d='HIM', adj.method='cor',
   }
   if(indicator==2L | indicator==5L){
     if(verbose==TRUE) cat("computing stability indicator SI...\n")
-    netsi[["SI"]] <- netsiSI(ADJcv, d=d, cl=cl, ga=ga)
+    netsi[["SI"]] <- netsiSI(ADJcv, d=d, ga=ga, n.cores=n.cores)
   }
   if(indicator==3L | indicator==5L){
     if(verbose==TRUE) cat("computing stability indicator Sw...\n")
@@ -208,45 +208,47 @@ netSI <- function(x,indicator="all", d='HIM', adj.method='cor',
 
 
 ## Stability indicator S
-netsiS <- function(g, H, d, cl, ga){
+netsiS <- function(g, H, d, cl, ga, ...){
   DIST <- c("HIM","IM","H")
   type <- pmatch(d,DIST)
   type <- DIST[type]
-
+  
   if(!is.null(cl)){
-    s <- parLapply(cl=cl,X=H,fun=function(x,g,type, ga){
-      res <- nettools:::netdist(g,x,d=type, ga)[[type]]
+    s <- parLapply(cl=cl,X=H,fun=function(x,g,type,ga, ...){
+      res <- nettools:::netdist(g,x,d=type, ga=ga, n.cores=1, ...)[[type]]
       return(res)
-    },g=g,type=type, ga=ga)
+    },g=g,type=type, ga=ga, ...)
   }else{
-    s <- lapply(X=H,FUN=function(x,g,type, ga){
-      res <- netdist(g,x,d=type, ga)[[type]]
+    s <- lapply(X=H,FUN=function(x,g,type, ga, ...){
+      res <- netdist(g,x,d=type, ga=ga, n.cores=1, ...)[[type]]
       return(res)
-    },g=g,type=type, ga=ga)
+    },g=g,type=type, ga=ga, ...)
   }
   return(unlist(s))
 }
 
 ## Stability indicator SI
-netsiSI <- function(H, d, cl, ga){
+netsiSI <- function(H, d, ga, ...){
   DIST <- c("HIM","IM","H")
   type <- pmatch(d,DIST)
   type <- DIST[type]
+
+  ## com <- combn(1:length(H), 2)
   
-  com <- combn(1:length(H), 2)
+  s <- netdist(H,d=type,ga=ga, ...)
   
-  if(!is.null(cl)){
-    ## Parallel computation
-    s <- parLapply(cl=cl,X=1:ncol(com),fun=function(x,com,H,type, ga){
-      res <- nettools:::netdist(H[[com[1,x]]],H[[com[2,x]]],d=type,ga)[[type]]
-      return(res)
-    },com=com,H=H,type=type, ga=ga)
-  }else{ ## One core computation
-    s <- lapply(X=1:ncol(com),FUN=function(x,com,H,type, ga){
-      res <- netdist(H[[com[1,x]]],H[[com[2,x]]],d=type, ga)[[type]]
-      return(res)
-    },com=com,H=H,type=type, ga=ga)
-  }
+  ## if(!is.null(cl)){
+  ##   ## Parallel computation
+  ##   s <- parLapply(cl=cl,X=1:ncol(com),fun=function(x,com,H,type, ga){
+  ##     res <- nettools:::netdist(H[[com[1,x]]],H[[com[2,x]]],d=type,ga)[[type]]
+  ##     return(res)
+  ##   },com=com,H=H,type=type, ga=ga)
+  ## }else{ ## One core computation
+  ##   s <- lapply(X=1:ncol(com),FUN=function(x,com,H,type, ga){
+  ##     res <- netdist(H[[com[1,x]]],H[[com[2,x]]],d=type, ga)[[type]]
+  ##     return(res)
+  ##   },com=com,H=H,type=type, ga=ga)
+  ## }
   return(unlist(s))
 }
 
