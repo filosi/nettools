@@ -31,17 +31,19 @@ netdist(x,\dots)
 
 \section{Methods}{
   \describe{
-    \item{\code{signature(object = "matrix")}}{Function for matrix}
-    \item{\code{signature(object = "Matrix")}}{Function working on
+    \item{\code{signature(object = "matrix")}}{Compute distance between
+  2 matrices or igraph objects}
+    \item{\code{signature(object = "Matrix")}}{Same as matrix method but
+  works also with sparse matrices from package \pkg{Matrix}
       sparse Matrix objects from Matrix package}
-    \item{\code{signature(object = "list")}}{Function working on list of
-      adjacecncy matrices}
+    \item{\code{signature(object = "list")}}{Computes computes the
+  mutual distances between all the matrices in the input list}
   }
 }
 
 \arguments{
-  \item{x}{Adjacency matrix or igraph object}
-  \item{h}{Adjacency matrix or igraph object}
+  \item{x}{Adjacency matrix, igraph object or list of adjacency matrices}
+  \item{h}{Only when \code{x} is a matrix object. Adjacency matrix or igraph object}
   \item{d}{\code{HIM}
     (default), or character string containing a valid method
     between the follwing: \code{IM}, \code{ipsen}, \code{Ipsen}, 
@@ -61,10 +63,14 @@ netdist(x,\dots)
     processed by the functions which compute the distance. Not all
     parameters are used by all functions.
     \describe{
-      \item{n.nodes:}{parameter used only when method is \code{ipsen} or
-    	\code{HIM}.  If the number of nodes of \code{g} and \code{h} is
-    	bigger than \code{n.nodes} the computation of the distance is
-    	parallelized on 2 cores, otherwise only one core will be used.
+      \item{n.cores}{parameter used only when method is \code{ipsen} or
+    	\code{HIM}. Very useful if the number of nodes in the adjacency
+	matrix is high and when method for object \code{list} is called.
+	If method \code{list} is called, each core take care of the
+	computation of eigenvalues for a matrix in the input list. If
+	\code{n.cores} is bigger than the number of available cores on the
+	specific machine, than \code{n.cores} is set to the number of
+	available cores - 1.
       }
     }
   }
@@ -88,6 +94,8 @@ netdist(x,\dots)
   The parameter \code{ga} is set to \code{NULL}.
   For method \code{ipsen} the "Ipsen-Mikhailov" distance is returned.
   For method \code{hamming} the "Hamming" distance is returned.
+
+  If a \code{list} object is provided a distance matrix is provided.
   %%  ~Describe the value returned
   %%  If it is a LIST, use
   %%  \item{comp1 }{Description of 'comp1'}
@@ -105,22 +113,40 @@ netdist(x,\dots)
 \author{
   Michele Filosi
 }
-\note{
-  %%  ~~further notes~~
-}
+%% \note{
+%%   %%  ~~further notes~~
+%% }
 
 %% ~Make other sections like Warning with \section{Warning }{....} ~
 
-\seealso{
-  %% ~~objects to See Also as \code{\link{help}}, ~~~
-}
+%% \seealso{
+%%   %% ~~objects to See Also as \code{\link{help}}, ~~~
+%% }
 \examples{
 ##---- Should be DIRECTLY executable !! ----
 ##-- ==>  Define data, use random,
 ##--	or do  help(data=index)  for the standard data sets.
+a <- matrix(rnorm(2000), nrow=200)
+b <- matrix(rnorm(2000), nrow=200)
+
+aa <- mat2adj(a, method="cor")
+bb <- mat2adj(b, method="cor")
+
+dd <- netdist(aa,bb, d="HIM")
+print(dd)
+
+## Change the gamma parameter
+dd <- netdist(aa,bb, d="HIM", ga=0.5)
+print(dd)
+
+alist <- list(aa,bb)
+netdist(alist, d="HIM")
+
+## Use multiple cores
+\dontrun{dd <- netdist(aa,bb,n.cores=2)}
 
 }
 % Add one or more standard keywords, see file 'KEYWORDS' in the
 % R documentation directory.
-\keyword{ ~kwd1 }
-\keyword{ ~kwd2 }% __ONLY ONE__ keyword per line
+\keyword{dist}
+\keyword{network}% __ONLY ONE__ keyword per line

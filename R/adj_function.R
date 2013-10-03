@@ -22,11 +22,13 @@ AdjWGCNA <- function(x,P,...){
 
 ## Function for computing the FDR value on the null hypothesis
 fdrrun <- function(x,idx,FUN='cor', cl=NULL, ...){
-
   FUN <- match.fun(FUN)
   measure <- 1
-  if (!is.na(match("measure",names(list(...)))))
+  if (!is.na(match("measure",names(list(...))))){
     measure <- list(...)[["measure"]]
+    if (length(measure)==0)
+      measure <- 1
+  }
   
   cormat <- matrix(Inf,ncol=dim(x)[2],nrow=dim(x)[2])
   myfun <- function(x, y, idx, tmpfun, measure){
@@ -36,20 +38,21 @@ fdrrun <- function(x,idx,FUN='cor', cl=NULL, ...){
       return(abs(tmpfun(sample(y[,idi[2]]),y[,idi[1]])[[measure]]))
     }else{return(NA)}
   }
-  if(dim(idx)[1]>0){
+  if(nrow(idx)>2){
     if (is.null(cl)){
       aa <- sapply(seq(dim(idx)[1]),myfun, y=x, idx=idx, tmpfun=FUN, measure)
     } else {
       ## NB need to load package on all the cores?!??!?!
       aa <- parSapply(cl, seq(dim(idx)[1]),myfun, y=x, idx=idx, tmpfun=FUN, measure)
     }
+    idx <- cbind(idx,aa)
+    tmpid <- subset(idx,!is.na(idx[,3]))
+    cormat[tmpid[,c(1,2)]] <- cormat[tmpid[,c(2,1)]] <- tmpid[,3]
+  } else {
+    stop("Not conformable array")
   }
-  
-  idx <- cbind(idx,aa)
-  tmpid <- subset(idx,!is.na(idx[,3]))
-  cormat[tmpid[,c(1,2)]] <- cormat[tmpid[,c(2,1)]] <- tmpid[,3]
-  
   invisible(cormat)
+  
 }
 
 ## WGCNA FDR
@@ -97,7 +100,7 @@ Adjbicor <- function(x,...){
 AdjbicorFDR <- function(x,FDR,P,...){
     Adj <- Adjbicor(x)
     idx <- as.matrix(expand.grid(seq(dim(Adj)[1]),seq(dim(Adj)[2])))
-    
+
     ## Check for multicore
     if (!is.na(match("n.cores", names(list(...))))){
       n.cores <- list(...)[["n.cores"]]
@@ -162,14 +165,13 @@ AdjCLR <- function(x,...){
 
 ## MINE
 AdjMINE <- function(x,measure,alpha,C,...){
-    Adj <- mine(x,alpha=alpha, C=C, ...)[[measure]]
-    if (!is.null(Adj)){
-      diag(Adj) <- 0
-      return(Adj)
-    } else {
-      stop("Invalid measure for method MINE")
-    }
-    
+  Adj <- mine(x,alpha=alpha, C=C, ...)[[measure]]
+  if (!is.null(Adj)){
+    diag(Adj) <- 0
+    return(Adj)
+  } else {
+    stop("Invalid measure for method MINE")
+  }
 }
 
 ## MINEFDR
@@ -192,12 +194,14 @@ AdjMINEFDR <- function(x,measure,alpha,C,FDR,...){
     }
     
     for (i in seq(1/FDR)){
-      cormat <- fdrrun(x,idx,FUN='mine',measure=measure, cl,...)
-      idx <- which(Adj>cormat,arr.ind=TRUE)
+      if (nrow(idx) > 2){
+        cormat <- fdrrun(x,idx,FUN='mine',measure=measure, cl,...)
+        idx <- which(Adj>cormat,arr.ind=TRUE)
+      }
     }
     adjfinal <- matrix(0,ncol=dim(Adj)[2],nrow=dim(Adj)[1],
                        dimnames=list(rownames(Adj),colnames(Adj)))
-    if(dim(idx)[1]>0){
+    if(nrow(idx)>2){
         for (i in seq(dim(idx)[1])){
             adjfinal[idx[i,1],idx[i,2]] <- Adj[idx[i,1],idx[i,2]]
         }

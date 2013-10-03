@@ -52,8 +52,8 @@ method="montecarlo", k=3, h=20, n.cores, save=TRUE, verbose=TRUE, ...)
     }
   }
 }
-  
-  \details{
+
+\details{
   For different network stability indicator are computed. This function
   is based on a resampling method functions \code{\link{mat2adj}} and \code{\link{netdist}}
 
