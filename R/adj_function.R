@@ -75,8 +75,10 @@ AdjWGCNAFDR <- function(x,FDR,P,...){
   }
   
   for (i in seq(1/FDR)){
-    cormat <- fdrrun(x,idx,FUN=cor,cl)
-    idx <- which(Adj>cormat,arr.ind=TRUE)
+    if (nrow(idx) > 2){
+      cormat <- fdrrun(x,idx,FUN=cor,cl)
+      idx <- which(Adj>cormat,arr.ind=TRUE)
+    }
   }
   adjfinal <- matrix(0,ncol=dim(Adj)[2],nrow=dim(Adj)[1],
                        dimnames=list(rownames(Adj),colnames(Adj)))
@@ -116,8 +118,10 @@ AdjbicorFDR <- function(x,FDR,P,...){
     }
     
     for (i in seq(1/FDR)){
-      cormat <- fdrrun(x,idx,FUN='bicor', cl, ...)
-      idx <- which(Adj>cormat,arr.ind=TRUE)
+      if (nrow(idx) > 2){
+        cormat <- fdrrun(x,idx,FUN='bicor', cl, ...)
+        idx <- which(Adj>cormat,arr.ind=TRUE)
+      }
     }
     adjfinal <- matrix(0,ncol=dim(Adj)[2],nrow=dim(Adj)[1],
                        dimnames=list(rownames(Adj),colnames(Adj)))
