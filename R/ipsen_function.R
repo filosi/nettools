@@ -49,6 +49,8 @@ ipsen <- function(object, ga=NULL, ...){
       myk <- K(mygamma,myomega)
       return(list(myomega,myk))
     })
+
+    stopCluster(cl)
     
   } else {
     ## Computation on 1 CPU
@@ -86,6 +88,9 @@ ipsen <- function(object, ga=NULL, ...){
     dist[t(idx)] <- dist[t(idx)[,c(2,1)]] <- tmpdist
     diag(dist) <- 0
   }
+
+
+
   return(dist)
 }
 
