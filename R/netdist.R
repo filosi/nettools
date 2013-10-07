@@ -23,7 +23,7 @@ netdist.matrix <- function(x, h=NULL, d="HIM", ga=NULL, components=TRUE, ...){
   Call <- match.call()
   
   ##add a check so that an unexisting parameter cannot be passed
-  id.Call <- match( names(Call),c("x", "h", "d", "ga","components","n.cores"), nomatch=0)
+  id.Call <- match( names(Call),c("x", "h", "d", "ga","components","n.cores","verbose"), nomatch=0)
   if(sum(id.Call[-1]==0)==1){
     warning("The parameter '",names(Call)[which(id.Call==0)[2]],"' will be ignored",call.=FALSE)
   }
@@ -131,7 +131,7 @@ netdist.list <- function(x, d="HIM", ga=NULL, components=TRUE, ...){
   Call <- match.call()
   
   ## add a check so that an unexisting parameter cannot be passed
-  id.Call <- match( names(Call),c("x", "d", "ga","components", "n.cores"), nomatch=0)
+  id.Call <- match( names(Call),c("x", "d", "ga","components", "n.cores", "verbose"), nomatch=0)
   if(sum(id.Call[-1]==0)==1){
     warning("The parameter '",names(Call)[which(id.Call==0)[2]],"' will be ignored",call.=FALSE)
   }

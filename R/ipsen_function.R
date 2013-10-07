@@ -53,7 +53,8 @@ ipsen <- function(object, ga=NULL, ...){
   } else {
     ## Computation on 1 CPU
     ll <- lapply(1:length(laplist),function(x,mygamma,laplist, ...){
-      cat("Computing eigen for ",x,"\n")
+      if (verbose)
+        cat("Done",x,"/",length(laplist),"\n")
       aa <- laplist[[x]]
       myomega <- sqrt(abs(round(spec(aa),5)))
       myk <- K(mygamma,myomega)
@@ -76,8 +77,9 @@ ipsen <- function(object, ga=NULL, ...){
   } else {
     ## Compute mutual distances between all the matrices in the list
     idx <- combn(length(ll),2)
-    tmpdist <- sapply(1:dim(idx)[2], function(x,ll,optgamma, idx){
-      cat("Distance",idx[1,x],"vs", idx[2,x],"\n")
+    tmpdist <- sapply(1:dim(idx)[2], function(x,ll,optgamma, idx, ...){
+      if (verbose)
+        cat("D(",idx[1,x],",", idx[2,x],")\n")
       mydistfun(ll[[idx[1,x]]], ll[[idx[2,x]]], optgamma)
     }, ll=ll, optgamma=optgamma, idx=idx)
     dist <- matrix(NA,ncol=length(ll), nrow=length(ll))
