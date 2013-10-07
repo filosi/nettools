@@ -296,8 +296,8 @@ him <- function(object,ga=NULL, components=TRUE, ltag=FALSE, ...){
       names(dist) <- c("H","IM","HIM")
     }
   } else {
-    dist <- gloc
-    names(dist) <- "HIM"
+    dist <- list(HIM=gloc)
+    ## names(dist) <- "HIM"
   }
   return(dist)
 }
