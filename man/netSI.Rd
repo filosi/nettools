@@ -5,7 +5,9 @@
 Network Stability Indicators
 }
 \description{
-Family NetSI of stability indicators for network inference methods
+Family NetSI of stability indicators for network inference methods. The
+function computes a suite of 4 stability indicators of data \code{x}
+based on network distances.
 }
 \usage{
 netSI(x,indicator="all", d='HIM', adj.method='cor',
@@ -30,13 +32,14 @@ method="montecarlo", k=3, h=20, n.cores, save=TRUE, verbose=TRUE, ...)
     \code{"LOO"} for Leave One Out or \code{"kCV"} for k-fold Cross
     Validation.}
   \item{k}{3 (default) numeric value indicating the number of subset the
-    data will be splitted in.  In case method=="montecarlo" the 1-1/cv
-    samples are taken for the computation In case cvlab=="loo" it should
-    be set to 1 In case cvlab=="kcv" cv iteration are performed, each
-    dividing the data into 1-1/cv }
+    data will be splitted in.  In case \code{method} is set to \code{"montecarlo"} the 1-1/\code{cv}
+    samples are taken for the computation.
+    In case \code{cvlab} is set to \code{"loo"} it should be set to 1.
+    In case \code{cvlab} is set to \code{"kcv"} cv iteration are performed, each
+    dividing the data into 1-1/cv}
   \item{h}{ 20 (default), numeric value indicates the number of iterations (cross validations).}
   \item{n.cores}{\code{NULL} (default), optional numeric value giving
-    the number of cores to be used for computation. The default
+    the number of cores to be used for parallel computation. The default
     behaviour try to asses the maximum number of available cores and set
     a parallel computation using the maximum number of cores - 1 for the
     computation.}
@@ -54,15 +57,55 @@ method="montecarlo", k=3, h=20, n.cores, save=TRUE, verbose=TRUE, ...)
 }
 
 \details{
-  For different network stability indicator are computed. This function
-  is based on a resampling method functions \code{\link{mat2adj}} and \code{\link{netdist}}
+  This function computes a suite of 4 stability indicators. It is based
+  on network inference method function \code{\link{mat2adj}} and network
+  distance function \code{\link{netdist}}.
+  Parameters passed through \dots will be used by the low-level
+  functions \code{\link{mat2adj}} and \code{\link{netdist}}.
 
-  %%  ~~ If necessary, more details than the description above ~~
+  Indicators:
+  \itemize{
+    \item{\code{S}: is the global stability indicator. It asses the
+      pertubations of the network given by the resampling: in particular it
+      account for the distance between the network inferred using all samples and the
+      network inferred on a subsampling.}
+    \item{\code{SI}: is the local stability indicator. It provides a measure of the
+      perturbations between different subsamplings. It computes the
+      pairwise distances between networks inferred on different
+      subsamplings.}
+    \item{\code{Sw}: is the edge stability indicator. It asses the
+      stability of the edges inferred in different subsamplings. In case
+      of a binary network it take into account only the presence/absence of
+      the link, if a "weight" attribute is provided it asses the
+      perturbation of the edge weight given the presence/absence on the
+      given subsampling.}
+    \item{\code{Sd}: is the degree stability indicator. It asses the
+      variations of the node degree given a subsampling perturbation on
+      the data.}
+  }
+ 
+  
+  Parallel computation is provided automatically through the functions
+  available in the \pkg{parallel} package included by default from \R
+  2.15. Support for parallel computation is available only on multi-core
+  machines not on high performace computing facility.
+  If \code{n.cores} is set to \code{NULL} it searches for multiple cores
+  on the machine, if it finds more than 2 cores the computation is
+  parallelized using the maximum number of cores available - 1.
+  If \code{n.cores} is a numeric value it checks if the number of cores provided
+  is suitable for the machine where \R is running. If the number of
+  cores requested is bigger than the available cores \code{n.cores} will
+  be set to \code{NULL}, otherwise the computation will be equally
+  distributed on the number of cores provided.
+  In case \code{indicator} is set to \code{all} or \code{SI}, parameter
+  \code{n.cores} will pass to the low level function which compute
+  the mutual distances, \link{netdist}.
+  %%  ~~ If. necessary, more details than the description above ~~
 }
 \value{
   A list with the followind elements:
   If \code{save=TRUE}:
-  \item{call}{string. Function call}
+  \item{call}{character. Function call}
   \item{ADJlist}{A list with the adjacency matrices computed in the
     resampling scheme.}
   \item{S}{A numerical vector with the value of the stability indicator S
