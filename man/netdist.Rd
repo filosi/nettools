@@ -36,9 +36,9 @@ netdist(x,\dots)
   \item{h}{Adjacency matrix or igraph object. Only when \code{x} is a matrix object. }
   \item{d}{\code{HIM}
     (default), or character string containing a valid method
-    between the follwing: \code{IM}, \code{ipsen}, \code{Ipsen}, 
-    \code{IpsenMikhailov}, or \code{Ipsen-Mikhailov}, for Ipsen-Mikhailov distance
-    and \code{H}, \code{hamming}, or \code{Hamming} for Hamming distance.}
+    between the follwing: \code{"IM"}, \code{"ipsen"}, \code{"Ipsen"}, 
+    \code{"IpsenMikhailov"}, or \code{"Ipsen-Mikhailov"}, for Ipsen-Mikhailov distance
+    and \code{"H"}, \code{"hamming"}, or \code{"Hamming"} for Hamming distance.}
   \item{ga}{\code{NULL} (default), a numeric value for the gamma parameter used
     only if method \code{ipsen} is called.  If \code{ga=NULL} an optimal
     value based on the number of nodes in the adjacency matrix is
@@ -78,7 +78,7 @@ netdist(x,\dots)
   
   Parallel computation is provided automatically through the functions
   available in the \pkg{parallel} package included by default from \R
-  2.15, only for methods \code{ipsen} and \code{HIM}.
+  2.15, only for methods \code{"ipsen"} and \code{"HIM"}.
   The computation can be automatically parallelized on a multi-cpu
   computer using the parameter \code{n.cores}.
   If \code{n.cores} is set to \code{NULL} it searches for multiple cores

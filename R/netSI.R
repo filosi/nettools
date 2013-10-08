@@ -133,10 +133,6 @@ netSI <- function(x,indicator="all", d='HIM', adj.method='cor',
       }
     }
   }
-
-  
-
-
   
   ## Get the dimension of the input matrix
   ddim <- nrow(x)
