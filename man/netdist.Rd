@@ -17,33 +17,23 @@
 \title{Distances between network}
 \description{
   Function that computes the distance between two adjacency matrix given as
-  matrix or igraph objects.
+  matrix, igraph objects or list of matrices.
 }
 
 %- maybe also 'usage' for other objects documented here.
 \usage{
 netdist(x,\dots)
+
 \method{netdist}{matrix}(x, h, d = "HIM", ga = NULL, components=TRUE, ...)
+
 \method{netdist}{Matrix}(x, h, d = "HIM", ga = NULL, components=TRUE, ...)
+
 \method{netdist}{list}(x, d = "HIM", ga = NULL, components=TRUE, ...)
 
 }
-
-\section{Methods}{
-  \describe{
-    \item{\code{signature(object = "matrix")}}{Compute distance between
-  2 matrices or igraph objects}
-    \item{\code{signature(object = "Matrix")}}{Same as matrix method but
-  works also with sparse matrices from package \pkg{Matrix}
-      sparse Matrix objects from Matrix package}
-    \item{\code{signature(object = "list")}}{Computes computes the
-  mutual distances between all the matrices in the input list}
-  }
-}
-
 \arguments{
   \item{x}{Adjacency matrix, igraph object or list of adjacency matrices}
-  \item{h}{Only when \code{x} is a matrix object. Adjacency matrix or igraph object}
+  \item{h}{Adjacency matrix or igraph object. Only when \code{x} is a matrix object. }
   \item{d}{\code{HIM}
     (default), or character string containing a valid method
     between the follwing: \code{IM}, \code{ipsen}, \code{Ipsen}, 
@@ -66,36 +56,63 @@ netdist(x,\dots)
       \item{n.cores}{parameter used only when method is \code{ipsen} or
     	\code{HIM}. Very useful if the number of nodes in the adjacency
 	matrix is high and when method for object \code{list} is called.
+	%% Insert the following code in the details
 	If method \code{list} is called, each core take care of the
 	computation of eigenvalues for a matrix in the input list. If
 	\code{n.cores} is bigger than the number of available cores on the
 	specific machine, than \code{n.cores} is set to the number of
-	available cores - 1.
-      }
+	available cores - 1.}
+      \item{verbose}{\code{FALSE} (default), print information about the
+	state of the computation}
     }
   }
 }
 
 \details{
-  Distance between networks can be computed using three methods through
-  the \code{netdist} function.
-  The input can be either adjacency symmetric matrix or graph object
-  from \pkg{igraph} package.  
+  \code{netdist} is a high level function which provide an interface to
+  different network distance methods. Distance can be computed for
+  binary or weighted networks either directed and undirected.
+  Each network should have the same number of nodes (the matrices
+  provided as input should have the same dimensions), otherwise no
+  computation will be performed and an errore message will be output.
+  
+  Parallel computation is provided automatically through the functions
+  available in the \pkg{parallel} package included by default from \R
+  2.15, only for methods \code{ipsen} and \code{HIM}.
+  The computation can be automatically parallelized on a multi-cpu
+  computer using the parameter \code{n.cores}.
+  If \code{n.cores} is set to \code{NULL} it searches for multiple cores
+  on the machine, if it finds more than 2 cores the computation is
+  parallelized using the maximum number of cores available - 1.
+  If \code{n.cores} is a numeric value it checks if the number of cores provided
+  is suitable for the machine where \R is running. If the number of
+  cores requested is bigger than the available cores \code{n.cores} will
+  be set to \code{NULL}, otherwise the computation will be equally
+  distributed on the number of cores provided.
+  
+  The input can be either an adjacency matrix, a graph object
+  from \pkg{igraph} package or a list of adjacency matrix or graph
+  objects.
   If the 'weight' attribute is given within the \code{graph} object it
   will be used as edge weight, otherwise binary representation of the network will be considered.
   In case edge weights are provided through the adjacency matrix, they
   should be scaled between 0-1. If some of the weights are outside the
   interval a scaling function is automatically applied.
+  
+  The parameter \code{ga} is used only in the \emph{Ipsen} and
+  \emph{HIM} distance. We suggest not to change it and use the automatic
+  computation of the parameter based on the number of nodes in the
+  network.
   %%  ~~ If necessary, more details than the description above ~~
 }
-\value{For method \code{"HIM"} a named vector with 3 values is returned. 
-  Respectively, \code{H} for "hamming", \code{IM} for "Ipsen-Mikhailov"
-  and \code{HIM} for "him" distance.
-  The parameter \code{ga} is set to \code{NULL}.
+\value{For method \code{HIM} and if parameter \code{components} is set
+  to \code{TRUE} a named vector with 3 values is returned, respectively
+  the \emph{Hamming} distance, the \emph{Ipsen-Mikhailov} distance and
+  the \emph{HIM} distance.
   For method \code{ipsen} the "Ipsen-Mikhailov" distance is returned.
   For method \code{hamming} the "Hamming" distance is returned.
-
-  If a \code{list} object is provided a distance matrix is provided.
+  If a \code{list} object is provided as input a distance matrix is
+  returned.
   %%  ~Describe the value returned
   %%  If it is a LIST, use
   %%  \item{comp1 }{Description of 'comp1'}
@@ -103,15 +120,13 @@ netdist(x,\dots)
   %% ...
 }
 \references{
-  
   G. Jurman, R. Visintainer, S. Riccadonna, M. Filosi, C. Furlanello
   \emph{A glocal distance for network comparison
   arXiv 2012, arXiv:1201.2931}\cr
-  
-  %% ~put references to the literature/web site here ~
+%% ~put references to the literature/web site here ~
 }
 \author{
-  Michele Filosi
+  M. Filosi, S. Riccadonna
 }
 %% \note{
 %%   %%  ~~further notes~~
@@ -143,7 +158,9 @@ alist <- list(aa,bb)
 netdist(alist, d="HIM")
 
 ## Use multiple cores
-\dontrun{dd <- netdist(aa,bb,n.cores=2)}
+\dontrun{
+dd <- netdist(aa,bb,n.cores=4)
+}
 
 }
 % Add one or more standard keywords, see file 'KEYWORDS' in the
