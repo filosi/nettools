@@ -23,7 +23,7 @@ netdist.matrix <- function(x, h=NULL, d="HIM", ga=NULL, components=TRUE, ...){
   Call <- match.call()
   
   ##add a check so that an unexisting parameter cannot be passed
-  id.Call <- match( names(Call),c("x", "h", "d", "ga","components","n.cores","verbose"), nomatch=0)
+  id.Call <- match( names(Call),c("x", "h", "d", "ga","components","n.cores","verbose", "rho"), nomatch=0)
   if(sum(id.Call[-1]==0)==1){
     warning("The parameter '",names(Call)[which(id.Call==0)[2]],"' will be ignored",call.=FALSE)
   }
@@ -131,7 +131,7 @@ netdist.list <- function(x, d="HIM", ga=NULL, components=TRUE, ...){
   Call <- match.call()
   
   ## add a check so that an unexisting parameter cannot be passed
-  id.Call <- match( names(Call),c("x", "d", "ga","components", "n.cores", "verbose"), nomatch=0)
+  id.Call <- match( names(Call),c("x", "d", "ga","components", "n.cores", "verbose", "rho"), nomatch=0)
   if(sum(id.Call[-1]==0)==1){
     warning("The parameter '",names(Call)[which(id.Call==0)[2]],"' will be ignored",call.=FALSE)
   }
@@ -299,10 +299,10 @@ Lap <- function(x,...){
 
 ## Him distance
 ##----------------------------------------
-him <- function(object,ga=NULL, components=TRUE, ltag=FALSE, ...){
+him <- function(object,ga=NULL, components=TRUE, ltag=FALSE, rho=1, ...){
   ipd <- ipsen(object$LAP, ga, ...)
   had <- hamming(object$ADJ)
-  gloc <- sqrt(had**2/2+ipd**2/2)
+  gloc <- sqrt(1/(1+rho)) * sqrt(had**2+ rho*(ipd**2))
   if(components==TRUE){
     if (ltag){
       dist <- list(H=had,I=ipd,HIM=gloc)
