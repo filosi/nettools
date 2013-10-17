@@ -10,7 +10,7 @@ netSI <- function(x,indicator="all", d='HIM', adj.method='cor',
   id.Call <- match( names(Call),c("x", "indicator", "d", "adj.method" , 
                                   "method","k","h","n.cores","save","verbose",
                                   "FDR","P","measure","alpha","C","DP","var.thr",
-                                  "components","n.nodes","ga","sseed"), nomatch=0)
+                                  "components","n.nodes","ga","sseed","rho"), nomatch=0)
   if(sum(id.Call[-1]==0)==1){
     warning("The parameter '",names(Call)[which(id.Call==0)[2]],"' will be ignored",call.=FALSE)
   }
@@ -27,9 +27,10 @@ netSI <- function(x,indicator="all", d='HIM', adj.method='cor',
   if(id.Call[1]==0){
     stop("A dataset must be provided",call.=FALSE)
   }else{
-    x <- eval(Call$x)
+    ## m <- eval(temp, parent.frame())
+    ## x <- eval(Call$x)
     if(!(is.matrix(x) | is.data.frame(x))){
-      stop("d must be a matrix or a data frame", call.=FALSE)
+      stop("x must be a matrix or a data frame", call.=FALSE)
     }
   }
   
@@ -106,8 +107,8 @@ netSI <- function(x,indicator="all", d='HIM', adj.method='cor',
     }
   }
 
-  ## n.cores parameter 
-  n.cores <- eval(Call$n.cores)
+  ## n.cores parameter
+  ## n.cores <- eval(Call$n.cores)
 
   ## Check availability of cores, otherwise set a default
   if(is.null(n.cores)){
@@ -170,7 +171,7 @@ netSI <- function(x,indicator="all", d='HIM', adj.method='cor',
   netsi <- list()
   if(indicator==1L | indicator==5L){
     if(verbose==TRUE) cat("computing stability indicator S...\n")
-    netsi[["S"]] <- netsiS(ADJall, ADJcv, d=d, cl=cl, ga=ga)
+    netsi[["S"]] <- netsiS(ADJall, ADJcv, d=d, cl=cl, ga=ga, ...)
   }
   if(indicator==3L | indicator==5L){
     if(verbose==TRUE) cat("computing stability indicator Sw...\n")
@@ -185,7 +186,7 @@ netSI <- function(x,indicator="all", d='HIM', adj.method='cor',
 
   if(indicator==2L | indicator==5L){
     if(verbose==TRUE) cat("computing stability indicator SI...\n")
-    netsi[["SI"]] <- netsiSI(ADJcv, d=d, ga=ga, n.cores=n.cores)
+    netsi[["SI"]] <- netsiSI(ADJcv, d=d, ga=ga, n.cores=n.cores, ...)
   }
 
   
