@@ -106,10 +106,10 @@ netSI <- function(x,indicator="all", d='HIM', adj.method='cor',
       components <- FALSE
     }
   }
-
+  
   ## n.cores parameter
   ## n.cores <- eval(Call$n.cores)
-
+  
   ## Check availability of cores, otherwise set a default
   if(is.null(n.cores)){
     if(detectCores()>=2){
@@ -141,7 +141,7 @@ netSI <- function(x,indicator="all", d='HIM', adj.method='cor',
   ## Get the resampling indexes
   if(verbose==TRUE) cat("computing resampling...\n")
   idxs <-  resamplingIDX(ddim,method=method, k=k, h=h)
-  
+
   ## length of the list for optimization purposes
   ADJcv <- vector("list",length=length(idxs))
   
@@ -163,7 +163,7 @@ netSI <- function(x,indicator="all", d='HIM', adj.method='cor',
       return(tmp)
     },DAT=x,method=adj.method,...)
   }
-
+  
   ##computing the adjacency matrix on the whole dataset
   ADJall <- mat2adj(x=x,method=adj.method,...)
   
@@ -215,7 +215,6 @@ netsiS <- function(g, H, d, cl, ga, ...){
   DIST <- c("HIM","IM","H")
   type <- pmatch(d,DIST)
   type <- DIST[type]
-  
   if(!is.null(cl)){
     s <- parLapply(cl=cl,X=H,fun=function(x,g,type,ga, ...){
       res <- nettools:::netdist(g,x,d=type, ga=ga, n.cores=1, ...)[[type]]
