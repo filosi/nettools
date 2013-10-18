@@ -1,8 +1,6 @@
 \encoding{UTF-8}
 \name{mat2adj}
-\docType{methods}
 \alias{mat2adj}
-\alias{mat2adj,ANY-method}
 \alias{mat2adj,data.frame-method}
 \alias{mat2adj,matrix-method}
 \alias{mat2adj.matrix}
@@ -35,19 +33,20 @@ mat2adj(x,\dots)
 
 \method{mat2adj}{matrix}(x,method='cor', FDR=1e-3, P=6, measure=NULL,
 alpha=0.6, C=15,DP=1, \dots)
+
 %% \S4method{mat2adj}{matrix}(x,method='cor', FDR=1e-3, P=6,
 %% measure=NULL, alpha=0.6, C=15,DP=1, \dots)
 
 }
 
-\section{Methods}{
-  \describe{
-    \item{\code{signature(object = "ANY")}}{Generic function}
-    \item{\code{signature(object = "data.frame")}}{Function for
-      data.frame}
-    \item{\code{signature(object = "matrix")}}{Function for matrix}
-  }
-}
+%% \section{Methods}{
+%%   \describe{
+%%     \item{\code{signature(object = "ANY")}}{Generic function}
+%%     \item{\code{signature(object = "data.frame")}}{Function for
+%%       data.frame}
+%%     \item{\code{signature(object = "matrix")}}{Function for matrix}
+%%   }
+%% }
 
 \arguments{
   \item{x}{ a matrix or data.frame of numerical values of N rows and P columns}
