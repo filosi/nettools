@@ -236,8 +236,6 @@ netsiSI <- function(H, d, ga, ...){
   type <- pmatch(d,DIST)
   type <- DIST[type]
 
-  ## com <- combn(1:length(H), 2)
-  
   s <- netdist(H,d=type,ga=ga, components=FALSE, ...)
   
   return(as.numeric(s))
