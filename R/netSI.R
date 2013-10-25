@@ -239,20 +239,8 @@ netsiSI <- function(H, d, ga, ...){
   ## com <- combn(1:length(H), 2)
   
   s <- netdist(H,d=type,ga=ga, ...)
-  
-  ## if(!is.null(cl)){
-  ##   ## Parallel computation
-  ##   s <- parLapply(cl=cl,X=1:ncol(com),fun=function(x,com,H,type, ga){
-  ##     res <- nettools:::netdist(H[[com[1,x]]],H[[com[2,x]]],d=type,ga)[[type]]
-  ##     return(res)
-  ##   },com=com,H=H,type=type, ga=ga)
-  ## }else{ ## One core computation
-  ##   s <- lapply(X=1:ncol(com),FUN=function(x,com,H,type, ga){
-  ##     res <- netdist(H[[com[1,x]]],H[[com[2,x]]],d=type, ga)[[type]]
-  ##     return(res)
-  ##   },com=com,H=H,type=type, ga=ga)
-  ## }
-  return(unlist(s))
+
+  return(as.numeric(s))
 }
 
 ## Degree stability
