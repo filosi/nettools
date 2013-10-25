@@ -238,8 +238,8 @@ netsiSI <- function(H, d, ga, ...){
 
   ## com <- combn(1:length(H), 2)
   
-  s <- netdist(H,d=type,ga=ga, ...)
-
+  s <- netdist(H,d=type,ga=ga, components=FALSE, ...)
+  
   return(as.numeric(s))
 }
 
