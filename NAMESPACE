@@ -1,4 +1,8 @@
 ## Import useful function from packages
+
+## methods
+import(methods)
+
 ## WGCNA: bicor, TOM, WGCNA
 importFrom("WGCNA",unsignedAdjacency,bicor,TOMsimilarityFromExpr)
 
