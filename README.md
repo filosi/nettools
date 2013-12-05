@@ -1,9 +1,18 @@
 nettools
-========
 
 R package for network analysis
 
 branches:
 master 		-> version freeze to 1.2
-beta 		-> development version for package release
 dev 		-> development version for adding network stability functions 
+## Move to the download directory
+cd ~/Dowloads
+
+## Unpack it with:
+unzip nettools-master.zip
+
+## Build the binary for R
+R CMD build nettools-master
+
+## Install it using (change the version according to the latest version):
+R CMD INSTALL nettools_0.8.tar.gz

@@ -6,7 +6,7 @@ mat2adj <- function(x,...) UseMethod("mat2adj")
 mat2adj.data.frame <- function(x,...){
   x <- apply(x,2,as.numeric)
   x <- as.matrix(x)
-  UseMethod("mat2adj", x)
+  mat2adj.matrix(x,...)
 }
 setMethod("mat2adj","data.frame",mat2adj.data.frame)
 
@@ -15,12 +15,12 @@ mat2adj.matrix <- function(x,method='cor',FDR=1e-3,P=6,measure=NULL,alpha=0.6,C=
     METHODS <- c('cor','WGCNA','WGCNAFDR','bicor',
                  'bicorFDR','TOM','ARACNE','CLR',
                  'MINE','MINEFDR','DTWMIC')
-    MEASURE <- c('MIC','MAS','MCN','MEV','MIC-R2')
+    MEASURE <- c('MIC','MAS','MCN','MEV','MICR2')
     method <- pmatch(method, METHODS)
     if(is.na(method))
-        stop("invalid distance method")
+        stop("invalid distance method", call. = FALSE)
     if(method == -1)
-        stop("ambiguous distance method")
+        stop("ambiguous distance method", call. = FALSE)
     if(method == 3L)
       if (P > 1){
         P <- 1
@@ -40,8 +40,17 @@ mat2adj.matrix <- function(x,method='cor',FDR=1e-3,P=6,measure=NULL,alpha=0.6,C=
       }
     }
     
-    myfun <- paste('Adj',METHODS[method],sep='')
-    tmp <- do.call(myfun,list(x=x,FDR=FDR,P=P,measure=MEASURE[measure],alpha=alpha,C=C,DP=DP,...))
-    return(tmp)
+    tmp <- checkvar(x,...)
+    if(!is.null(tmp)){
+     warning(paste("The variables indexed as",paste(tmp,collapse=", "), 
+                "have nearly zero variance: check the data matrix provided or change the tollerance parameter"),
+          call.=FALSE) 
+     return(NULL)
+    }else{
+      myfun <- paste('Adj',METHODS[method],sep='')
+      tmp <- do.call(myfun,list(x=x,FDR=FDR,P=P,measure=MEASURE[measure],alpha=alpha,C=C,DP=DP,...))
+      return(tmp)
+    }
 }
 setMethod("mat2adj","matrix",mat2adj.matrix)
+>>>>>>> dev
