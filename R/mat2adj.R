@@ -53,4 +53,3 @@ mat2adj.matrix <- function(x,method='cor',FDR=1e-3,P=6,measure=NULL,alpha=0.6,C=
     }
 }
 setMethod("mat2adj","matrix",mat2adj.matrix)
->>>>>>> dev
