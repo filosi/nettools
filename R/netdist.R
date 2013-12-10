@@ -280,12 +280,17 @@ setMethod("g2adj","igraph",g2adj.igraph)
 
 g2adj.matrix <- function(x,...){
   ll <- transfmat(x)
-  
   return(ll)
 }
 setMethod("g2adj","matrix",g2adj.matrix)
 setMethod("g2adj","Matrix",g2adj.matrix)
 
+g2adj.data.frame <- function(x, ...){
+  x <- apply(x,2,as.numeric)
+  ll <- transfmat(x)
+  return(ll)
+}
+setMethod("g2adj","data.frame",g2adj.data.frame)
 
 ## Generical Laplacian
 ##----------------------------------------
