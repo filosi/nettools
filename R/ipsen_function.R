@@ -88,9 +88,6 @@ ipsen <- function(object, ga=NULL, ...){
     dist[t(idx)] <- dist[t(idx)[,c(2,1)]] <- tmpdist
     diag(dist) <- 0
   }
-
-
-
   return(dist)
 }
 

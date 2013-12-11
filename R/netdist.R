@@ -311,9 +311,11 @@ him <- function(object,ga=NULL, components=TRUE, ltag=FALSE, rho=1, ...){
   ipd <- ipsen(object$LAP, ga, ...)
   had <- hamming(object$ADJ)
   gloc <- sqrt(1/(1+rho)) * sqrt(had**2+ rho*(ipd**2))
+  if (length(gloc)==1)
+    names(gloc) <- "HIM"
   if(components==TRUE){
     if (ltag){
-      dist <- list(H=had,I=ipd,HIM=gloc)
+      dist <- list(H=had,IM=ipd,HIM=gloc)
     } else {
       dist <- c(had, ipd, gloc)
       names(dist) <- c("H","IM","HIM")

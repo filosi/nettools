@@ -16,7 +16,7 @@ badj <- mat2adj(b, method="MINE")
 ## Compute the him distance between the 2 matrix
 
 ## Him distance
-netdist(aadj,badj,method="HIM")
+netdist(aadj,badj,method="HIM",n.cores=1,components=FALSE)
 ##
 netdist(aadj,badj,method="HIM", components=FALSE)
 
