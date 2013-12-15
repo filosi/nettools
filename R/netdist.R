@@ -104,10 +104,13 @@ netdist.matrix <- function(x, h=NULL, d="HIM", ga=NULL, components=TRUE, ...){
   return(dd)
 }
 netdist.Matrix <- netdist.matrix
+netdist.igraph <- netdist.matrix
 
 setMethod("netdist","matrix", netdist.matrix)
 setMethod("netdist","Matrix", netdist.matrix)
 setMethod("netdist","data.frame", netdist.matrix)
+setMethod("netdist","igraph",netdist.matrix)
+
 
 ## Method netdist for list of adjacency matrices
 ##--------------------------------------------------
