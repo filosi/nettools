@@ -211,25 +211,33 @@ netdist.list <- function(x, d="HIM", ga=NULL, components=TRUE, ...){
     mylap <- list(L=laplist,N=N, tag=tag)
     ## mylap <- list(L1=Lap(g1$adj),L2=Lap(g2$adj),N=g1$N, tag=g1$tag)
     dd <- ipsen(mylap,ga=ga, ...)
+    dd <- list(IM=dd)
     ## if (!is.null(names(x)))
     ##   colnames(dd) <- rownames(dd) <- names(x)
   }
   if (myadj$d=="H"){
     dd <- hamming(myadj)
+    dd <- list(H=dd)
     ## if (!is.null(names(x)))
     ##   colnames(dd) <- rownames(dd) <- names(x)
   }
   
   ## Give names to the matrices
   if (!is.null(names(x))){
+    ## Create a list form the matrix
     if (is.list(dd)){
       dd <- lapply(dd,function(y,x){colnames(y) <- rownames(y) <- names(x)
                                     return(y)}, x=x)
     } else {
       colnames(dd) <- rownames(dd) <- names(x)
+      dd <- list(HIM=dd)
     }
-  }
-  
+  } else {
+    ## Return names in the list if HIM with no components has been set
+    if (is.matrix(dd) && d==1L){
+      dd <- list(HIM=dd)
+    } 
+  } 
   return(dd)
 }
 setMethod("netdist", "list", netdist.list)

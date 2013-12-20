@@ -235,8 +235,8 @@ netsiSI <- function(H, d, ga, ...){
   DIST <- c("HIM","IM","H")
   type <- pmatch(d,DIST)
   type <- DIST[type]
-
-  s <- netdist(H,d=type,ga=ga, components=FALSE, ...)
+  
+  s <- netdist(H,d=type,ga=ga, components=FALSE, ...)[[1]]
   
   return(as.numeric(s))
 }
