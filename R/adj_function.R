@@ -81,13 +81,13 @@ AdjWGCNAFDR <- function(x,FDR,P,...){
     }
   }
   adjfinal <- matrix(0,ncol=dim(Adj)[2],nrow=dim(Adj)[1],
-                       dimnames=list(rownames(Adj),colnames(Adj)))
-    if(dim(idx)[1]>0){
-        for (i in seq(dim(idx)[1])){
-            adjfinal[idx[i,1],idx[i,2]] <- Adj[idx[i,1],idx[i,2]]
-        }
+                     dimnames=list(rownames(Adj),colnames(Adj)))
+  if(dim(idx)[1]>0){
+    for (i in seq(dim(idx)[1])){
+      adjfinal[idx[i,1],idx[i,2]] <- Adj[idx[i,1],idx[i,2]]
     }
-    return(adjfinal)
+  }
+  return(adjfinal)
 }
 
 ## Bicor
