@@ -96,78 +96,92 @@ alpha=0.6, C=15,DP=1, \dots)
 	  Regulatory Networks, see also package \pkg{minet}}
 	\item{\code{CLR}}{Context Likelihood of Relatedness see also
 	  package \pkg{minet}}
-	\item{\code{WGCNA}}{WeiGhted Correlation Network Analsysis. It is
-	  based on a correlation measure. For further details see
-	  the documentation of \pkg{WGCNA} package. The method accept
-	  parameter \code{P} which is set to 6 by default}
-	\item{\code{bicor}}{Biweighted Correlation method. It uses a
-	  biweighted correlation as described in \link[WGCNA]{bicor}
-	  package}
-	\item{\code{TOM}}{Topological Overlap Measure inference method. For
+	\item{\code{WGCNA}}{WeiGhted Correlation
+	  Network Analsysis. It is based on a correlation measure. For
 	  further details see the documentation of \pkg{WGCNA}
-	  package. As for \code{WGCNA} the parameter \code{P} can be
-	  set(6 by default).}
+	  package. The method accept parameter \code{P} which is set to
+	  6 by default}
+	\item{\code{bicor}}{Biweighted Correlation
+	  method. It uses a biweighted correlation as described in
+	  \link[WGCNA]{bicor} package}
+	\item{\code{TOM}}{Topological
+	  Overlap Measure inference method. For further details see the
+	  documentation of \pkg{WGCNA} package. As for \code{WGCNA} the
+	  parameter \code{P} can be set(6 by default).}
 	\item{\code{MINE}}{Maximum Information-based Non-parametric
-	  Exploration. This method uses the \pkg{minerva} implementation of
-	  the original measure. For this methods different measures are
-	  available. See \pkg{minerva} for further information.
-	  To clarify the main MINE family statistics let \eqn{D={(x,y)}} be the
-	  set of \emph{n} ordered pairs of elements of \code{x} and
-	  \code{y}. The data space is partitioned in an \emph{X-by-Y} grid,
-	  grouping the \emph{x} and \emph{y} values in \emph{X} and \emph{Y}
-	  bins respectively.\cr
-	  The value of \code{alpha} (default 0.6) has been
-	  empirically chosen by the authors of the original paper.\eqn{alpha} is
-	  the exponent of the search-grid size \eqn{B(n)=n^{\alpha}}. It is
-	  worthwhile noting that \code{alpha} and \code{C} are defined to obtain
-	  an heuristic approximation in a reasonable amount of time. In case of
-	  small sample size (\emph{n}) it is preferable to increase \code{alpha}
-	  to 1 to obtain a solution closer to the theoretical one.\cr
-	  \code{C} determines the number of starting point of the
-	  X-by-Y search-grid. When trying to partition the x-axis into X
-	  columns, the algorithm will start with at most C x X clumps. Default
-	  value is 15.\cr
-	  The \strong{Maximal Information Coefficient (MIC)} is defined as
-	  \deqn{\textrm{MIC}(D)=\max_{XY<B(n)} M(D)_{X,Y} = \max_{XY<B(n)}
-	    \frac{I^*(D,X,Y)}{log(\min{X,Y})},}{MIC(D)=max_{XY<B(n)}
-	    M(D)_{X,Y}=max_{XY<B(n)} I*(D,X,Y)/log(min(X,Y)),} where
+	  Exploration. This method uses the \pkg{minerva} implementation
+	  of the original measure. For this methods different measures
+	  are available. See \pkg{minerva} for further information.  To
+	  clarify the main MINE family statistics let \eqn{D={(x,y)}} be
+	  the set of \emph{n} ordered pairs of elements of \code{x} and
+	  \code{y}. The data space is partitioned in an \emph{X-by-Y}
+	  grid, grouping the \emph{x} and \emph{y} values in \emph{X}
+	  and \emph{Y} bins respectively.\cr The value of \code{alpha}
+	  (default 0.6) has been empirically chosen by the authors of
+	  the original paper.\eqn{alpha} is the exponent of the
+	  search-grid size \eqn{B(n)=n^{\alpha}}. It is worthwhile
+	  noting that \code{alpha} and \code{C} are defined to obtain an
+	  heuristic approximation in a reasonable amount of time. In
+	  case of small sample size (\emph{n}) it is preferable to
+	  increase \code{alpha} to 1 to obtain a solution closer to the
+	  theoretical one.\cr \code{C} determines the number of starting
+	  point of the X-by-Y search-grid. When trying to partition the
+	  x-axis into X columns, the algorithm will start with at most C
+	  x X clumps. Default value is 15.\cr The \strong{Maximal
+	  Information Coefficient (MIC)} is defined as
+	  \deqn{\textrm{MIC}(D)=\max_{XY<B(n)} M(D)_{X,Y} =
+	  \max_{XY<B(n)}
+	  \frac{I^*(D,X,Y)}{log(\min{X,Y})},}{MIC(D)=max_{XY<B(n)}
+	  M(D)_{X,Y}=max_{XY<B(n)} I*(D,X,Y)/log(min(X,Y)),} where
 	  \eqn{B(n)=n^{\alpha}} is the search-grid size,
-	  \eqn{I^*(D,X,Y)}{I*(D,X,Y)} is the maximum mutual information over all
-	  grids \emph{X-by-Y}, of the distribution induced by D on a grid having
-	  \emph{X} and \emph{Y} bins (where the probability mass on a cell of
-	  the grid is the fraction of points of D falling in that cell).  The
-	  other statistics of the MINE family are derived from the mutual
-	  information matrix achieved by an \emph{X-by-Y} grid on D.
-	  The \strong{Maximum Asymmetry Score (MAS)} is defined as
-	  \deqn{\textrm{MAS}(D) = \max_{XY<B(n)} |M(D)_{X,Y} -
-	    M(D)_{Y,X}|.}{MAS(D) = max_{XY<B(n)} |M(D)_{X,Y} - M(D)_{Y,X}|.}
-	  The \strong{Maximum Edge Value (MEV)} is defined as
-	  \deqn{\textrm{MEV}(D) = \max_{XY<B(n)} \{M(D)_{X,Y}:
-	    X=2~or~Y=2\}.}{MEV(D) = max_{XY<B(n)} {M(D)_{X,Y}: X=2 or Y=2}.}
-	  The \strong{Minimum Cell Number (MCN)} is defined as
-	  \deqn{\textrm{MCN}(D,\epsilon) = \min_{XY<B(n)} \{\log(XY): M(D)_{X,Y}
-	    \geq (1-\epsilon)MIC(D)\}.}{MCN(D,\epsilon) = min_{XY<B(n)} {log(XY):
-	      M(D)_{X,Y} >= (1-\epsilon)MIC(D)}.}  More details are provided in the
-	  supplementary material (SOM) of the original paper.}
-	\item{\code{MINEFDR}}{This calls an FDR corrected version of the
-	  standard MINE method.  See the description for the \code{MINE}
-	  method. Parameter \code{FDR=1e-3} (default) can
-	  be set.}
-	\item{\code{bicorFDR}}{This calls an FDR corrected version of the
-	  \code{bicor} method. See the description for the \code{bicor}.
-	  Parameter \code{FDR=1e-3} (default) can
-	  be set.}
-	\item{\code{WGCNAFDR}}{This calls an FDR corrected version of the
-	  \code{WGCNA} method. Parameter \code{P} cannot be set for this
-	  method. Parameter \code{FDR=1e-3} (default) can
-	  be set.}
-	\item{\code{DTWMIC}}{This method uses Dynamic Time Warping
-	  transformation coupled witht the MIC statistic from the MINE
-	  family. See Details for further information. Additional
-	  parameters can be set with this method:
-	}
+	  \eqn{I^*(D,X,Y)}{I*(D,X,Y)} is the maximum mutual information
+	  over all grids \emph{X-by-Y}, of the distribution induced by D
+	  on a grid having \emph{X} and \emph{Y} bins (where the
+	  probability mass on a cell of the grid is the fraction of
+	  points of D falling in that cell).  The other statistics of
+	  the MINE family are derived from the mutual information matrix
+	  achieved by an \emph{X-by-Y} grid on D.  The \strong{Maximum
+	  Asymmetry Score (MAS)} is defined as \deqn{\textrm{MAS}(D) =
+	  \max_{XY<B(n)} |M(D)_{X,Y} - M(D)_{Y,X}|.}{MAS(D) =
+	  max_{XY<B(n)} |M(D)_{X,Y} - M(D)_{Y,X}|.}  The \strong{Maximum
+	  Edge Value (MEV)} is defined as \deqn{\textrm{MEV}(D) =
+	  \max_{XY<B(n)} \{M(D)_{X,Y}: X=2~or~Y=2\}.}{MEV(D) =
+	  max_{XY<B(n)} {M(D)_{X,Y}: X=2 or Y=2}.}  The \strong{Minimum
+	  Cell Number (MCN)} is defined as
+	  \deqn{\textrm{MCN}(D,\epsilon) = \min_{XY<B(n)} \{\log(XY):
+	  M(D)_{X,Y} \geq (1-\epsilon)MIC(D)\}.}{MCN(D,\epsilon) =
+	  min_{XY<B(n)} {log(XY): M(D)_{X,Y} >= (1-\epsilon)MIC(D)}.}
+	  More details are provided in the supplementary material (SOM)
+	  of the original paper.}
+	\item{\code{MINEFDR}}{This calls an
+	  FDR corrected version of the standard MINE method.  See the
+	  description for the \code{MINE} method. Parameter
+	  \code{FDR=1e-3} (default) can be set.}
+	\item{\code{bicorFDR}}{This calls an FDR corrected version of
+	  the \code{bicor} method. See the description for the
+	  \code{bicor}.  Parameter \code{FDR=1e-3} (default) can be
+	  set.}
+	\item{\code{WGCNAFDR}}{This calls an FDR corrected
+	  version of the \code{WGCNA} method. Parameter \code{P} cannot
+	  be set for this method. Parameter \code{FDR=1e-3} (default)
+	  can be set.}
+	\item{\code{DTWMIC}}{This method uses Dynamic
+	  Time Warping transformation coupled witht the MIC statistic
+	  from the MINE family. See Details for further
+	  information. Additional parameters can be set with this
+	  method: }
+	\item{\dots}{
+	  \describe{
+	    \item{\code{tol}}{1e-5 (default), a numeric value which
+	  controls the tolerance on the variable variance. In particular
+	  this parameter is passed to a function which controls the
+	  variance of each feature. The function returns the indexes of
+	  the features with variance <\code{tol}. Indexes refers to
+	  1-based column numbers of the original dataset.}
       }
     }
+  }
+}
     
     \value{A P by P symmetric adjacency matrix with the diagonal set to
       0. Self loop and direction of the edges are not taking into

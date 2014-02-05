@@ -120,9 +120,8 @@ netdist(x,\dots)
   %% ...
 }
 \references{
-  G. Jurman, R. Visintainer, S. Riccadonna, M. Filosi, C. Furlanello
-  \emph{A glocal distance for network comparison
-  arXiv 2012, arXiv:1201.2931}\cr
+  G. Jurman, R. Visintainer, M. Filosi, S. Riccadonna, C. Furlanello
+  \emph{The HIM glocal metric and kernel for network comparison and classification arXiv 2013, arXiv:1201.2931v3}\cr
 %% ~put references to the literature/web site here ~
 }
 \author{
