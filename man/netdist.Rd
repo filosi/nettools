@@ -16,8 +16,8 @@
 %- Also NEED an '\alias' for EACH other topic documented here.
 \title{Distances between network}
 \description{
-  Function that computes the distance between two adjacency matrix given as
-  matrix, igraph objects or list of matrices.
+  This function computes the distance between two adjacency matrix given
+  as matrices or igraph objects.
 }
 
 %- maybe also 'usage' for other objects documented here.
@@ -32,11 +32,11 @@ netdist(x,\dots)
 
 }
 \arguments{
-  \item{x}{Adjacency matrix, igraph object or list of adjacency matrices}
-  \item{h}{Adjacency matrix or igraph object. Only when \code{x} is a matrix object. }
-  \item{d}{\code{HIM}
-    (default), or character string containing a valid method
-    between the follwing: \code{"IM"}, \code{"ipsen"}, \code{"Ipsen"}, 
+  \item{x}{Adjacency matrix, igraph object or list of adjacency
+    matrices/igraph objects}
+  \item{h}{Adjacency matrix or igraph object. Only when \code{x} is a matrix object.}
+  \item{d}{\code{HIM} (default), character string containing a valid method.
+    Accepted values are: \code{"IM"}, \code{"ipsen"}, \code{"Ipsen"}, 
     \code{"IpsenMikhailov"}, or \code{"Ipsen-Mikhailov"}, for Ipsen-Mikhailov distance
     and \code{"H"}, \code{"hamming"}, or \code{"Hamming"} for Hamming distance.}
   \item{ga}{\code{NULL} (default), a numeric value for the gamma parameter used

@@ -25,16 +25,15 @@ netdist.matrix <- function(x, h=NULL, d="HIM", ga=NULL, components=TRUE, ...){
   ##add a check so that an unexisting parameter cannot be passed
   id.Call <- match( names(Call),c("x", "h", "d", "ga","components","n.cores","verbose", "rho"), nomatch=0)
   if(sum(id.Call[-1]==0)==1){
-    warning("The parameter '",names(Call)[which(id.Call==0)[2]],"' will be ignored",call.=FALSE)
+    warning("For netdist function the parameter '",names(Call)[which(id.Call==0)[2]],"' will be ignored",call.=FALSE)
   }
   if(sum(id.Call[-1]==0)>1){
-    msg <- "The following parameters will be ignored:\n"
+    msg <- "For netdist function, the following parameters will be ignored:\n"
     for(i in which(id.Call==0)[-1]){
       msg <- paste(msg,"'",names(Call)[i],"'\n",sep="")
     }
     warning(msg,call.=FALSE)
   }
-  
   if(is.na(d))
     stop("invalid distance")
   if(d == -1)
@@ -57,8 +56,14 @@ netdist.matrix <- function(x, h=NULL, d="HIM", ga=NULL, components=TRUE, ...){
       warning("components parameter will be ignored", call. = FALSE)
     }
   }
-  
+  ## if(!is.null(Call$ga)){
+  ##   ga <- eval(Call$ga)
+  ## } else {
+  ##   ga <- NULL
+  ## }
+  ## print(ga)
   ##check on ga passing through ipsen function
+
   if(is.null(ga)){
     if(d==2){
       warning("The ga parameter will be automatically defined.", call.=FALSE)
