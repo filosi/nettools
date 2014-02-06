@@ -11,7 +11,7 @@ based on network distances.
 }
 \usage{
 netSI(x,indicator="all", d='HIM', adj.method='cor',
-method="montecarlo", k=3, h=20, n.cores, save=TRUE, verbose=TRUE, ...)
+method="montecarlo", k=3, h=20, n.cores, save=FALSE, verbose=TRUE, ...)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
@@ -146,13 +146,13 @@ method="montecarlo", k=3, h=20, n.cores, save=TRUE, verbose=TRUE, ...)
 %% ~Make other sections like Warning with \section{Warning }{....} ~
 
 \seealso{
-  \code{\link{netdist}}, \code{\link{mat2adj}}, \link{\code{WGCNA}}, \link{\code{minet}}
+  \code{\link{netdist}}, \code{\link{mat2adj}}, \code{\link{WGCNA}}, \code{\link{minet}}
 %% ~~objects to See Also as \code{\link{help}}, ~~~
 }
 \examples{
 myrawdata <- matrix(rnorm(500),ncol=20)
 
-sstab <- netSI(a, d="HIM", n.cores=1, save=FALSE)
+sstab <- netSI(myrawdata, d="HIM", n.cores=1, save=FALSE)
 sstab$S
 sstab$SI
 }
