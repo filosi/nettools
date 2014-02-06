@@ -1,5 +1,5 @@
 netSI <- function(x,indicator="all", d='HIM', adj.method='cor', 
-                  method="montecarlo", k=3, h=20, n.cores=NULL,save=TRUE,
+                  method="montecarlo", k=3, h=20, n.cores=NULL,save=FALSE,
                   verbose=TRUE, ...){
 
   ## Get the function call parameters
@@ -189,21 +189,20 @@ netSI <- function(x,indicator="all", d='HIM', adj.method='cor',
     netsi[["SI"]] <- netsiSI(ADJcv, d=d, n.cores=n.cores, ...)
   }
 
-  
+  results <- list("S"=mean(netsi[["S"]]),
+                  "SI"=mean(netsi[["SI"]]),
+                  "Sw"=apply(netsi[["Sw"]], 1,compute.indicator),
+                  "Sd"=apply(netsi[["Sd"]], 2,compute.indicator)
+                  )
+    
   if(save==TRUE){
-    results <- list("call"=Call,
-                    "ADJ"=ADJall,
-                    "ADJlist"=ADJcv,
-                    "S"=netsi[["S"]],
-                    "SI"=netsi[["SI"]],
-                    "Sw"=netsi[["Sw"]],
-                    "Sd"=netsi[["Sd"]])
-  } else {
-    results <- list("S"=mean(netsi[["S"]]),
-                    "SI"=mean(netsi[["SI"]]),
-                    "Sw"=apply(netsi[["Sw"]], 1, mean, na.rm=TRUE),
-                    "Sd"=apply(netsi[["Sd"]], 2, mean, na.rm=TRUE)
-                    )
+    results$call <- Call
+    results$ADJ <- ADJall
+    results$ADJlist <- ADJcv
+    results$S_boot <- netsi[["S"]]
+    results$SI_boot <- netsi[["SI"]]
+    results$Sw_boot <- netsi[["Sw"]]
+    results$Sd_boot <- netsi[["Sd"]]
   }
   
   return(results)
@@ -241,8 +240,11 @@ netsiSI <- function(H, d, ...){
 
 ## Degree stability
 netsiSd <- function(H,cl){
-  if (length(H))
-    n <- ncol(H[[1]]) else stop("No adjacency matrix computed",call.=FALSE)
+  if (length(H)){
+    n <- ncol(H[[1]])
+  } else {
+    stop("No adjacency matrix computed",call.=FALSE)
+  }
   
   if (!is.null(cl)){
     ## Parallel computation
@@ -255,7 +257,7 @@ netsiSd <- function(H,cl){
   return(dd)
 }
 
-## Edges stability
+## Edge stability
 netsiSw <- function(H,cl){
   if (length(H))
     n <- nrow(H[[1]]) else stop("List of adjacency matrices do not exist")
@@ -335,4 +337,16 @@ resamplingIDX <- function(N,method="montecarlo", k=3, h=20){
   
   ## return a list with indexes
   return(take)
+}
+
+compute.indicator <- function(x){
+  ##  Compute the indicator value as Range/Mean over resamplings
+  tmp <- range(x)
+  mm <- mean(x, na.rm=TRUE)
+  if (all.equal(mm,0)==TRUE){
+    rr <- NA
+  } else {
+    rr <- (tmp[2] - tmp[1])/mm
+  }
+  return(rr)
 }
