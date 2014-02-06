@@ -25,16 +25,15 @@ netdist.matrix <- function(x, h=NULL, d="HIM", ga=NULL, components=TRUE, ...){
   ##add a check so that an unexisting parameter cannot be passed
   id.Call <- match( names(Call),c("x", "h", "d", "ga","components","n.cores","verbose", "rho"), nomatch=0)
   if(sum(id.Call[-1]==0)==1){
-    warning("The parameter '",names(Call)[which(id.Call==0)[2]],"' will be ignored",call.=FALSE)
+    warning("For netdist function the parameter '",names(Call)[which(id.Call==0)[2]],"' will be ignored",call.=FALSE)
   }
   if(sum(id.Call[-1]==0)>1){
-    msg <- "The following parameters will be ignored:\n"
+    msg <- "For netdist function, the following parameters will be ignored:\n"
     for(i in which(id.Call==0)[-1]){
       msg <- paste(msg,"'",names(Call)[i],"'\n",sep="")
     }
     warning(msg,call.=FALSE)
   }
-  
   if(is.na(d))
     stop("invalid distance")
   if(d == -1)
@@ -57,8 +56,14 @@ netdist.matrix <- function(x, h=NULL, d="HIM", ga=NULL, components=TRUE, ...){
       warning("components parameter will be ignored", call. = FALSE)
     }
   }
-  
+  ## if(!is.null(Call$ga)){
+  ##   ga <- eval(Call$ga)
+  ## } else {
+  ##   ga <- NULL
+  ## }
+  ## print(ga)
   ##check on ga passing through ipsen function
+
   if(is.null(ga)){
     if(d==2){
       warning("The ga parameter will be automatically defined.", call.=FALSE)
@@ -104,10 +109,13 @@ netdist.matrix <- function(x, h=NULL, d="HIM", ga=NULL, components=TRUE, ...){
   return(dd)
 }
 netdist.Matrix <- netdist.matrix
+netdist.igraph <- netdist.matrix
 
 setMethod("netdist","matrix", netdist.matrix)
 setMethod("netdist","Matrix", netdist.matrix)
 setMethod("netdist","data.frame", netdist.matrix)
+setMethod("netdist","igraph",netdist.matrix)
+
 
 ## Method netdist for list of adjacency matrices
 ##--------------------------------------------------
@@ -208,25 +216,33 @@ netdist.list <- function(x, d="HIM", ga=NULL, components=TRUE, ...){
     mylap <- list(L=laplist,N=N, tag=tag)
     ## mylap <- list(L1=Lap(g1$adj),L2=Lap(g2$adj),N=g1$N, tag=g1$tag)
     dd <- ipsen(mylap,ga=ga, ...)
+    dd <- list(IM=dd)
     ## if (!is.null(names(x)))
     ##   colnames(dd) <- rownames(dd) <- names(x)
   }
   if (myadj$d=="H"){
     dd <- hamming(myadj)
+    dd <- list(H=dd)
     ## if (!is.null(names(x)))
     ##   colnames(dd) <- rownames(dd) <- names(x)
   }
   
   ## Give names to the matrices
   if (!is.null(names(x))){
+    ## Create a list form the matrix
     if (is.list(dd)){
       dd <- lapply(dd,function(y,x){colnames(y) <- rownames(y) <- names(x)
                                     return(y)}, x=x)
     } else {
       colnames(dd) <- rownames(dd) <- names(x)
+      dd <- list(HIM=dd)
     }
-  }
-  
+  } else {
+    ## Return names in the list if HIM with no components has been set
+    if (is.matrix(dd) && d==1L){
+      dd <- list(HIM=dd)
+    } 
+  } 
   return(dd)
 }
 setMethod("netdist", "list", netdist.list)
@@ -308,9 +324,11 @@ him <- function(object,ga=NULL, components=TRUE, ltag=FALSE, rho=1, ...){
   ipd <- ipsen(object$LAP, ga, ...)
   had <- hamming(object$ADJ)
   gloc <- sqrt(1/(1+rho)) * sqrt(had**2+ rho*(ipd**2))
+  if (length(gloc)==1)
+    names(gloc) <- "HIM"
   if(components==TRUE){
     if (ltag){
-      dist <- list(H=had,I=ipd,HIM=gloc)
+      dist <- list(H=had,IM=ipd,HIM=gloc)
     } else {
       dist <- c(had, ipd, gloc)
       names(dist) <- c("H","IM","HIM")

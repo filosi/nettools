@@ -12,10 +12,10 @@ dev 		-> development version for adding network stability functions merged into 
 cd ~/Dowloads
 
 ## Unpack it with:
-unzip nettools-master.zip
+unzip nettools-dev.zip
 
 ## Build the binary for R
-R CMD build nettools-master
+R CMD build nettools-dev
 
 ## Install it using (change the version according to the latest version):
-R CMD INSTALL nettools_0.9.4.tar.gz
+R CMD INSTALL nettools_0.9.5.tar.gz

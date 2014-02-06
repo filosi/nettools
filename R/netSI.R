@@ -1,12 +1,12 @@
 netSI <- function(x,indicator="all", d='HIM', adj.method='cor', 
-                  method="montecarlo", k=3, h=20, n.cores,save=TRUE,
+                  method="montecarlo", k=3, h=20, n.cores=NULL,save=FALSE,
                   verbose=TRUE, ...){
 
   ## Get the function call parameters
   ## NB the parameters should be evaluated with eval()
   Call <- match.call()
   
-#   #add a check so that an unexisting parameter cannot be passed
+  ##add a check so that an unexisting parameter cannot be passed
   id.Call <- match( names(Call),c("x", "indicator", "d", "adj.method" , 
                                   "method","k","h","n.cores","save","verbose",
                                   "FDR","P","measure","alpha","C","DP","var.thr",
@@ -89,11 +89,11 @@ netSI <- function(x,indicator="all", d='HIM', adj.method='cor',
   set.seed(sseed)
 
   ## Pass parameter gamma to netdist functions
-  if(!is.null(Call$ga)){
-    ga <- eval(Call$ga)
-  } else {
-    ga <- Call$ga}
-  
+  ## if(!is.null(Call$ga)){
+  ##   ga <- eval(Call$ga)
+  ## } else {
+  ##   ga <- Call$ga}
+
   ## Pass parameter components to netdist functions
   if(!is.null(Call$components)){
     components <- eval(Call$components)
@@ -157,7 +157,7 @@ netSI <- function(x,indicator="all", d='HIM', adj.method='cor',
     },DAT=x,method=adj.method,...)
   } else {
     ## One core computation
-    ADJcv <- lapply(X=idxs,FUN=function(x,DAT,method,...){
+    ADJcv <- lapply(X=idxs,FUN=function(x,DAT,method, ...){
       ss <- DAT[x,]
       tmp <- mat2adj(ss, method=method, ...)
       return(tmp)
@@ -171,7 +171,7 @@ netSI <- function(x,indicator="all", d='HIM', adj.method='cor',
   netsi <- list()
   if(indicator==1L | indicator==5L){
     if(verbose==TRUE) cat("computing stability indicator S...\n")
-    netsi[["S"]] <- netsiS(ADJall, ADJcv, d=d, cl=cl, ga=ga, ...)
+    netsi[["S"]] <- netsiS(ADJall, ADJcv, d=d, cl=cl, ...)
   }
   if(indicator==3L | indicator==5L){
     if(verbose==TRUE) cat("computing stability indicator Sw...\n")
@@ -186,24 +186,23 @@ netSI <- function(x,indicator="all", d='HIM', adj.method='cor',
 
   if(indicator==2L | indicator==5L){
     if(verbose==TRUE) cat("computing stability indicator SI...\n")
-    netsi[["SI"]] <- netsiSI(ADJcv, d=d, ga=ga, n.cores=n.cores, ...)
+    netsi[["SI"]] <- netsiSI(ADJcv, d=d, n.cores=n.cores, ...)
   }
 
-  
+  results <- list("S"=mean(netsi[["S"]]),
+                  "SI"=mean(netsi[["SI"]]),
+                  "Sw"=apply(netsi[["Sw"]], 1,compute.indicator),
+                  "Sd"=apply(netsi[["Sd"]], 2,compute.indicator)
+                  )
+    
   if(save==TRUE){
-    results <- list("call"=Call,
-                    "ADJ"=ADJall,
-                    "ADJlist"=ADJcv,
-                    "S"=netsi[["S"]],
-                    "SI"=netsi[["SI"]],
-                    "Sw"=netsi[["Sw"]],
-                    "Sd"=netsi[["Sd"]])
-  } else {
-    results <- list("S"=mean(netsi[["S"]]),
-                    "SI"=mean(netsi[["SI"]]),
-                    "Sw"=apply(netsi[["Sw"]], 1, mean, na.rm=TRUE),
-                    "Sd"=apply(netsi[["Sd"]], 2, mean, na.rm=TRUE)
-                    )
+    results$call <- Call
+    results$ADJ <- ADJall
+    results$ADJlist <- ADJcv
+    results$S_boot <- netsi[["S"]]
+    results$SI_boot <- netsi[["SI"]]
+    results$Sw_boot <- netsi[["Sw"]]
+    results$Sd_boot <- netsi[["Sd"]]
   }
   
   return(results)
@@ -211,40 +210,41 @@ netSI <- function(x,indicator="all", d='HIM', adj.method='cor',
 
 
 ## Stability indicator S
-netsiS <- function(g, H, d, cl, ga, ...){
+netsiS <- function(g, H, d, cl, ...){
   DIST <- c("HIM","IM","H")
   type <- pmatch(d,DIST)
   type <- DIST[type]
   if(!is.null(cl)){
-    s <- parLapply(cl=cl,X=H,fun=function(x,g,type,ga, ...){
-      res <- nettools:::netdist(g,x,d=type, ga=ga, n.cores=1, ...)[[type]]
+    s <- parLapply(cl=cl,X=H,fun=function(x,g,type, ...){
+      res <- nettools:::netdist(g,x,d=type, n.cores=1, ...)[[type]]
       return(res)
-    },g=g,type=type, ga=ga, ...)
+    }, g=g, type=type, ...)
   
   }else{
-    s <- lapply(X=H,FUN=function(x,g,type, ga, ...){
-      res <- netdist(g,x,d=type, ga=ga, n.cores=1, ...)[[type]]
+    s <- lapply(X=H,FUN=function(x,g,type, ...){
+      res <- netdist(g,x,d=type, n.cores=1, ...)[[type]]
       return(res)
-    },g=g,type=type, ga=ga, ...)
+    },g=g,type=type, ...)
   }
   return(unlist(s))
 }
 
 ## Stability indicator SI
-netsiSI <- function(H, d, ga, ...){
+netsiSI <- function(H, d, ...){
   DIST <- c("HIM","IM","H")
   type <- pmatch(d,DIST)
   type <- DIST[type]
-
-  s <- netdist(H,d=type,ga=ga, components=FALSE, ...)
-  
-  return(as.numeric(s))
+  s <- netdist(H,d=type, ...)[[1]]
+  return(s[upper.tri(s)])
 }
 
 ## Degree stability
 netsiSd <- function(H,cl){
-  if (length(H))
-    n <- ncol(H[[1]]) else stop("No adjacency matrix computed",call.=FALSE)
+  if (length(H)){
+    n <- ncol(H[[1]])
+  } else {
+    stop("No adjacency matrix computed",call.=FALSE)
+  }
   
   if (!is.null(cl)){
     ## Parallel computation
@@ -257,7 +257,7 @@ netsiSd <- function(H,cl){
   return(dd)
 }
 
-## Edges stability
+## Edge stability
 netsiSw <- function(H,cl){
   if (length(H))
     n <- nrow(H[[1]]) else stop("List of adjacency matrices do not exist")
@@ -337,4 +337,16 @@ resamplingIDX <- function(N,method="montecarlo", k=3, h=20){
   
   ## return a list with indexes
   return(take)
+}
+
+compute.indicator <- function(x){
+  ##  Compute the indicator value as Range/Mean over resamplings
+  tmp <- range(x)
+  mm <- mean(x, na.rm=TRUE)
+  if (all.equal(mm,0)==TRUE){
+    rr <- NA
+  } else {
+    rr <- (tmp[2] - tmp[1])/mm
+  }
+  return(rr)
 }
