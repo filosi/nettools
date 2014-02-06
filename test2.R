@@ -33,6 +33,8 @@ mylist <- lapply(mydlist, mat2adj, method="cor")
 
 am <- "WGCNA"
 
+sstab <- netSI(a, d="HIM", n.cores=1, save=FALSE)
+
 lapply(1:length(mylist),function(x,ga,h,adj.method, P){netdist(mylist[[x]],h=h, d="HIM", n.cores=1, adj.method=adj.method, P=P)}, ga=myga, h=aa, adj.method=am, P=4)
 
 ## mylist <- list(aa,bb,dd, ee, ff, gg, hh, ii)

@@ -28,23 +28,25 @@ method="montecarlo", k=3, h=20, n.cores, save=TRUE, verbose=TRUE, ...)
   }
   \item{method}{\code{"montecarlo"} (default), a string identifying the
     cross validation schema to be used for the stability computation.
-    This must be one of the strings \code{"montecarlo"} (default),
-    \code{"LOO"} for Leave One Out or \code{"kCV"} for k-fold Cross
+    This must be one of the strings \code{montecarlo} (default),
+    \code{LOO} for Leave One Out or \code{kCV} for k-fold Cross
     Validation.}
   \item{k}{3 (default) numeric value indicating the number of subset the
-    data will be splitted in.  In case \code{method} is set to \code{"montecarlo"} the 1-1/\code{cv}
-    samples are taken for the computation.
-    In case \code{cvlab} is set to \code{"loo"} it should be set to 1.
-    In case \code{cvlab} is set to \code{"kcv"} cv iteration are performed, each
-    dividing the data into 1-1/cv}
-  \item{h}{ 20 (default), numeric value indicates the number of iterations (cross validations).}
+    data will be splitted in. In case \code{method} is set to
+    \code{montecarlo} the 1-1/\code{k} samples are taken for the computation.
+    In case \code{cvlab} is set to \code{loo} it should be set to 1,
+    otherwise it will be automatically set to 1.
+    In case \code{cvlab} is set to \code{kCV} \code{h} iteration are
+    performed, each dividing the data into randomly chosen \code{k} groups}
+  \item{h}{ 20 (default), numeric value indicates the number of
+    iterations the \code{montecarlo} and \code{kCV} procedure should be repeated(cross validations).}
   \item{n.cores}{\code{NULL} (default), optional numeric value giving
     the number of cores to be used for parallel computation. The default
     behaviour try to asses the maximum number of available cores and set
     a parallel computation using the maximum number of cores - 1 for the
     computation.}
-  \item{save}{\code{TRUE} (default), logical. Should adjacency matrices
-    from resampling scheme be saved?} 
+  \item{save}{\code{FALSE} (default), logical. Should adjacency matrices
+    and indicator's raw value from resampling scheme be saved?} 
   \item{verbose}{\code{TRUE} (default), logical. Print all the
     information about the computation. If \code{FALSE} messages will be suppressed.}
   \item{\dots}{Additional arguments to be passed to the downstream
@@ -67,12 +69,11 @@ method="montecarlo", k=3, h=20, n.cores, save=TRUE, verbose=TRUE, ...)
   \itemize{
     \item{\code{S}: is the global stability indicator. It asses the
       pertubations of the network given by the resampling: in particular it
-      account for the distance between the network inferred using all samples and the
-      network inferred on a subsampling.}
-    \item{\code{SI}: is the local stability indicator. It provides a measure of the
-      perturbations between different subsamplings. It computes the
-      pairwise distances between networks inferred on different
-      subsamplings.}
+      account for the distance between the network inferred using all
+      samples and the network inferred on a subsampling.}
+    \item{\code{SI}: is the local stability indicator. It provides a
+      measure of the perturbations between different subsamplings. It
+      computes the pairwise distances between networks inferred on different subsamplings.}
     \item{\code{Sw}: is the edge stability indicator. It asses the
       stability of the edges inferred in different subsamplings. In case
       of a binary network it take into account only the presence/absence of
@@ -108,49 +109,55 @@ method="montecarlo", k=3, h=20, n.cores, save=TRUE, verbose=TRUE, ...)
   \item{call}{character. Function call}
   \item{ADJlist}{A list with the adjacency matrices computed in the
     resampling scheme.}
-  \item{S}{A numerical vector with the value of the stability indicator S
+  \item{S}{The value of the global indicator "S"}
+  \item{SI}{The value of the global internal indicator "SI"}
+  \item{Sw}{The value of the edge weight stability indicator "Sw"}
+  \item{Sd}{The value of the node stability indicator "Sd"}
+  \item{S_boot}{A numerical vector with the value of the stability indicator S
     for each resampling.}
-  \item{SI}{A numerical vector with the value of the stability indicator SI
+  \item{SI_boot}{A numerical vector with the value of the stability indicator SI
     for each combination of pairs within all the resampling.}
-  \item{Sw}{A numerical matrix. Each row contains the value of the
+  \item{Sw_boot}{A numerical matrix. Each row contains the value of the
     weight of a particular edge on different resampling splits.}
-  \item{Sd}{A numerical matrix number_of_resampling X number_of_nodes.
+  \item{Sd_boot}{A numerical matrix number_of_resampling X number_of_nodes.
     Each column contain the degree of a node on different resampling splits.}
 
-  If \code{save=FALSE} elements \code{"call"} and \code{"ADJlist"} will
-  not be provided. For the elements \code{S} and \code{SI} the mean over the
-  resampling splits is computed, instead for the element \code{Sw} the
-  mean is computed for each edge and for the element \code{Sd} the mean
-  is computed for each node.
-  %%  ~Describe the value returned
-  %%  If it is a LIST, use
-  %%  \item{comp1 }{Description of 'comp1'}
-  %%  \item{comp2 }{Description of 'comp2'}
-  %% ...
+  If \code{save=FALSE} elements \code{call}, \code{ADJlist}, \code{ADJ},
+  \code{S_boot}, \code{SI_boot}, \code{Sw_boot} and \code{Sd_boot} will
+  not be provided. For \code{S} and \code{SI} the mean over the
+  resampling splits is computed, instead for the element \code{Sw} and
+  \code{Sd} the range/mean is computed over resamplings.
 }
 \references{
-G. Jurman, M. Filosi, R. Visintainer, S. Riccadonna, C. Furlanello
-\emph{Stability indicators in network reconstruction
-arXiv 2013, arXiv:1209.1654}\cr
+  M. Filosi, R. Visintainer, S. Riccadonna, G. Jurman, C. Furlanello
+  (2014)\emph{Stability Indicators in Network Reconstruction,
+    PLOSONE}\cr
+  
 %% ~put references to the literature/web site here ~
 }
 \author{
   Michele Filosi, Samantha Riccadonna
   %%  ~~who you are~~
 }
-\note{
-%%  ~~further notes~~
-}
+%% \note{
+%% %%  ~~further notes~~
+%% }
 
 %% ~Make other sections like Warning with \section{Warning }{....} ~
 
 \seealso{
-  \code{\link{netdist}}, \code{\link{mat2adj}}
+  \code{\link{netdist}}, \code{\link{mat2adj}}, \link{\code{WGCNA}}, \link{\code{minet}}
 %% ~~objects to See Also as \code{\link{help}}, ~~~
 }
 \examples{
+myrawdata <- matrix(rnorm(500),ncol=20)
+
+sstab <- netSI(a, d="HIM", n.cores=1, save=FALSE)
+sstab$S
+sstab$SI
 }
 % Add one or more standard keywords, see file 'KEYWORDS' in the
 % R documentation directory.
-\keyword{ ~kwd1 }
-\keyword{ ~kwd2 }% __ONLY ONE__ keyword per line
+\keyword{ stability }
+\keyword{ network }% __ONLY ONE__ keyword per line
+\keyword{ reproducibility }
