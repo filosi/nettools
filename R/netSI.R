@@ -67,27 +67,19 @@ netSI <- function(x,indicator="all", d='HIM', adj.method='cor',
   d <- c("HIM","IM","H")[d]
   
   ##check on save and verbose
-  if(is.null(Call$save)){
-    save <- TRUE
-  }else{
-    save <- eval(Call$save)
-    if(!is.logical(save))
-      stop("save must be TRUE or FALSE",call.=FALSE)
-  }
+  if(!is.logical(save))
+    stop("save must be TRUE or FALSE",call.=FALSE)
   
-  if(is.null(Call$verbose)){
-    verbose <- TRUE
-  }else{
-    verbose <- eval(Call$verbose)
-    if(!is.logical(verbose))
+  if(!is.logical(verbose))
       stop("verbose must be TRUE or FALSE", call.=FALSE)
-  }
-
+  
   ## It can be passed through ...
-  if (is.null(Call$sseed)) sseed <- 0
-  else sseed <- eval(Call$sseed)
+  if (is.null(Call$sseed)){
+    sseed <- 0
+  } else {
+    sseed <- eval(Call$sseed)}
   set.seed(sseed)
-
+  
   ## Pass parameter gamma to netdist functions
   ## if(!is.null(Call$ga)){
   ##   ga <- eval(Call$ga)
@@ -101,8 +93,8 @@ netSI <- function(x,indicator="all", d='HIM', adj.method='cor',
       warning(paste("components parameter will be ignored. \n",
                     "The stability indicators will be computed just for",
                     d, "distance.\n",
-            "For computing them for Hamming or Ipsen-Mikhailov", 
-            "distance use dist=H or dist=IM"), call.=FALSE)
+                    "For computing them for Hamming or Ipsen-Mikhailov", 
+                    "distance use dist=H or dist=IM"), call.=FALSE)
       components <- FALSE
     }
   }
@@ -194,7 +186,7 @@ netSI <- function(x,indicator="all", d='HIM', adj.method='cor',
                   "Sw"=apply(netsi[["Sw"]], 1,compute.indicator),
                   "Sd"=apply(netsi[["Sd"]], 2,compute.indicator)
                   )
-    
+  
   if(save==TRUE){
     results$call <- Call
     results$ADJ <- ADJall
