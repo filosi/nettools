@@ -168,8 +168,8 @@ AdjCLR <- function(x,...){
 }
 
 ## MINE
-AdjMINE <- function(x,measure,alpha,C,...){
-  Adj <- mine(x,alpha=alpha, C=C, ...)[[measure]]
+AdjMINE <- function(x,measure,alpha,C, var.thr=1e-10,...){
+  Adj <- mine(x,alpha=alpha, C=C,var.thr=var.thr)[[measure]]
   if (!is.null(Adj)){
     diag(Adj) <- 0
     return(Adj)
