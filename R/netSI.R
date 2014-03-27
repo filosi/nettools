@@ -253,7 +253,8 @@ netsiSd <- function(H,cl){
     ## One core computation
     dd <- lapply(H, rowSums)
   }
-  dd <- matrix(unlist(dd),ncol=n)
+  dd <- matrix(unlist(dd),ncol=n, byrow=TRUE)
+  colnames(dd) <- names(H[[1]])
   return(dd)
 }
 
