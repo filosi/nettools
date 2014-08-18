@@ -178,6 +178,9 @@ alpha=0.6, C=15,DP=1, \dots)
 	  variance of each feature. The function returns the indexes of
 	  the features with variance <\code{tol}. Indexes refers to
 	  1-based column numbers of the original dataset.}
+	\item{\code{var.thr}}{1e-5 (default), a numeric value which
+      controls the tolerance parameter on the column variance for the
+      method \code{MINE, MINEFDR, DTWMIC}.}
       }
     }
   }

@@ -1,7 +1,7 @@
 ## Import useful function from packages
 
 ## Matrix, parallel, methods, rootSolve
-import(Matrix, parallel, methods, rootSolve)
+import(methods, Matrix, parallel, rootSolve)
 
 ## WGCNA: bicor, TOM, WGCNA
 importFrom("WGCNA",unsignedAdjacency,bicor,TOMsimilarityFromExpr)
