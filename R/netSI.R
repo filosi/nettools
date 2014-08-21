@@ -144,7 +144,7 @@ netSI <- function(x,indicator="all", d='HIM', adj.method='cor',
     ## Parallel computation
     ADJcv <- parLapply(cl=cl,X=idxs,fun=function(x,DAT,method,...){
       ss <- DAT[x,]
-      tmp <- nettools:::mat2adj(ss, method=method, ...)
+      tmp <- mat2adj(ss, method=method, ...)
       return(tmp)
     },DAT=x,method=adj.method,...)
   } else {
@@ -208,7 +208,7 @@ netsiS <- function(g, H, d, cl, ...){
   type <- DIST[type]
   if(!is.null(cl)){
     s <- parLapply(cl=cl,X=H,fun=function(x,g,type, ...){
-      res <- nettools:::netdist(g,x,d=type, n.cores=1, ...)[[type]]
+      res <- netdist(g,x,d=type, n.cores=1, ...)[[type]]
       return(res)
     }, g=g, type=type, ...)
   

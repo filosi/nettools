@@ -35,7 +35,7 @@ am <- "WGCNA"
 
 sstab <- netSI(a, d="HIM", n.cores=1, save=FALSE)
 
-lapply(1:length(mylist),function(x,ga,h,adj.method, P){netdist(mylist[[x]],h=h, d="HIM", n.cores=1, adj.method=adj.method, P=P)}, ga=myga, h=aa, adj.method=am, P=4)
+# lapply(1:length(mylist),function(x,ga,h,adj.method, P){netdist(mylist[[x]],h=h, d="HIM", n.cores=1, adj.method=adj.method, P=P)}, ga=myga, h=aa, adj.method=am, P=4)
 
 ## mylist <- list(aa,bb,dd, ee, ff, gg, hh, ii)
 names(mylist) <- paste(letters[c(1:2,4:9)],letters[c(1:2,4:9)],sep="")
@@ -44,8 +44,6 @@ names(mylist) <- NULL
 ## for (i in 1:10)
 DDD <- netdist(mylist,d="HIM",n.cores=1, components=TRUE, verbose=TRUE)
 DDDr <- netdist(mylist,d="HIM",n.cores=6, components=TRUE, verbose=FALSE, rho=100)
-netdists()
-
 
 ssa <- netSI(a,d="HIM",n.cores=6,adj.method="MINE")
 ssa <- lapply(mylist,netSI,adj.method="cor",method="kCV",k=4,h=10,n.cores=1)

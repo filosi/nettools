@@ -1,7 +1,7 @@
 ## Import useful function from packages
 
-## methods
-import(methods)
+## Matrix, parallel, methods, rootSolve
+import(methods, Matrix, parallel, rootSolve)
 
 ## WGCNA: bicor, TOM, WGCNA
 importFrom("WGCNA",unsignedAdjacency,bicor,TOMsimilarityFromExpr)
@@ -9,24 +9,14 @@ importFrom("WGCNA",unsignedAdjacency,bicor,TOMsimilarityFromExpr)
 ## Minet:minet
 importFrom("minet",minet)
 
-## Rootsolve
-import(rootSolve)
-
 ## DTW
 importFrom("dtw",dtw)
 
 ## minerva
 importFrom("minerva",mine)
 
-## Matrix
-import(Matrix)
-
-## parallel
-import(parallel)
-
 ## combinatorics utilities for stability indicators computation
 importFrom("combinat",combn)
-
 
 ## Exporting all generic methods for Adjacency
 ## exportPattern("mat2adj")
@@ -38,4 +28,5 @@ exportMethods(mat2adj)
 ## Export methods for distances
 export(netdist)
 
+## Export methods for network stability
 export(netSI)
