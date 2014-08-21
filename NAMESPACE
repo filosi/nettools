@@ -30,3 +30,5 @@ export(netdist)
 
 ## Export methods for network stability
 export(netSI)
+
+export(K, lorentz, rho)
