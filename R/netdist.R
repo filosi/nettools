@@ -116,10 +116,8 @@ setMethod("netdist","data.frame", netdist.matrix)
 
 
 ## Register S3 and S4 methods for igraph objects is igraph is available
-if (require(igraph)){
-  netdist.igraph <- netdist.matrix
-  setMethod("netdist","igraph",netdist.matrix)
-}
+netdist.igraph <- netdist.matrix
+setMethod("netdist","igraph",netdist.matrix)
 
 
 ## Method netdist for list of adjacency matrices
