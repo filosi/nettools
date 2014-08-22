@@ -22,12 +22,12 @@ netdist(list(aadj,badj),method="HIM", components=FALSE, n.cores=1)
 
 
 ## Hamming distance
-dd <- netdist(aadj,badj,method="ham")
+dd <- netdist(aadj,badj,method="ham", n.cores=1)
 ## [1] 0.2134906
 ##
 
 ## Ipsen distance
-netdist(aadj,badj,method="ips",gamma=0.09)
+netdist(aadj,badj,method="ips",gamma=0.09, n.cores=1)
 ## [1] 0.1358396
 ##
 
@@ -43,13 +43,12 @@ a1 <- get.adjacency(g1,type="both",sparse=TRUE)
 a2 <- get.adjacency(g2,type="both",sparse=TRUE)
 
 ## HIM distance
-netdist(g1,g2,method="HIM")
+netdist(g1,g2,method="HIM", n.cores=1)
 
 
 ##-------------------------------------------------
 ## Computing stability indicators
 ##-------------------------------------------------
-
-ssind <- netSI(a)
+ssind <- netSI(a, n.cores=1)
 
 
