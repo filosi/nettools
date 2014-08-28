@@ -242,7 +242,7 @@ alpha=0.6, C=15,DP=1, \dots)
 \dontrun{
 data(Spellman, package="minerva")
 dim(Spellman)
-A <- mat2adj(Spellman,method="cor")
+A <- mat2adj(Spellman,method="cor", n.cores=1)
 dim(A)
 }
 }

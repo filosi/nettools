@@ -153,8 +153,8 @@ method="montecarlo", k=3, h=20, n.cores, save=FALSE, verbose=TRUE, ...)
 myrawdata <- matrix(rnorm(500),ncol=20)
 
 sstab <- netSI(myrawdata, d="HIM", n.cores=1, save=FALSE)
-sstab$S
-sstab$SI
+print(sstab$S)
+print(sstab$SI)
 }
 % Add one or more standard keywords, see file 'KEYWORDS' in the
 % R documentation directory.

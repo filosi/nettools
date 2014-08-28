@@ -127,24 +127,22 @@ netdist(x,\dots)
 %%   %% ~~objects to See Also as \code{\link{help}}, ~~~
 %% }
 \examples{
-##---- Should be DIRECTLY executable !! ----
-##-- ==>  Define data, use random,
-##--	or do  help(data=index)  for the standard data sets.
-a <- matrix(rnorm(2000), nrow=200)
-b <- matrix(rnorm(2000), nrow=200)
+a <- matrix(rnorm(200), nrow=20)
+b <- matrix(rnorm(200), nrow=20)
 
-aa <- mat2adj(a, method="cor")
-bb <- mat2adj(b, method="cor")
+aa <- mat2adj(a, method="cor", n.cores=1)
+bb <- mat2adj(b, method="cor", n.cores=1)
 
-dd <- netdist(aa,bb, d="HIM")
+dd <- netdist(aa,bb, d="HIM", n.cores=1)
 print(dd)
 
-## Change the gamma parameter
-dd <- netdist(aa,bb, d="HIM", ga=0.5)
+## Use a different gamma parameter for HIM distance
+dd <- netdist(aa,bb, d="HIM", ga=0.5, n.cores=1)
 print(dd)
 
+## The function can accept also list of adjacency matrices as input
 alist <- list(aa,bb)
-netdist(alist, d="HIM")
+ddist <- netdist(alist, d="HIM", n.cores=1)
 
 ## Use multiple cores
 \dontrun{

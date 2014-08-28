@@ -13,6 +13,6 @@ Depends: R (>= 2.14.1), methods
 Suggests: igraph
 Imports: WGCNA, minet, rootSolve, dtw, Matrix, parallel, minerva, combinat
 Description: Collect the functions for network analysis. Creating adjacency matrix and compute distances between networks
-License: CC BY-NC-SA 3.0
+License: CC BY-NC-SA 4.0 
 Packaged: 2012-11-27 21:24:00 UTC; michele
-Author: Michele Filosi [aut, cre], Roberto Visintainer [aut], Samantha Riccadonna [ctb], Giuseppe Jurman [ctb], Cesare Furlanello [ctb]
+Author: Michele Filosi [aut, cre], Roberto Visintainer [aut], Samantha Riccadonna [aut], Giuseppe Jurman [ctb], Cesare Furlanello [ctb]

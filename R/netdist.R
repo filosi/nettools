@@ -324,7 +324,6 @@ Lap <- function(x,...){
   return(L)
 }
 
-
 ## Him distance
 ##----------------------------------------
 him <- function(object,ga=NULL, components=TRUE, ltag=FALSE, rho=1, ...){
