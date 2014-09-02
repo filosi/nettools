@@ -10,8 +10,7 @@ Authors@R: c(person("Michele","Filosi",role=c("aut","cre"), email = "filosi@fbk.
 	   person("Cesare", "Furlanello", role = "ctb", email = "furlan@fbk.eu"))
 Maintainer: Michele Filosi <filosi@fbk.eu>
 Depends: R (>= 2.14.1), methods
-Suggests: igraph
-Imports: parallel, rootSolve, dtw, WGCNA, minet, Matrix, minerva, combinat
+Imports: parallel, rootSolve, dtw, WGCNA, minet, Matrix, minerva, combinat, igraph
 Description: Collect the functions for network analysis. Creating adjacency matrix and compute distances between networks
 License: CC BY-NC-SA 4.0 
 Packaged: 2012-11-27 21:24:00 UTC; michele

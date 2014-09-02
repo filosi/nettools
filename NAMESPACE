@@ -18,6 +18,9 @@ importFrom("minerva",mine)
 ## combinatorics utilities for stability indicators computation
 importFrom("combinat",combn)
 
+## igraph
+importFrom("igraph", get.adjacency, get.edge.attribute)
+
 ## Exporting all generic methods for Adjacency
 ## exportPattern("mat2adj")
 exportMethods(mat2adj)

@@ -23,8 +23,7 @@
     Date: \tab \cr
     Depends: R (>= 2.14.1), methods
     Imports: WGCNA, minet, rootSolve, dtw, Matrix, parallel, minerva,
-    combinat
-    Suggests: igraph
+    combinat, igraph
     License: CC BY-NC-SA 4.0
   }
 }
