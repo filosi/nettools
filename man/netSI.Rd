@@ -150,7 +150,7 @@ method="montecarlo", k=3, h=20, n.cores, save=FALSE, verbose=TRUE, ...)
 %% ~~objects to See Also as \code{\link{help}}, ~~~
 }
 \examples{
-myrawdata <- matrix(rnorm(500),ncol=20)
+myrawdata <- matrix(rnorm(200),ncol=20)
 
 sstab <- netSI(myrawdata, d="HIM", n.cores=1, save=FALSE)
 print(sstab$S)

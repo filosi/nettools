@@ -144,7 +144,7 @@ print(dd)
 alist <- list(aa,bb)
 ddist <- netdist(alist, d="HIM", n.cores=1)
 
-## Use multiple cores
+## Use of multiple cores
 \dontrun{
 dd <- netdist(aa,bb,n.cores=4)
 }
