@@ -16,18 +16,18 @@ badj <- mat2adj(b, method="MINE", n.cores=1)
 ## Compute the him distance between the 2 matrix
 
 ## Him distance
-netdist(aadj,badj, method="HIM", components=FALSE, n.cores=1)
+netdist(aadj,badj, d="HIM", components=FALSE, n.cores=1)
 ## HIM distance using list of matrices as input
-netdist(list(aadj,badj), method="HIM", components=FALSE, n.cores=1)
+netdist(list(aadj,badj), d="HIM", components=FALSE, n.cores=1)
 
 
 ## Hamming distance
-dd <- netdist(aadj,badj,method="ham", n.cores=1)
+dd <- netdist(aadj, badj, d="ham", n.cores=1)
 ## [1] 0.2134906
 ##
 
 ## Ipsen distance
-netdist(aadj,badj,method="ips",gamma=0.09, n.cores=1)
+netdist(aadj, badj, d="ips",gamma=0.09, n.cores=1)
 ## [1] 0.1358396
 ##
 
@@ -43,7 +43,7 @@ netdist(aadj,badj,method="ips",gamma=0.09, n.cores=1)
 ## a2 <- get.adjacency(g2,type="both",sparse=TRUE)
 
 ## HIM distance
-## netdist(g1,g2,method="HIM", n.cores=1)
+## netdist(g1,g2,d="HIM", n.cores=1)
 
 
 ##-------------------------------------------------

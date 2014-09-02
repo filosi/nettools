@@ -53,7 +53,7 @@ netdist.matrix <- function(x, h=NULL, d="HIM", ga=NULL, components=TRUE, ...){
         stop("components must be TRUE or FALSE")
     }else{
       comp <- FALSE
-      warning("components parameter will be ignored", call. = FALSE)
+      # warning("components parameter will be ignored", call. = FALSE)
     }
   }
 
