@@ -4,15 +4,11 @@
 \alias{NetTools}
 \alias{netTools}
 \docType{package}
-\title{
-  A collection of tools for network analysis
-}
-\description{
-  This package provides a collection of methods for variable association
-  inference in order to predict the network structure underlying the data.
-  A collection of quantitative methods for network comparison is
-  provided within the package.
-}
+\title{ A Network Comparison Framework}
+\description{ This package provides a collection of network inference
+  methods for co-expression networks, quantitative network distances and
+  a novel framework for network stability analysis.
+  }
 
 \details{
   Summary:

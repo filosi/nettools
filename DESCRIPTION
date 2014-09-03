@@ -1,6 +1,6 @@
 Package: nettools
 Type: Package
-Title: A comprehensive network analysis tool: from inference method to distances between networks and network stability 
+Title: A Network Comparison Framework
 Version: 1.0.1
 Date: 2014-09-02
 Authors@R: c(person("Michele","Filosi",role=c("aut","cre"), email = "filosi@fbk.eu"),
@@ -11,7 +11,7 @@ Authors@R: c(person("Michele","Filosi",role=c("aut","cre"), email = "filosi@fbk.
 Maintainer: Michele Filosi <filosi@fbk.eu>
 Depends: R (>= 2.14.1), methods
 Imports: parallel, rootSolve, dtw, WGCNA, minet, Matrix, minerva, combinat, igraph
-Description: Collect the functions for network analysis. Creating adjacency matrix and compute distances between networks
+Description: A collection of network inference methods for co-expression networks, quantitative network distances and a novel framework for network stability analysis.
 License: CC BY-NC-SA 4.0 
 Packaged: 2012-11-27 21:24:00 UTC; michele
 Author: Michele Filosi [aut, cre], Roberto Visintainer [aut], Samantha Riccadonna [aut], Giuseppe Jurman [ctb], Cesare Furlanello [ctb]
