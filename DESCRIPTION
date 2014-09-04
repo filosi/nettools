@@ -5,7 +5,7 @@ Version: 1.0.1
 Date: 2014-09-02
 Authors@R: c(person("Michele","Filosi",role=c("aut","cre"), email = "filosi@fbk.eu"),
 	   person("Roberto", "Visintainer", role = "aut", email = "visintainer@fbk.eu"),
-	   person("Samantha", "Riccadonna", role = "aut", email = "riccadonna@fbk.eu"), 
+	   person("Samantha", "Riccadonna", role = "aut", email = "samantha.riccadonna@fmach.it"), 
 	   person("Giuseppe", "Jurman", role = "ctb", email = "jurman@fbk.eu"), 
 	   person("Cesare", "Furlanello", role = "ctb", email = "furlan@fbk.eu"))
 Maintainer: Michele Filosi <filosi@fbk.eu>
