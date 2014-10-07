@@ -1,66 +1,66 @@
 ## Normal correlation (default pearson)
 Adjcor <- function(x,method='pearson',...){
-    Adj <- abs(cor(x,method=method))
-    diag(Adj) <- 0
-    return(Adj)
+
+  ## Check for use argument
+  param <- list(...)
+  nn <- names(param)
+  if (!is.na(match("use", nn))){
+    use <- param$use
+  } else {
+    use <- "all.obs"
+  }
+
+  Adj <- abs(cor(x,method=method, use=use))
+  diag(Adj) <- 0
+
+  ## use argument, remove NA from Adj and set to 0
+  na.method <- pmatch(use, c("all.obs", "complete.obs", "pairwise.complete.obs", 
+                             "everything"))
+  if (na.method %in% c(2L, 3L))
+      Adj[is.na(Adj)] <- 0
+  
+  return(Adj)
 }
 
 ## WGCNA method with cor^P
 AdjWGCNA <- function(x,P,...){
-  ## Default P = 6
+  ## Default P = 6 send a warning if P!=6
   if (P!=6)
     warning(paste("WGCNA computed with P =",P,"!!!"))
-  ## Adj <- WGCNA::unsignedAdjacency(x,
-  ##                                 power = P,
-  ##                                 corFnc = 'cor')
+
+  ## Check for use argument in ...
+  param <- list(...)
+  nn <- names(param)
+  if (!is.na(match("use", nn))){
+    use <- param$use
+  } else {
+    use <- "all.obs"
+  }
+
+  ## Compute the adjacency matrix (no auto-loop)
   Adj <- unsignedAdjacency(x,
                            power = P,
-                           corFnc = 'cor')
+                           corFnc = 'cor',
+                           corOptions=paste("use=\'", use,"\'", sep=""))
   diag(Adj) <- 0
+
+  ## use argument, remove NA from Adj and set to 0
+  na.method <- pmatch(use, c("all.obs", "complete.obs", "pairwise.complete.obs", 
+                             "everything"))
+  if (na.method %in% c(2L, 3L))
+    Adj[is.na(Adj)] <- 0
+
+  ## return adjacency matrix
   return(Adj)
 }
 
-## Function for computing the FDR value on the null hypothesis
-fdrrun <- function(x,idx,FUN='cor', cl=NULL, ...){
-  FUN <- match.fun(FUN)
-  measure <- 1
-  if (!is.na(match("measure",names(list(...))))){
-    measure <- list(...)[["measure"]]
-    if (length(measure)==0)
-      measure <- 1
-  }
-  
-  cormat <- matrix(Inf,ncol=dim(x)[2],nrow=dim(x)[2])
-  myfun <- function(x, y, idx, tmpfun, measure){
-    idi <- idx[x,]
-    if (idi[1]>idi[2]){
-      ## cat(idi, "\n")
-      return(abs(tmpfun(sample(y[,idi[2]]),y[,idi[1]])[[measure]]))
-    }else{return(NA)}
-  }
-  if(nrow(idx)>2){
-    if (is.null(cl)){
-      aa <- sapply(seq(dim(idx)[1]),myfun, y=x, idx=idx, tmpfun=FUN, measure)
-    } else {
-      ## NB need to load package on all the cores?!??!?!
-      aa <- parSapply(cl, seq(dim(idx)[1]),myfun, y=x, idx=idx, tmpfun=FUN, measure)
-    }
-    idx <- cbind(idx,aa)
-    tmpid <- subset(idx,!is.na(idx[,3]))
-    cormat[tmpid[,c(1,2)]] <- cormat[tmpid[,c(2,1)]] <- tmpid[,3]
-  } else {
-    stop("Not conformable array")
-  }
-  invisible(cormat)
-  
-}
 
 ## WGCNA FDR
 AdjWGCNAFDR <- function(x,FDR,P,...){
-  Adj <- AdjWGCNA(x,P=P)
+  Adj <- AdjWGCNA(x,P=P, ...)
   idx <- as.matrix(expand.grid(seq(dim(Adj)[1]),seq(dim(Adj)[2])))
   
-  ## check for multicore
+  ## check for multiple cores
   if (!is.na(match("n.cores", names(list(...))))){
     n.cores <- list(...)[["n.cores"]]
     if (is.numeric(n.cores) && n.cores > 1 && detectCores()>1){
@@ -73,13 +73,16 @@ AdjWGCNAFDR <- function(x,FDR,P,...){
   } else {
     cl <- NULL
   }
-  
+
+  ## Start the FDR computation using fdrrun function
   for (i in seq(1/FDR)){
     if (nrow(idx) > 2){
-      cormat <- fdrrun(x,idx,FUN=cor,cl)
+      cormat <- fdrrun(x,idx,FUN=cor,cl,...)
       idx <- which(Adj>cormat,arr.ind=TRUE)
     }
   }
+
+  ## create the adjacency matrix after the fdr filter
   adjfinal <- matrix(0,ncol=dim(Adj)[2],nrow=dim(Adj)[1],
                      dimnames=list(rownames(Adj),colnames(Adj)))
   if(dim(idx)[1]>0){
@@ -92,15 +95,32 @@ AdjWGCNAFDR <- function(x,FDR,P,...){
 
 ## Bicor
 Adjbicor <- function(x,...){
-    ## Adj <- WGCNA::bicor(x)
-    Adj <- abs(bicor(x))
-    diag(Adj) <- 0
-    return(Adj)
+  ## Check for use argument in ...
+  param <- list(...)
+  nn <- names(param)
+  if (!is.na(match("use", nn))){
+    use <- param$use
+  } else {
+    use <- "all.obs"
+  }
+
+  ## compute the matrix
+  Adj <- abs(bicor(x, use=use))
+  diag(Adj) <- 0
+
+  ## use argument, remove NA from Adj and set to 0
+  na.method <- pmatch(use, c("all.obs", "complete.obs", "pairwise.complete.obs", 
+                             "everything"))
+  if (na.method %in% c(2L, 3L))
+    Adj[is.na(Adj)] <- 0
+
+  ## Return the Adj matrix
+  return(Adj)
 }
 
 ## Bicor FDR
 AdjbicorFDR <- function(x,FDR,P,...){
-    Adj <- Adjbicor(x)
+    Adj <- Adjbicor(x, ...)
     idx <- as.matrix(expand.grid(seq(dim(Adj)[1]),seq(dim(Adj)[2])))
 
     ## Check for multicore
@@ -116,13 +136,16 @@ AdjbicorFDR <- function(x,FDR,P,...){
     } else {
       cl <- NULL
     }
-    
+
+    ## Start the FDR computation using fdrrun function
     for (i in seq(1/FDR)){
       if (nrow(idx) > 2){
         cormat <- fdrrun(x,idx,FUN='bicor', cl, ...)
         idx <- which(Adj>cormat,arr.ind=TRUE)
       }
     }
+
+    ## create the adjacency matrix after the fdr filter
     adjfinal <- matrix(0,ncol=dim(Adj)[2],nrow=dim(Adj)[1],
                        dimnames=list(rownames(Adj),colnames(Adj)))
     if(dim(idx)[1]>0){
@@ -130,6 +153,8 @@ AdjbicorFDR <- function(x,FDR,P,...){
             adjfinal[idx[i,1],idx[i,2]] <- Adj[idx[i,1],idx[i,2]]
         }
     }
+
+    ## Return the Adj matrix
     return(adjfinal)
 }
 
@@ -137,11 +162,6 @@ AdjbicorFDR <- function(x,FDR,P,...){
 AdjTOM <- function(x,P,...){
   if (P!=6)
     warning(paste("WGCNA computed with P =",P,"!!!"))
-  ## Adj <- WGCNA::TOMsimilarityFromExpr(datExpr=x,
-  ##                                     power=P,
-  ##                                     corType="pearson",
-  ##                                     TOMType="unsigned",
-  ##                                     verbose=0)
   Adj <- TOMsimilarityFromExpr(datExpr=x,
                                power=P,
                                corType="pearson",
@@ -153,18 +173,51 @@ AdjTOM <- function(x,P,...){
 
 ## Aracne
 AdjARACNE <- function(x,...){
-    ##anet <- minet::minet(x,method="aracne",estimator="spearman")
-    Adj <- minet(x,method="aracne",estimator="spearman")
-    diag(Adj) <- 0
-    return(Adj)
+  ## Check for use argument in ...
+  param <- list(...)
+  nn <- names(param)
+  if (!is.na(match("use", nn))){
+    use <- param$use
+  } else {
+    use <- "all.obs"
+  }
+
+  ## mutual information estimation does not accept use paramter!
+  Adj <- minet(x,method="aracne",estimator="spearman")
+  diag(Adj) <- 0
+
+  ## use argument, remove NA from Adj and set to 0
+  na.method <- pmatch(use, c("all.obs", "complete.obs", "pairwise.complete.obs", 
+                             "everything"))
+  if (na.method %in% c(2L, 3L))
+    Adj[is.na(Adj)] <- 0
+  
+  return(Adj)
 }
 
 ## CLR normalized
 AdjCLR <- function(x,...){
-    ## cnet <- minet::minet(x,method="clr",estimator="spearman")
-    Adj <- minet(x,method="clr",estimator="spearman")
-    diag(Adj) <- 0
-    return(Adj)
+  ## Check for use argument in ...
+  param <- list(...)
+  nn <- names(param)
+  if (!is.na(match("use", nn))){
+    use <- param$use
+  } else {
+    use <- "all.obs"
+  }
+
+  ## mutual information estimation does not accept use paramter!
+  Adj <- minet(x,method="clr",estimator="spearman")
+  diag(Adj) <- 0
+
+  ## use argument, remove NA from Adj and set to 0
+  na.method <- pmatch(use, c("all.obs", "complete.obs", "pairwise.complete.obs", 
+                             "everything"))
+  if (na.method %in% c(2L, 3L))
+    Adj[is.na(Adj)] <- 0
+
+  ## return Adj
+  return(Adj)
 }
 
 ## MINE
@@ -226,6 +279,40 @@ AdjDTWMIC <- function(x,DP,...){
     }
     rownames(Adj) <- colnames(Adj) <- colnames(x)
     return(Adj)
+}
+
+## Function for computing the FDR value on the null hypothesis
+fdrrun <- function(x,idx,FUN='cor', cl=NULL, use="pairwise.complete.obs",...){
+  FUN <- match.fun(FUN)
+  measure <- 1
+  if (!is.na(match("measure",names(list(...))))){
+    measure <- list(...)[["measure"]]
+    if (length(measure)==0)
+      measure <- 1
+  }
+
+  cormat <- matrix(Inf,ncol=dim(x)[2],nrow=dim(x)[2])
+  myfun <- function(x, y, idx, tmpfun, measure, use){
+    idi <- idx[x,]
+    if (idi[1]>idi[2]){
+      ## cat(idi, "\n")
+      return(abs(tmpfun(sample(y[,idi[2]]),y[,idi[1]], use)[[measure]]))
+    }else{return(NA)}
+  }
+  if(nrow(idx)>2){
+    if (is.null(cl)){
+      aa <- sapply(seq(dim(idx)[1]),myfun, y=x, idx=idx, tmpfun=FUN, measure, use)
+    } else {
+      ## NB need to load package on all the cores?!??!?!
+      aa <- parSapply(cl, seq(dim(idx)[1]),myfun, y=x, idx=idx, tmpfun=FUN, measure, use)
+    }
+    idx <- cbind(idx,aa)
+    tmpid <- subset(idx,!is.na(idx[,3]))
+    cormat[tmpid[,c(1,2)]] <- cormat[tmpid[,c(2,1)]] <- tmpid[,3]
+  } else {
+    stop("Not conformable array")
+  }
+  invisible(cormat)  
 }
 
 ## Function for check the variance by features
