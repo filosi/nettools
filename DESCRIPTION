@@ -1,8 +1,8 @@
 Package: nettools
 Type: Package
 Title: A Network Comparison Framework
-Version: 1.0.1
-Date: 2014-09-02
+Version: 1.0.2
+Date: 2014-10-08
 Authors@R: c(person("Michele","Filosi",role=c("aut","cre"), email = "filosi@fbk.eu"),
 	   person("Roberto", "Visintainer", role = "aut", email = "visintainer@fbk.eu"),
 	   person("Samantha", "Riccadonna", role = "aut", email = "samantha.riccadonna@fmach.it"), 
