@@ -172,16 +172,22 @@ alpha=0.6, C=15,DP=1, \dots)
       method: }
     \item{\dots}{
       \describe{
-	\item{\code{tol}}{1e-5 (default), a numeric value which
-	  controls the tolerance on the variable variance. In particular
-	  this parameter is passed to a function which controls the
-	  variance of each feature. The function returns the indexes of
-	  the features with variance <\code{tol}. Indexes refers to
-	  1-based column numbers of the original dataset.}
-	\item{\code{var.thr}}{1e-5 (default), a numeric value which
-      controls the tolerance parameter on the column variance for the
-      method \code{MINE, MINEFDR, DTWMIC}.}
-      }
+		\item{\code{tol}}{1e-5 (default), a numeric value which
+		  controls the tolerance on the variable variance. In particular
+		  this parameter is passed to a function which controls the
+		  variance of each feature. The function returns the indexes of
+		  the features with variance <\code{tol}. Indexes refers to
+		  1-based column numbers of the original dataset.}
+		\item{\code{var.thr}}{1e-5 (default), a numeric value which
+		  controls the tolerance parameter on the column variance for the
+		  method \code{MINE, MINEFDR, DTWMIC}.}
+		\item{use}{\code{"complete.obs"} (default),
+		  an optional character string giving a method for computing
+		  covariances in the presence of missing values.  This must be
+		  (an abbreviation of) one of the strings \code{"all.obs"}, \code{"complete.obs"} or
+		  \code{"pairwise.complete.obs"}.}
+		
+	  }
     }
   }
 }
@@ -242,7 +248,7 @@ alpha=0.6, C=15,DP=1, \dots)
 \dontrun{
 data(Spellman, package="minerva")
 dim(Spellman)
-A <- mat2adj(Spellman,method="cor")
+A <- mat2adj(Spellman,method="cor", n.cores=1)
 dim(A)
 }
 }

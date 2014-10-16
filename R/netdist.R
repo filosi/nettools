@@ -53,7 +53,7 @@ netdist.matrix <- function(x, h=NULL, d="HIM", ga=NULL, components=TRUE, ...){
         stop("components must be TRUE or FALSE")
     }else{
       comp <- FALSE
-      warning("components parameter will be ignored", call. = FALSE)
+      # warning("components parameter will be ignored", call. = FALSE)
     }
   }
 
@@ -146,7 +146,7 @@ netdist.list <- function(x, d="HIM", ga=NULL, components=TRUE, ...){
 
   ## add a check so that an unexisting parameter cannot be passed
   if(sum(id.Call[-1]==0)==1){
-    warning("The parameter '",names(Call)[which(id.Call==0)[2]],"' will be ignored",call.=FALSE)
+    warning("For netdist function the parameter '",names(Call)[which(id.Call==0)[2]],"' will be ignored",call.=FALSE)
   }
   if(sum(id.Call[-1]==0)>1){
     msg <- "The following parameters will be ignored:\n"
@@ -323,7 +323,6 @@ Lap <- function(x,...){
   diag(L) <- D
   return(L)
 }
-
 
 ## Him distance
 ##----------------------------------------

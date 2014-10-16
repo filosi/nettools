@@ -4,27 +4,23 @@
 \alias{NetTools}
 \alias{netTools}
 \docType{package}
-\title{
-  A collection of tools for network analysis
-}
-\description{
-  This package provides a collection of methods for variable association
-  inference in order to predict the network structure underlying the data.
-  A collection of quantitative methods for network comparison is
-  provided within the package.
-}
+\title{ A Network Comparison Framework}
+\description{ This package provides a collection of network inference
+  methods for co-expression networks, quantitative network distances and
+  a novel framework for network stability analysis.
+  }
 
 \details{
   Summary:
   \tabular{ll}{
     Package: \tab nettools\cr
     Type: \tab Package\cr
-    Version: \tab 1.0.0\cr
+    Version: \tab 1.0.2\cr
     Date: \tab \cr
     Depends: R (>= 2.14.1), methods
     Imports: WGCNA, minet, rootSolve, dtw, Matrix, parallel, minerva,
-    combinat
-    License: CC BY-NC-SA 3.0
+    combinat, igraph
+    License: CC BY-NC-SA 4.0
   }
 }
 
@@ -41,7 +37,6 @@
     (2014) \emph{Stability Indicators in Network Reconstruction,
     PLOSONE}\cr
 
-
     P. Langfelder, S. Horvath (2008) \emph{WGCNA: an R package for
     weighted correlation network analysis. BMC Bioinformatics 2008,
     9:559}\cr
@@ -51,12 +46,10 @@
     based Network Inference. BMC Bioinformatics}.
     \url{http://www.biomedcentral.com/1471-2105/9/461}\cr
 
-
     D. Albanese, M.Filosi, R. Visintainer, S. Riccadonna, G. Jurman,
     C. Furlanello (2012). \emph{minerva and minepy: a C engine for the
     MINE suite and its R, Python and MATLAB wrappers, Bioinformatics 2012}.
     \url{http://mpba.fbk.eu/cmine}\cr
-
 
     D. Reshef, Y. Reshef, H. Finucane, S. Grossman, G. McVean, P.
     Turnbaugh, E. Lander, M. Mitzenmacher, P. Sabeti. (2011)

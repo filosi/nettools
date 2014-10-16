@@ -36,10 +36,21 @@ ipsen <- function(object, ga=NULL, ...){
     cl <- makeCluster(n.cores)
     
     ## Eval needed function on nodes
-    clusterEvalQ(cl,{K <- nettools:::K
-                     rho <- nettools:::rho
-                     lorentz <- nettools:::lorentz
+    clusterEvalQ(cl,{K <- function(mygamma,given_omega){
+      return(1/integrate(lorentz,lower=0,upper=Inf,mygamma=mygamma,given_omega=given_omega, stop.on.error = FALSE)$value)
+    }
+                     rho <- function(omega, mygamma, ll){
+                       ll[[2]]*lorentz(omega,mygamma,ll[[1]])
+                     }
+                     lorentz <- function(omega,mygamma,given_omega){
+                       l <-0
+                       for(i in 2:length(given_omega)){
+                         l = l + mygamma/( (omega-given_omega[i])**2+mygamma**2)                          }
+                       return(l)
+                     }
                    })
+    
+
     
     if (verbose)
       cat("Start computing eigenvalues with multiple cores\n")

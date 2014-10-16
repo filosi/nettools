@@ -1,18 +1,17 @@
 Package: nettools
 Type: Package
-Title: A comprehensive network analysis tool: from inference method to distances between networks and network stability 
-Version: 1.0.0
-Date: 2014-08-18
+Title: A Network Comparison Framework
+Version: 1.0.2
+Date: 2014-10-08
 Authors@R: c(person("Michele","Filosi",role=c("aut","cre"), email = "filosi@fbk.eu"),
 	   person("Roberto", "Visintainer", role = "aut", email = "visintainer@fbk.eu"),
-	   person("Samantha", "Riccadonna", role = "aut", email = "riccadonna@fbk.eu"), 
+	   person("Samantha", "Riccadonna", role = "aut", email = "samantha.riccadonna@fmach.it"), 
 	   person("Giuseppe", "Jurman", role = "ctb", email = "jurman@fbk.eu"), 
 	   person("Cesare", "Furlanello", role = "ctb", email = "furlan@fbk.eu"))
 Maintainer: Michele Filosi <filosi@fbk.eu>
 Depends: R (>= 2.14.1), methods
-Suggests: igraph
-Imports: WGCNA, minet, rootSolve, dtw, Matrix, parallel, minerva, combinat
-Description: Collect the functions for network analysis. Creating adjacency matrix and compute distances between networks
-License: CC BY-NC-SA 3.0
+Imports: parallel, rootSolve, dtw, WGCNA, minet, Matrix, minerva, combinat, igraph
+Description: A collection of network inference methods for co-expression networks, quantitative network distances and a novel framework for network stability analysis.
+License: CC BY-NC-SA 4.0 
 Packaged: 2012-11-27 21:24:00 UTC; michele
-Author: Michele Filosi [aut, cre], Roberto Visintainer [aut], Samantha Riccadonna [ctb], Giuseppe Jurman [ctb], Cesare Furlanello [ctb]
+Author: Michele Filosi [aut, cre], Roberto Visintainer [aut], Samantha Riccadonna [aut], Giuseppe Jurman [ctb], Cesare Furlanello [ctb]
