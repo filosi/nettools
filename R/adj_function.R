@@ -9,7 +9,6 @@ Adjcor <- function(x,method='pearson',...){
   } else {
     use <- "all.obs"
   }
-
   Adj <- abs(cor(x,method=method, use=use))
   diag(Adj) <- 0
 

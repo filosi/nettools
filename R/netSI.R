@@ -10,7 +10,7 @@ netSI <- function(x,indicator="all", d='HIM', adj.method='cor',
   id.Call <- match( names(Call),c("x", "indicator", "d", "adj.method" , 
                                   "method","k","h","n.cores","save","verbose",
                                   "FDR","P","measure","alpha","C","DP","var.thr",
-                                  "components","n.nodes","ga","sseed","rho"), nomatch=0)
+                                  "components","n.nodes","ga","sseed","rho", "use"), nomatch=0)
   if(sum(id.Call[-1]==0)==1){
     warning("The parameter '",names(Call)[which(id.Call==0)[2]],"' will be ignored",call.=FALSE)
   }
@@ -138,7 +138,6 @@ netSI <- function(x,indicator="all", d='HIM', adj.method='cor',
   ADJcv <- vector("list",length=length(idxs))
   
   if(verbose==TRUE) cat("computing adjacency matrices...\n")
-  
   ## Compute the adjacency matrices for each resampling index
   if(!is.null(cl)){
     ## Parallel computation
@@ -146,18 +145,18 @@ netSI <- function(x,indicator="all", d='HIM', adj.method='cor',
       ss <- DAT[x,]
       tmp <- mat2adj(ss, method=method, ...)
       return(tmp)
-    },DAT=x,method=adj.method,...)
+    },DAT=x,method=adj.method, ...)
   } else {
     ## One core computation
     ADJcv <- lapply(X=idxs,FUN=function(x,DAT,method, ...){
       ss <- DAT[x,]
       tmp <- mat2adj(ss, method=method, ...)
       return(tmp)
-    },DAT=x,method=adj.method,...)
+    },DAT=x,method=adj.method, ...)
   }
   
   ##computing the adjacency matrix on the whole dataset
-  ADJall <- mat2adj(x=x,method=adj.method,...)
+  ADJall <- mat2adj(x=x,method=adj.method, ...)
   
   ## Compute the stability indicators
   netsi <- list()

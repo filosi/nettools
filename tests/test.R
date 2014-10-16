@@ -49,6 +49,6 @@ netdist(aadj, badj, d="ips",gamma=0.09, n.cores=1)
 ##-------------------------------------------------
 ## Computing stability indicators
 ##-------------------------------------------------
-ssind <- netSI(a, n.cores=1)
+ssind <- netSI(a, n.cores=1, use="pair")
 
 

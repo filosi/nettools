@@ -10,7 +10,7 @@ mat2adj.data.frame <- function(x,...){
 }
 setMethod("mat2adj","data.frame",mat2adj.data.frame)
 
-mat2adj.matrix <- function(x,method='cor',FDR=1e-3,P=6,measure=NULL,alpha=0.6,C=15,DP=1,...){
+mat2adj.matrix <- function(x,method='cor',FDR=1e-3,P=6,measure=NULL,alpha=0.6,C=15,DP=1, ...){
 
   METHODS <- c('cor','WGCNA','WGCNAFDR','bicor',
                'bicorFDR','TOM','ARACNE','CLR',
