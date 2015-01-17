@@ -21,6 +21,10 @@ importFrom("combinat",combn)
 ## igraph
 importFrom("igraph", get.adjacency, get.edge.attribute)
 
+## Compile Rcpp functions
+useDynLib(nettools)
+importFrom(Rcpp, sourceCpp)
+
 ## Exporting all generic methods for Adjacency
 ## exportPattern("mat2adj")
 exportMethods(mat2adj)
@@ -31,6 +35,10 @@ exportMethods(mat2adj)
 ## Export methods for distances
 export(netdist)
 
+## Export methods for multilayer network distance
+export(mpnetdist)
+
 ## Export methods for network stability
 export(netSI)
+
 
