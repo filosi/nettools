@@ -1,3 +1,33 @@
+/*  
+	nettools R package
+    
+    This code is written by Michele Filosi <michele.filosi@gmail.com>.
+    Copyright (C) 2012 Michele Filosi, Copyright (C) 2012 Fondazione
+    Bruno Kessler.
+
+    References: 
+	a) A. Sole-Ribalta, M. De Domenico, N.E. Kouvaris, A. Diaz-Guuilera, 
+	   S. Gomez, A. Arenas.
+	   Spectral properties of the Laplacian of multiplex networks.
+	   arXiv: 1307.2090v1
+	
+    b) M. Filosi, R. Visintainer, S. Riccadonna, G. Jurman, C. Furlanello
+       Stability Indicators in Network Reconstruction, PLOSONE 2014
+    
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program. If not, see <http://www.gnu.org/licenses/>.
+*/
+
 #include <Rcpp.h>
 #include <stdlib.h>
 #include <stdio.h>
@@ -12,15 +42,21 @@ array3d *readarray(double *mod, int *dim, int n){
   array3d *myarray;
   int i, j, s, offset;
   
+  // Initialize array3d structure
   myarray = (array3d *) malloc (sizeof(array3d));
+
+  // Array dimensions
   myarray->dim = (int *) malloc (n * sizeof(int));
   
+  // Initialize array dimension
   for (i=0; i<n; i++){
 	myarray->dim[i] = dim[(n - (i+1))];
   }
   
+  // Allocate space for the numeric array
   myarray->A = (double ***) malloc (myarray->dim[0] * sizeof(double **));
   
+  // Initialize the array with the input values
   for (i=0; i<myarray->dim[0]; i++){
   	myarray->A[i] = (double **) malloc (myarray->dim[1] * sizeof(double *));
   	offset = myarray->dim[1] * myarray->dim[2] * i;
@@ -36,6 +72,12 @@ array3d *readarray(double *mod, int *dim, int n){
   return myarray;
 }
 
+
+/* Compute the degrees of each matrix in the array3d. Namely for the
+   matrix defined by slicing the 3 dimension array3d -> dim[2] 
+
+   Returns a bi-dimensional array
+*/
 double **arrdegree(array3d *myarray){
   
   double **degree;
