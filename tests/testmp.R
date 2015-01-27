@@ -1,11 +1,5 @@
 library(nettools)
 
-library(parallel)
-library(minerva)
-
-source("../R/adj_function.R")
-source("../R/mat2adj.R")
-
 ## Create toy dataset
 a <- matrix(rnorm(1000),ncol=100)
 b <- matrix(rnorm(1000),ncol=100)
