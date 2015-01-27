@@ -25,7 +25,7 @@ mpnetdist(x,y, d="HIM", ga=NULL, components=TRUE, \dots)
   \item{components}{\code{TRUE} (default), to obtain the components 
     (Hamming and Ipsen-Mikhailov) for \code{method=HIM}; 
     otherwise the function returns only the HIM value.
-    If \code{method} is set to \code{hamming} or \code{ipsen} it will be ignored.
+    If \code{method} is set to \code{hamming} or \code{ipsen} it will be ignored.}
   \item{\dots}{Additional
 	arguments to be passed to the downstream functions. Normally the
 	argument passed through \dots are processed by the functions which
