@@ -1,5 +1,11 @@
 library(nettools)
 
+library(parallel)
+library(minerva)
+
+source("../R/adj_function.R")
+source("../R/mat2adj.R")
+
 ## Create toy dataset
 a <- matrix(rnorm(1000),ncol=100)
 b <- matrix(rnorm(1000),ncol=100)
@@ -26,7 +32,12 @@ W <- matrix(c(0,1,1,0,1,0,1,1,1,1,0,1,0,1,1,0), ncol=4)
 
 LI <- S - W
 
-dd <- mpnetdist(net1, net2, n.cores=1)
+dd <- mpnetdist(net1, net2, d="HIM",n.cores=1, components=FALSE)
+
+ll <- IntraAdj(myarr)
+ll2 <- IntraAdj(myarr)
+
+
 
 ## Ll <- intraLaplacian(myarr)
 ## Li <- directProd(LI, n=7)

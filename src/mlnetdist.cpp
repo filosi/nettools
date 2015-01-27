@@ -104,26 +104,38 @@ double **arrdegree(array3d *myarray){
 }
 
 
+/* 
+  This function copy the original array and 
+  compute the laplacian for each adjacency matrix.
+*/
 void arrLap (array3d **myarray){
   
   int i, j, s;
   double **mydegree;
   array3d *myarrtmp = *myarray;
   
+  /* Compute the degree array for each layer */
   mydegree = arrdegree(myarrtmp);
 
   for (i=0; i<myarrtmp->dim[0]; i++){
   	for (j=0; j<myarrtmp->dim[1]; j++){
   	  for (s=0; s<myarrtmp->dim[2]; s++){
 		if (j == s){
+		  /* Assign degree onto the major diagonal */
 		  myarrtmp->A[i][j][s] = mydegree[i][s];
 		} else {
+		  /* Fill the off-diagonal positions of the Laplacian by slide */
 		  myarrtmp->A[i][j][s] = (-1 * myarrtmp->A[i][j][s]);
 		}
   	  }
   	}
   }
-  Free(mydegree);
+
+  // Free degree array
+  for (i=0; i<myarrtmp->dim[0]; i++){
+	free(mydegree[i]);
+  }
+  free(mydegree);
 }
 
 /*
@@ -186,34 +198,18 @@ NumericMatrix intraLaplacian(NumericVector mod) {
   	}
   }
 
-
-  // Free memory
+  /* Free multi-slice array */
   for (s=0; s<myarray->dim[0]; s++){
   	for (i=0; i<myarray->dim[1]; i++){
-  	  Free(myarray->A[s][i]);
+  	  free(myarray->A[s][i]);
   	}
-  	Free(myarray->A[s]);
+  	free(myarray->A[s]);
   }
-  Free(myarray->A);
-  Free(myarray->dim);
-  Free(myarray);
+  free(myarray->A);
+  free(myarray->dim);
+  free(myarray);
   
-  /* Slices */
-  // for (s=0; s<mydim[2]; s++){
-  // 	offset = (p*p*s);
-	
-  // 	/* Adj Mat */
-  // 	for (i=0; i<p; i++){
-  // 	  y = (p * s) + i;
-  // 	  for (j=i+1; j<p; j++){
-  // 		x = (p * s) + j;
-  // 		tmp = mod[offset + (p*i) + j];
-  // 		LL(y,x) = tmp;
-  // 		LL(x,y) = tmp;
-  // 	  }
-  // 	}
-  // }
-   
+  /* Return the intra-Laplacian */
   return LL;
 }
 
@@ -231,8 +227,8 @@ NumericMatrix intraLaplacian(NumericVector mod) {
    Outputs:
    NumericMatrix -> a numerical matrix of n x #layers composed as:
    Li KroenekercProd I_(n,n)
-   
 */
+
 // [[Rcpp::export]]
 NumericMatrix directProd(NumericMatrix Li, int n) {
   IntegerVector mydim;
@@ -244,9 +240,10 @@ NumericMatrix directProd(NumericMatrix Li, int n) {
   /* Number of layers */
   p = mydim[0];
 
+  /* Alloc the space to store the inter-Laplacian */
   NumericMatrix LI(n*p,n*p);
 
-  /* Initialize and fill the matrix */
+  /* Initialize and fill the matrix with zeros */
   for (i=0; i<(n*p); i++){
   	for (j=i+1; j<(n*p); j++){
   	  LI(i,j) = 0.0;
@@ -264,7 +261,44 @@ NumericMatrix directProd(NumericMatrix Li, int n) {
 	}
   }
   
+  /* Return inter-Laplacian matrix */
   return LI;
 }
 
+// [[Rcpp::export]]
+NumericMatrix IntraAdj(NumericVector mod) {
+  IntegerVector mydim;
+  mydim = as<IntegerVector>(mod.attr("dim"));
+  int i, j, l, n, s, x, y, offset;
+  double tmp;
+  
+  l = mydim[2];
+  n = mydim[0];
+ 
+  /* Initialize the matrix nodes by layer */
+  NumericMatrix LL(n*l, n*l);
+  for (i=0; i<(n*l); i++){
+  	for (j=i+1; j<(n*l); j++){
+  	  LL(i,j) = 0.0;
+  	  LL(j,i) = 0.0;
+  	}
+  }
+
+  /* Fill the matrix with inter-layer Laplacian */
+  for (s=0; s<l; s++){
+  	offset = n * n * s;
+	for (i=0; i<n; i++){
+	  y = (n * s) + i;
+	  for (j=i; j<n; j++){
+  		x = (n * s) + j;
+  		tmp = mod[(offset + (n * i) + j)];
+  		LL(x,y) = tmp;
+  		LL(y,x) = tmp;
+  	  }
+  	}
+  }
+
+  /* Return the intra-Laplacian */
+  return LL;
+}
 
