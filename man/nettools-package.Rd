@@ -15,10 +15,10 @@
   \tabular{ll}{
     Package: \tab nettools\cr
     Type: \tab Package\cr
-    Version: \tab 1.0.3\cr
+    Version: \tab 1.0.4\cr
     Date: \tab \cr
     Depends: R (>= 2.14.1), methods
-    Imports: WGCNA, minet, rootSolve, dtw, Matrix, parallel, minerva,
+    Imports: WGCNA, minet, rootSolve, dtw, Matrix, parallel, minerva, Rcpp,
     combinat, igraph
     License: CC BY-NC-SA 4.0
   }
@@ -41,7 +41,6 @@
     S. gomez, A. Arenas \emph{Spectral Properties of the Laplacian of
 	multiplex networks, 2013, arXiv:1307.2090v1}\cr
 
-  
     P. Langfelder, S. Horvath (2008) \emph{WGCNA: an R package for
     weighted correlation network analysis. BMC Bioinformatics 2008,
     9:559}\cr

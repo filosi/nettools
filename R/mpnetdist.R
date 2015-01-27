@@ -89,7 +89,6 @@ mpnetdist <- function(x, y, d="HIM", ga=NULL, components=TRUE, ...){
 }
 
 
-
 ## This function computes the Laplacian for a multiplex network
 mpLap <- function(x, nodes, ...){
   lx <- Lap(x[[1]])

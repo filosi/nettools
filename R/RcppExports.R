@@ -9,3 +9,7 @@ directProd <- function(Li, n) {
     .Call('nettools_directProd', PACKAGE = 'nettools', Li, n)
 }
 
+IntraAdj <- function(mod) {
+    .Call('nettools_IntraAdj', PACKAGE = 'nettools', mod)
+}
+

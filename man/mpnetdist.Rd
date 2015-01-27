@@ -9,15 +9,23 @@
 
 %- maybe also 'usage' for other objects documented here.
 \usage{
-mpnetdist(x,y, ga=NULL, \dots)
+mpnetdist(x,y, d="HIM", ga=NULL, components=TRUE, \dots)
 }
 
 \arguments{
   \item{x}{A list object, see Description for more details.}
   \item{y}{A list object, see Description for more details.}
+  \item{d}{\code{HIM} (default), character string containing a valid method.
+    Accepted values are: \code{"IM"}, \code{"ipsen"}, \code{"Ipsen"}, 
+    \code{"IpsenMikhailov"}, or \code{"Ipsen-Mikhailov"}, for Ipsen-Mikhailov distance
+    and \code{"H"}, \code{"hamming"}, or \code{"Hamming"} for Hamming distance.}
   \item{ga}{\code{NULL} (default), a numeric value for the gamma
 	parameter.  If \code{ga=NULL} an optimal value based on the number of
 	nodes in the adjacency matrix is computed.}
+  \item{components}{\code{TRUE} (default), to obtain the components 
+    (Hamming and Ipsen-Mikhailov) for \code{method=HIM}; 
+    otherwise the function returns only the HIM value.
+    If \code{method} is set to \code{hamming} or \code{ipsen} it will be ignored.
   \item{\dots}{Additional
 	arguments to be passed to the downstream functions. Normally the
 	argument passed through \dots are processed by the functions which

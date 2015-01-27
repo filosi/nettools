@@ -246,7 +246,7 @@ netdist.list <- function(x, d="HIM", ga=NULL, components=TRUE, ...){
       dd <- list(HIM=dd)
     } 
   }
-
+  
   ## Return a distance matrix
   return(dd)
 }
