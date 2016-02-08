@@ -1,5 +1,6 @@
 .Rhistory
 *.*~
+*.Rout
 *.RData
 *out
 *#

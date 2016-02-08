@@ -19,16 +19,17 @@ cd ~/Dowloads
 
 **Unpack it with:**
 ``` 
-unzip nettools-dev.zip
+unzip nettools-master.zip
 ```
 
 **Build the binary for R**
-``` CMD build nettools-dev
-R CMD build nettoo-dev
+``` 
+R CMD build nettools-master
+```
 
 **Install it using (change the version according to the latest version):**
 ``` 
-R CMD INSTALL nettools_1.0.4.tar.gz
+R CMD INSTALL nettools_X.Y.Z.tar.gz
 ```
 
 ### Option 2
