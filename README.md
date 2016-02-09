@@ -1,17 +1,40 @@
 # nettools
+This package is available on [CRAN](https://cran.r-project.org/web/packages/nettools/index.html).
 
-## R package for network analysis
-
+## R package for differential network analysis
 branches:
-* master 		-> version freeze to 0.9.4
-* dev 		-> development version for adding network stability functions merged into master
+* master 		-> version freeze to 1.0.4
+* dev 		-> development version only unstable and newe functions
+
+
+
+
 
 ## Installation instructions
 
+### Package Dependecy
+**From CRAN**
+```
+install.packages(c("rootSolve", "dtw", "minerva", "combinat", "WGCNA"))
+```
+
+**From bioconductor**
+```
+source("https://bioconductor.org/biocLite.R")
+biocLite("impute", "minet", "AnnotationDbi", "GO.db")
+```
+
+**Optional**
+```
+install.packages(c("igraph", "Matrix", "Rcpp"))
+```
+
 ### Option 1 
 
-**Download the zip file**
-
+**Download the zip file from github**
+```
+https://github.com/MPBA/nettools/archive/master.zip
+```
 **Move to the download directory**
 ``` 
 cd ~/Dowloads
@@ -37,6 +60,7 @@ R CMD INSTALL nettools_X.Y.Z.tar.gz
 Directly from R with the devtools library (https://github.com/hadley/devtools) installed 
 
 ``` R
+install.packages("devtools")
 library(devtools)
 install_github("nettools","MPBA")
 ```
