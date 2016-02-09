@@ -106,8 +106,8 @@ netdist(x,\dots)
   vector with 3 values is returned, respectively  the
   \emph{Hamming}(\code{H}) distance, the \emph{Ipsen-Mikhailov}
   \code{IM} distance and the \emph{HIM} distance.
-  If a \code{list} object is provided as input a distance matrix with
-  all the possible pairwise comparison is returned
+  If a \code{list} object is provided as input, a distance matrix with
+  all the possible pairwise comparison is returned.
 }
 \references{
   G. Jurman, R. Visintainer, M. Filosi, S. Riccadonna, C. Furlanello
@@ -149,6 +149,37 @@ ddist <- netdist(alist, d="HIM", n.cores=1)
 dd <- netdist(aa,bb,n.cores=4)
 }
 
+## Use of network distance as a kernel (need kernlab package)
+\dontrun{
+library(kernlab)
+## Create random adjacency matrix
+ll <- lapply(1:100, function(x){mat2adj(matrix(rnorm(100), ncol=10),
+method="cor", n.cores=6)})
+
+## Kernel function based on HIM distance
+himdot <- function(adjlist, gamma=1, rho=1, n.cores=1){
+
+  ## Compute network distance matrix between all the network
+  dd <- netdist(adjlist, d="HIM", rho=rho, components=FALSE, n.cores=n.cores)
+  return(exp(-gamma * dd[[1]]**2))
+}
+
+## Assign label (0,1) to each network
+y <- rep(c(0,1),each=50)
+
+## We suggest to perform a grid search for tuning parameter gamma of the
+## kernel function and parameter C for the SVM.
+## For the purpose of this short tutorial, gamma and C are set to
+## default (1,1) respectively.
+## For further information have a look at the package "kernlab",
+## function "ksvm".
+
+## Compute the kernel matrix for the classifier
+K <- as.kernelMatrix(himdot(ll))
+
+## Train an SVM model on the kernel matrix
+svmmod <- ksvm(K, y, type="C-svc")
+}
 }
 % Add one or more standard keywords, see file 'KEYWORDS' in the
 % R documentation directory.
