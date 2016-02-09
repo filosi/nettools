@@ -20,6 +20,7 @@ ipsen <- function(object, ga=NULL, ...){
   if (!is.na(match("n.cores",names(list(...)))))
     n.cores <- list(...)[["n.cores"]]
 
+  ## Check if verbose output is needed
   verbose <- FALSE
   if (!is.na(match("verbose", names(list(...)))))
     verbose <- list(...)[["verbose"]]
@@ -48,9 +49,10 @@ ipsen <- function(object, ga=NULL, ...){
                          l = l + mygamma/( (omega-given_omega[i])**2+mygamma**2)                          }
                        return(l)
                      }
+                     spec <- function(mm){
+                       sort(eigen(mm)$values)
+                     }
                    })
-    
-
     
     if (verbose)
       cat("Start computing eigenvalues with multiple cores\n")
@@ -61,7 +63,7 @@ ipsen <- function(object, ga=NULL, ...){
       return(list(myomega,myk))
     })
 
-    stopCluster(cl)
+    # stopCluster(cl)
     
   } else {
     ## Computation on 1 CPU
@@ -74,13 +76,26 @@ ipsen <- function(object, ga=NULL, ...){
       return(list(myomega,myk))
     }, mygamma=optgamma, laplist=laplist, ...)
   }
-  mydistfun <- function(a,b, optgamma){
-    integrand <- function(omega, mygamma, given_omega_G, given_omega_H){
-      (rho(omega, optgamma,a)-rho(omega,optgamma,b))**2
+  if (exists("cl")){
+    clusterEvalQ(cl,{
+      mydistfun <- function(a,b, optgamma){
+        integrand <- function(omega, mygamma, given_omega_G, given_omega_H){
+          (rho(omega, optgamma,a)-rho(omega,optgamma,b))**2
+        }
+        tmp <- sqrt(integrate(integrand,lower=0,upper=Inf,mygamma=optgamma,given_omega_G=a[[1]],given_omega_H=b[[1]], stop.on.error=FALSE,rel.tol=.Machine$double.eps,subdivisions=1e4)$value)
+        return(tmp)
+      }
+    })
+  } else {
+      mydistfun <- function(a,b, optgamma){
+        integrand <- function(omega, mygamma, given_omega_G, given_omega_H){
+          (rho(omega, optgamma,a)-rho(omega,optgamma,b))**2
+        }
+        tmp <- sqrt(integrate(integrand,lower=0,upper=Inf,mygamma=optgamma,given_omega_G=a[[1]],given_omega_H=b[[1]], stop.on.error=FALSE,rel.tol=.Machine$double.eps,subdivisions=1e4)$value)
+        return(tmp)
+      }
     }
-    tmp <- sqrt(integrate(integrand,lower=0,upper=Inf,mygamma=optgamma,given_omega_G=a[[1]],given_omega_H=b[[1]], stop.on.error=FALSE,rel.tol=.Machine$double.eps,subdivisions=1e4)$value)
-    return(tmp)
-  }
+  
   if (verbose)
     cat("Start computing mutual distances\n")
   if (length(laplist) == 2){
@@ -90,11 +105,26 @@ ipsen <- function(object, ga=NULL, ...){
   } else {
     ## Compute mutual distances between all the matrices in the list
     idx <- combn(length(ll),2)
-    tmpdist <- sapply(1:dim(idx)[2], function(x,ll,optgamma, idx, ...){
-      if (verbose)
-        cat("D(",idx[1,x],",", idx[2,x],")\n")
-      mydistfun(ll[[idx[1,x]]], ll[[idx[2,x]]], optgamma)
-    }, ll=ll, optgamma=optgamma, idx=idx)
+
+    ## If a cluster exist launch distance computing on parallel
+    if (exists("cl")){
+      tmpdist <- parSapply(cl, 1:dim(idx)[2], function(x,ll,optgamma, idx, ...){
+        if (verbose)
+          cat("D(",idx[1,x],",", idx[2,x],")\n")
+        mydistfun(ll[[idx[1,x]]], ll[[idx[2,x]]], optgamma)
+      }, ll=ll, optgamma=optgamma, idx=idx)
+
+      ## Last command run on the cluster:
+      ## Stop the cluster
+      stopCluster(cl)
+      
+    } else {
+      tmpdist <- sapply(1:dim(idx)[2], function(x,ll,optgamma, idx, ...){
+        if (verbose)
+          cat("D(",idx[1,x],",", idx[2,x],")\n")
+        mydistfun(ll[[idx[1,x]]], ll[[idx[2,x]]], optgamma)
+      }, ll=ll, optgamma=optgamma, idx=idx)
+    }
     dist <- matrix(NA,ncol=length(ll), nrow=length(ll))
     dist[t(idx)] <- dist[t(idx)[,c(2,1)]] <- tmpdist
     diag(dist) <- 0
