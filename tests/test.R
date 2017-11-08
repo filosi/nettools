@@ -2,7 +2,7 @@
 ## Testing nettools usage
 ##--------------------------------------------------
 
-library(nettools)
+# library(nettools)
 
 ## Create toy dataset
 a <- matrix(rnorm(1000),ncol=100)
@@ -10,8 +10,8 @@ b <- matrix(rnorm(1000),ncol=100)
 
 ## Compute adjacency matrix!
 ## For different methods check the mat2adj help page!
-aadj <- mat2adj(a, method="MINE", n.cores=1)
-badj <- mat2adj(b, method="MINE", n.cores=1)
+aadj <- mat2adj(a, infer.method="MINE", n.cores=1)
+badj <- mat2adj(b, infer.method="MINE", n.cores=1)
 
 ## Compute the him distance between the 2 matrix
 

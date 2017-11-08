@@ -21,7 +21,8 @@ test_that("Test WGCNA:",{
 })
 
 test_that("Test bicorFDR:",{
-    aadj <- mat2adj(a, infer.method="bicorFDR", P=6, FDR=1e-2, n.cores=4, ciccio=3)
+    skip("Do not test multicore...")
+    aadj <- mat2adj(a, infer.method="bicorFDR", P=6, FDR=1e-2, n.cores=1, ciccio=3)
     dima <- dim(aadj)
     expect_equal(dima[1], 100)
     expect_equal(dima[2], 100)
