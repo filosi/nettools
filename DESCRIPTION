@@ -1,8 +1,8 @@
 Package: nettools
 Type: Package
 Title: A Network Comparison Framework
-Version: 1.0.4
-Date: 2016-02-09
+Version: 1.1.0
+Date: 2017-11-06
 Authors@R: c(person("Michele","Filosi",role=c("aut","cre"), email = "filosi@fbk.eu"),
 	   person("Roberto", "Visintainer", role = "aut", email = "visintainer@fbk.eu"),
 	   person("Samantha", "Riccadonna", role = "aut", email = "samantha.riccadonna@fmach.it"), 
@@ -11,8 +11,7 @@ Authors@R: c(person("Michele","Filosi",role=c("aut","cre"), email = "filosi@fbk.
 Maintainer: Michele Filosi <filosi@fbk.eu>
 Depends: R (>= 2.14.1), methods
 LinkingTo: Rcpp
-Imports: parallel, Rcpp, rootSolve, dtw, WGCNA, minet, Matrix, minerva, combinat, igraph
+Imports: parallel, Rcpp, rootSolve, dtw, WGCNA, minet, Matrix, minerva, combinat, igraph, c3net, R.utils
 Description: A collection of network inference methods for co-expression networks, quantitative network distances and a novel framework for network stability analysis.
 License: CC BY-NC-SA 4.0 
-Packaged: 2012-11-27 21:24:00 UTC; michele
 Author: Michele Filosi [aut, cre], Roberto Visintainer [aut], Samantha Riccadonna [aut], Giuseppe Jurman [ctb], Cesare Furlanello [ctb]

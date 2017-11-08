@@ -1,127 +1,87 @@
 ## Normal correlation (default pearson)
 Adjcor <- function(x,method='pearson',...){
 
-  ## Check for use argument
-  param <- list(...)
-  nn <- names(param)
-  if (!is.na(match("use", nn))){
-    use <- param$use
-  } else {
-    use <- "all.obs"
-  }
-  Adj <- abs(cor(x,method=method, use=use))
-  diag(Adj) <- 0
-
-  ## use argument, remove NA from Adj and set to 0
-  na.method <- pmatch(use, c("all.obs", "complete.obs", "pairwise.complete.obs", 
-                             "everything"))
-  if (na.method %in% c(2L, 3L))
-      Adj[is.na(Adj)] <- 0
-  
-  return(Adj)
+    Adj <- abs(doCall(cor, x=x, method=method, ...))
+    diag(Adj) <- 0
+    
+    return(Adj)
 }
 
 ## WGCNA method with cor^P
-AdjWGCNA <- function(x,P,...){
-  ## Default P = 6 send a warning if P!=6
-  if (P!=6)
-    warning(paste("WGCNA computed with P =",P,"!!!"))
+AdjWGCNA <- function(x,P=6, use="all.obs", ...){
+    ## Default P = 6 send a warning if P!=6
+    if (P!=6)
+        warning(paste("WGCNA computed with P =",P,"!!!"))
+    
+    ## Compute the adjacency matrix (no auto-loop)
+    Adj <- doCall(unsignedAdjacency, datExpr=x, power = P, corFnc = 'cor',
+                  corOptions=paste("use=\'", use,"\'", sep=""), ...)
+    diag(Adj) <- 0
 
-  ## Check for use argument in ...
-  param <- list(...)
-  nn <- names(param)
-  if (!is.na(match("use", nn))){
-    use <- param$use
-  } else {
-    use <- "all.obs"
-  }
-
-  ## Compute the adjacency matrix (no auto-loop)
-  Adj <- unsignedAdjacency(x,
-                           power = P,
-                           corFnc = 'cor',
-                           corOptions=paste("use=\'", use,"\'", sep=""))
-  diag(Adj) <- 0
-  
-  ## use argument, remove NA from Adj and set to 0
-  na.method <- pmatch(use, c("all.obs", "complete.obs", "pairwise.complete.obs", 
-                             "everything"))
-  if (na.method %in% c(2L, 3L))
-    Adj[is.na(Adj)] <- 0
-
-  ## return Adj
-  return(Adj)
+    return(Adj)
 }
 
 
 ## WGCNA FDR
-AdjWGCNAFDR <- function(x,FDR,P,...){
-  Adj <- AdjWGCNA(x,P=P, ...)
-  idx <- as.matrix(expand.grid(seq(dim(Adj)[1]),seq(dim(Adj)[2])))
-  
-  ## check for multiple cores
-  if (!is.na(match("n.cores", names(list(...))))){
-    n.cores <- list(...)[["n.cores"]]
-    if (is.numeric(n.cores) && n.cores > 1 && detectCores()>1){
-      if (n.cores > detectCores())
-        n.cores <- detectCores() - 1
-      cl <- makeCluster(n.cores)
+AdjWGCNAFDR <- function(x,FDR=1e-3,P=1, n.cores=1, ...){
+    if (P > 1){
+        P <- 1
+        warning("Using WGCNAFDR method with P > 1, not yet implemented,\n P will be ignored")
+    }
+
+    Adj <- AdjWGCNA(x,P=P, ...)
+    idx <- as.matrix(expand.grid(seq(dim(Adj)[1]),seq(dim(Adj)[2])))
+
+    ## check for multiple cores
+    if (!is.na(match("n.cores", names(list(...))))){
+        n.cores <- list(...)[["n.cores"]]
+        if (is.numeric(n.cores) && n.cores > 1 && detectCores()>1){
+            if (n.cores > detectCores())
+                n.cores <- detectCores() - 1
+            cl <- makeCluster(n.cores)
+        } else {
+            cl <- NULL
+        }
     } else {
-      cl <- NULL
+        cl <- NULL
     }
-  } else {
-    cl <- NULL
-  }
 
-  ## Start the FDR computation using fdrrun function
-  for (i in seq(1/FDR)){
-    if (nrow(idx) > 2){
-      cormat <- fdrrun(x,idx,FUN=cor,cl,...)
-      idx <- which(Adj>cormat,arr.ind=TRUE)
+    ## Start the FDR computation using fdrrun function
+    for (i in seq(1/FDR)){
+        if (nrow(idx) > 2){
+            cormat <- fdrrun(x,idx,FUN=cor,cl,...)
+            idx <- which(Adj>cormat,arr.ind=TRUE)
+        }
     }
-  }
 
-  ## create the adjacency matrix after the fdr filter
-  adjfinal <- matrix(0,ncol=dim(Adj)[2],nrow=dim(Adj)[1],
-                     dimnames=list(rownames(Adj),colnames(Adj)))
-  if(dim(idx)[1]>0){
-    for (i in seq(dim(idx)[1])){
-      adjfinal[idx[i,1],idx[i,2]] <- Adj[idx[i,1],idx[i,2]]
+    ## create the adjacency matrix after the fdr filter
+    adjfinal <- matrix(0,ncol=dim(Adj)[2],nrow=dim(Adj)[1],
+                       dimnames=list(rownames(Adj),colnames(Adj)))
+    if(dim(idx)[1]>0){
+        for (i in seq(dim(idx)[1])){
+            adjfinal[idx[i,1],idx[i,2]] <- Adj[idx[i,1],idx[i,2]]
+        }
     }
-  }
-  return(adjfinal)
+    return(adjfinal)
 }
 
 ## Bicor
-Adjbicor <- function(x,...){
-  ## Check for use argument in ...
-  param <- list(...)
-  nn <- names(param)
-  if (!is.na(match("use", nn))){
-    use <- param$use
-  } else {
-    use <- "all.obs"
-  }
+Adjbicor <- function(x, ...){
 
-  ## compute the matrix
-  Adj <- abs(bicor(x, use=use))
-  diag(Adj) <- 0
+    ## compute the matrix
+    ## Adj <- abs(bicor(x, use=use, ...))
+    Adj <- abs(doCall(bicor, x=x, ...))
+    diag(Adj) <- 0
 
-  ## use argument, remove NA from Adj and set to 0
-  na.method <- pmatch(use, c("all.obs", "complete.obs", "pairwise.complete.obs", 
-                             "everything"))
-  if (na.method %in% c(2L, 3L))
-    Adj[is.na(Adj)] <- 0
-
-  ## Return the Adj matrix
-  return(Adj)
+    ## Return the Adj matrix
+    return(Adj)
 }
 
 ## Bicor FDR
-AdjbicorFDR <- function(x,FDR,P,...){
+AdjbicorFDR <- function(x, FDR, ...){
     Adj <- Adjbicor(x, ...)
     idx <- as.matrix(expand.grid(seq(dim(Adj)[1]),seq(dim(Adj)[2])))
-
+    
     ## Check for multicore
     if (!is.na(match("n.cores", names(list(...))))){
       n.cores <- list(...)[["n.cores"]]
@@ -135,7 +95,6 @@ AdjbicorFDR <- function(x,FDR,P,...){
     } else {
       cl <- NULL
     }
-
     ## Start the FDR computation using fdrrun function
     for (i in seq(1/FDR)){
       if (nrow(idx) > 2){
@@ -158,55 +117,39 @@ AdjbicorFDR <- function(x,FDR,P,...){
 }
 
 ## TOM
-AdjTOM <- function(x,P,...){
-  if (P!=6)
-    warning(paste("WGCNA computed with P =",P,"!!!"))
-  Adj <- TOMsimilarityFromExpr(datExpr=x,
-                               power=P,
-                               corType="pearson",
-                               TOMType="unsigned",
-                               verbose=0)
-  diag(Adj) <- 0
-  return(Adj)
+AdjTOM <- function(x,P=6, ...){
+    if (P!=6)
+        warning(paste("WGCNA computed with P =",P,"!!!"))
+    
+    Adj <- doCall(TOMsimilarityFromExpr, datExpr=x, power=P,
+                  corType="pearson",
+                  TOMType="unsigned",
+                  verbose=0, ...)
+    diag(Adj) <- 0
+    return(Adj)
 }
 
 ## Aracne
-AdjARACNE <- function(x,...){
-  ## Check for use argument in ...
-  param <- list(...)
-  nn <- names(param)
-  if (!is.na(match("use", nn))){
-    use <- param$use
-  } else {
-    use <- "all.obs"
-  }
+AdjARACNE <- function(x, use='all.obs', ...){
 
-  ## mutual information estimation does not accept use paramter!
-  Adj <- minet(x,method="aracne",estimator="spearman")
-  diag(Adj) <- 0
+    ## mutual information estimation does not accept use paramter!
+    Adj <- doCall(minet, x=x, method="aracne",estimator="spearman", ...)
+    diag(Adj) <- 0
 
-  ## use argument, remove NA from Adj and set to 0
-  na.method <- pmatch(use, c("all.obs", "complete.obs", "pairwise.complete.obs", 
-                             "everything"))
-  if (na.method %in% c(2L, 3L))
-    Adj[is.na(Adj)] <- 0
-  
-  return(Adj)
+    ## use argument, remove NA from Adj and set to 0
+    na.method <- pmatch(use, c("all.obs", "complete.obs", "pairwise.complete.obs", 
+                               "everything"))
+    if (na.method %in% c(2L, 3L))
+        Adj[is.na(Adj)] <- 0
+    
+    return(Adj)
 }
 
 ## CLR normalized
-AdjCLR <- function(x,...){
-  ## Check for use argument in ...
-  param <- list(...)
-  nn <- names(param)
-  if (!is.na(match("use", nn))){
-    use <- param$use
-  } else {
-    use <- "all.obs"
-  }
+AdjCLR <- function(x, use='all.obs', ...){
 
-  ## mutual information estimation does not accept use paramter!
-  Adj <- minet(x,method="clr",estimator="spearman")
+    ## mutual information estimation does not accept use paramter!
+  Adj <- doCall(minet ,x=x, method="clr", estimator="spearman", ...)
   diag(Adj) <- 0
 
   ## use argument, remove NA from Adj and set to 0
@@ -215,23 +158,14 @@ AdjCLR <- function(x,...){
   if (na.method %in% c(2L, 3L))
     Adj[is.na(Adj)] <- 0
 
-  ## return Adj
   return(Adj)
 }
 
 ## MINE
-AdjMINE <- function(x,measure,alpha,C, var.thr=1e-10,...){
-  ## Check for use argument in ...
-  param <- list(...)
-  nn <- names(param)
-  if (!is.na(match("use", nn))){
-    use <- param$use
-  } else {
-    use <- "all.obs"
-  }
+AdjMINE <- function(x, measure='MIC', use='all.obs', ...){
 
   ## Infer the adjacency matrix
-  Adj <- mine(x,alpha=alpha, C=C,var.thr=var.thr, ...)[[measure]]
+  Adj <- doCall(mine, x=x, ...)[[measure]]
   
   ## Check whether the measure for MINE is available 
   if (is.null(Adj)){
@@ -287,16 +221,7 @@ AdjMINEFDR <- function(x,measure,alpha,C,FDR,...){
 
 
 ## DTWMIC
-AdjDTWMIC <- function(x,DP,...){
-  ## Check for use argument in ...
-  param <- list(...)
-  nn <- names(param)
-  if (!is.na(match("use", nn))){
-    use <- param$use
-  } else {
-    use <- "all.obs"
-  }
-
+AdjDTWMIC <- function(x, use='all.obs', ...){
   
   ## Infer the adjacency matrix
   Adj <- matrix(0,nrow=ncol(x),ncol=ncol(x))
@@ -317,6 +242,20 @@ AdjDTWMIC <- function(x,DP,...){
 
   ## Return Adj
   return(Adj)
+}
+
+
+Adjc3net <- function(x, use='all.obs', ...){
+
+    Adj <- doCall(c3net, dataset=t(x), network=FALSE, ...)
+    
+    ## use argument, remove NA from Adj and set to 0
+    na.method <- pmatch(use, c("all.obs", "complete.obs", "pairwise.complete.obs", 
+                               "everything"))
+    if (na.method %in% c(2L, 3L))
+        Adj[is.na(Adj)] <- 0
+    ## Return Adj
+    return(Adj)
 }
 
 ## Function for computing the FDR value on the null hypothesis

@@ -3,6 +3,12 @@
 ## Matrix, parallel, methods, rootSolve
 import(methods, Matrix, parallel, rootSolve)
 
+## Import R.utils
+importFrom("R.utils", "doCall")
+
+## Import function from stats package
+importFrom("stats", "cor", "integrate", "uniroot", "var")
+
 ## WGCNA: bicor, TOM, WGCNA
 importFrom("WGCNA",unsignedAdjacency,bicor,TOMsimilarityFromExpr)
 
@@ -21,9 +27,12 @@ importFrom("combinat",combn)
 ## igraph
 importFrom("igraph", get.adjacency, get.edge.attribute)
 
+## c3net
+importFrom("c3net", c3net)
+
 ## Compile Rcpp functions
 useDynLib(nettools)
-importFrom(Rcpp, sourceCpp)
+importFrom(Rcpp, evalCpp)
 
 ## Exporting all generic methods for Adjacency
 ## exportPattern("mat2adj")
