@@ -11,7 +11,7 @@ based on network distances.
 }
 \usage{
 netSI(x,indicator="all", d='HIM', adj.method='cor',
-method="montecarlo", k=3, h=20, n.cores, save=FALSE, verbose=TRUE, ...)
+resamp.method="montecarlo", k=3, h=20, n.cores, save=FALSE, verbose=TRUE, ...)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
@@ -26,13 +26,13 @@ method="montecarlo", k=3, h=20, n.cores, save=FALSE, verbose=TRUE, ...)
     giving one of the methods available for network inference. For
     details see \code{\link{mat2adj}}.
   }
-  \item{method}{\code{"montecarlo"} (default), a string identifying the
+  \item{resamp.method}{\code{"montecarlo"} (default), a string identifying the
     cross validation schema to be used for the stability computation.
     This must be one of the strings \code{montecarlo} (default),
     \code{LOO} for Leave One Out or \code{kCV} for k-fold Cross
     Validation.}
   \item{k}{3 (default) numeric value indicating the number of subset the
-    data will be splitted in. In case \code{method} is set to
+    data will be splitted in. In case \code{resamp.method} is set to
     \code{montecarlo} the 1-1/\code{k} samples are taken for the computation.
     In case \code{cvlab} is set to \code{loo} it should be set to 1,
     otherwise it will be automatically set to 1.

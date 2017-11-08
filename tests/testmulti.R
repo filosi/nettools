@@ -7,9 +7,9 @@ cc <- matrix(rnorm(1000),ncol=100)
 
 ## Compute adjacency matrix!
 ## For different methods check the mat2adj help page!
-aadj <- mat2adj(a, method="MINE", n.cores=1)
-badj <- mat2adj(b, method="MINE", n.cores=1)
-cadj <- mat2adj(cc, method="MINE", n.cores=1)
+aadj <- mat2adj(a, infer.method="MINE", n.cores=1)
+badj <- mat2adj(b, infer.method="MINE", n.cores=1)
+cadj <- mat2adj(cc, infer.method="MINE", n.cores=1)
 
 myarr <- array(data=NA, c(100,100,3))
 myarr[,,1] <- aadj
@@ -26,9 +26,9 @@ cc <- matrix(rnorm(1000),ncol=100)
 
 ## Compute adjacency matrix!
 ## For different methods check the mat2adj help page!
-aadj <- mat2adj(a, method="MINE", n.cores=1)
-badj <- mat2adj(b, method="MINE", n.cores=1)
-cadj <- mat2adj(cc, method="MINE", n.cores=1)
+aadj <- mat2adj(a, infer.method="MINE", n.cores=1)
+badj <- mat2adj(b, infer.method="MINE", n.cores=1)
+cadj <- mat2adj(cc, infer.method="MINE", n.cores=1)
 
 myarr <- array(data=NA, c(100,100,3))
 myarr[,,1] <- aadj

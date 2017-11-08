@@ -31,7 +31,7 @@ mat2adj(x,\dots)
 \method{mat2adj}{data.frame}(x, \dots)
 %% \S4method{mat2adj}{data.frame}(x, \dots)
 
-\method{mat2adj}{matrix}(x, infer.method='cor', \dots)
+\method{mat2adj}{matrix}(x, infer.method='cor', use='all.obs', \dots)
 
 %% \S4method{mat2adj}{matrix}(x,method='cor', FDR=1e-3, P=6,
 %% measure=NULL, alpha=0.6, C=15,DP=1, \dots)
@@ -209,7 +209,7 @@ mat2adj(x,\dots)
   C. Furlanello (2013). \emph{minerva and minepy: a C engine for the
     MINE suite and its R, Python and MATLAB wrappers, Bioinformatics}
   
-  \url{http://mpba.fbk.eu/cmine}\cr
+  \url{http://minepy.readthedocs.io/en/latest/}\cr
 
   M. Filosi, R. Visintainer, S. Riccadonna, G. Jurman, C. Furlanello
   (2014)\emph{Stability Indicators in Network Reconstruction,
@@ -235,7 +235,7 @@ mat2adj(x,\dots)
 \dontrun{
 data(Spellman, package="minerva")
 dim(Spellman)
-A <- mat2adj(Spellman,method="cor", n.cores=1)
+A <- mat2adj(Spellman, infer.method="cor", n.cores=1)
 dim(A)
 }
 }
