@@ -31,8 +31,7 @@ mat2adj(x,\dots)
 \method{mat2adj}{data.frame}(x, \dots)
 %% \S4method{mat2adj}{data.frame}(x, \dots)
 
-\method{mat2adj}{matrix}(x,method='cor', FDR=1e-3, P=6, measure=NULL,
-alpha=0.6, C=15,DP=1, \dots)
+\method{mat2adj}{matrix}(x, infer.method='cor', \dots)
 
 %% \S4method{mat2adj}{matrix}(x,method='cor', FDR=1e-3, P=6,
 %% measure=NULL, alpha=0.6, C=15,DP=1, \dots)
@@ -47,25 +46,13 @@ alpha=0.6, C=15,DP=1, \dots)
 %% }
 \arguments{
   \item{x}{ a matrix or data.frame of numerical values of N rows and P columns}
-  \item{method}{ a character string indicating which
+  \item{infer.method}{ a character string indicating which
     method will be used for inferring a relationship between two variables. This must
     be (an abbreviation of) one of \code{"cor"} (default), \code{"WGCNA"}, \code{"WGCNAFDR"},
     \code{"bicor"}, \code{"bicorFDR"}, \code{"TOM"}, \code{"ARACNE"},
     \code{"CLR"}, \code{"MINE"}, \code{"MINEFDR"}, \code{"DTWMIC"}}
-  \item{P}{6 (default), integer used as soft-thresholding power for network
-    construction, used by the \code{"WGCNA"} and \code{"TOM"} methods.}
-  \item{FDR}{1e-3 (default), a number which indicates the number of
-    values generated to compute the NULL hypothesis. To be used for
-    methods \code{"WGCNAFDR"}, \code{"MINEFDR"} and \code{"bicorFDR"}}
-  \item{measure}{\code{"MIC"} (default), a valid string indicating
-    the measure of the MINE suite to compute. One of \code{"MIC"},
-    \code{"MCN"}, \code{"MEV"}, \code{"MAS"} or \code{"MICR2"}.}
-  \item{alpha}{0.6 (default), the \code{alpha} argument to be
-    passed to the function \code{mine}. See also
-    \code{\link[minerva]{mine}}}
-  \item{C}{15 (default), an integer value to be passed at the mine function
-    main. Only for methods \code{"MINE"}  and \code{"MINEFDR"}.}
-  \item{DP}{1 (default), only for method \code{"DTWMIC"}.}
+  \item{use}{specifies handling of ‘NA’s. One of (unique abbreviations of)
+          "complete.obs", "pairwise.complete.obs"}
   \item{\dots}{Additional arguments to be passed to the downstream
     functions. Normally the argument passed through \dots are processed
     by the functions which compute the inference. Not all parameters are

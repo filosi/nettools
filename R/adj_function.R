@@ -221,7 +221,7 @@ AdjMINEFDR <- function(x,measure,alpha,C,FDR,...){
 
 
 ## DTWMIC
-AdjDTWMIC <- function(x, use='all.obs', ...){
+AdjDTWMIC <- function(x, use='all.obs', DP=1, ...){
   
   ## Infer the adjacency matrix
   Adj <- matrix(0,nrow=ncol(x),ncol=ncol(x))
