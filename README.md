@@ -7,15 +7,12 @@ branches:
 * dev 		-> development version only unstable and newe functions
 
 
-
-
-
 ## Installation instructions
 
 ### Package Dependecy
 **From CRAN**
 ```
-install.packages(c("rootSolve", "dtw", "minerva", "combinat", "WGCNA"))
+install.packages(c("infotheo", "rootSolve", "dtw", "minerva", "combinat", "WGCNA", "R.utils"))
 ```
 
 **From bioconductor**
@@ -33,7 +30,7 @@ install.packages(c("igraph", "Matrix", "Rcpp"))
 
 **Download the zip file from github**
 ```
-https://github.com/MPBA/nettools/archive/master.zip
+https://github.com/filosi/nettools/archive/master.zip
 ```
 **Move to the download directory**
 ``` 
@@ -62,5 +59,5 @@ Directly from R with the devtools library (https://github.com/hadley/devtools) i
 ``` R
 install.packages("devtools")
 library(devtools)
-install_github("nettools","MPBA")
+install_github("nettools","filosi")
 ```
