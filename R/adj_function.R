@@ -258,6 +258,20 @@ Adjc3net <- function(x, use='all.obs', ...){
     return(Adj)
 }
 
+Adjbc3net <- function(x, use='all.obs', ...){
+
+    Adj <- doCall(bc3net, dataset=t(x), network=FALSE, ...)
+    
+    ## use argument, remove NA from Adj and set to 0
+    na.method <- pmatch(use, c("all.obs", "complete.obs", "pairwise.complete.obs", 
+                               "everything"))
+    if (na.method %in% c(2L, 3L))
+        Adj[is.na(Adj)] <- 0
+    ## Return Adj
+    return(Adj)
+}
+
+
 ## Function for computing the FDR value on the null hypothesis
 fdrrun <- function(x,idx,FUN='cor', cl=NULL, ...){
   FUN <- match.fun(FUN)

@@ -14,7 +14,8 @@ mat2adj.matrix <- function(x, infer.method='cor', use='all.obs', ...){
 
     METHODS <- c('cor','WGCNA','WGCNAFDR','bicor',
                  'bicorFDR','TOM','ARACNE','CLR',
-                 'MINE','MINEFDR','DTWMIC', 'c3net')
+                 'MINE','MINEFDR','DTWMIC', 'c3net',
+                 'bc3net')
     MEASURE <- c('MIC','MAS','MCN','MEV','MICR2')
     infer.method <- pmatch(infer.method, METHODS)
     if(is.na(infer.method))

@@ -157,6 +157,11 @@ mat2adj(x,\dots)
       from the MINE family. See Details for further
       information. Additional parameters can be set with this
       method: }
+    \item{\code{c3net}}{See package \pkg{c3net} for further information
+      on available parameters. For additional info on the method see: \link{http://bmcsystbiol.biomedcentral.com/articles/10.1186/1752-0509-4-132}}
+    \item{\code{bc3net}}{See package \link{bc3net} for further
+      information and specific parameters. For additional info on the
+      methods see: \link{https://doi.org/10.1371/journal.pone.0033624}.}
     \item{\dots}{
       \describe{
 		\item{\code{tol}}{1e-5 (default), a numeric value which
