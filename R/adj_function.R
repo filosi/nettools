@@ -260,7 +260,7 @@ Adjc3net <- function(x, use='all.obs', ...){
 
 Adjbc3net <- function(x, use='all.obs', ...){
 
-    Adj <- doCall(bc3net, dataset=t(x), network=FALSE, ...)
+    Adj <- doCall(bc3net, dataset=t(x), igraph=FALSE,  ...)
     
     ## use argument, remove NA from Adj and set to 0
     na.method <- pmatch(use, c("all.obs", "complete.obs", "pairwise.complete.obs", 
