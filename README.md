@@ -4,7 +4,7 @@ This package is available on [CRAN](https://cran.r-project.org/web/packages/nett
 ## R package for differential network analysis
 branches:
 * master 		-> version freeze to 1.0.4
-* dev 		-> development version only unstable and newe functions
+* dev 		-> development version only unstable and new functions
 
 
 ## Installation instructions
