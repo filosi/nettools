@@ -30,6 +30,9 @@ importFrom("igraph", get.adjacency, get.edge.attribute)
 ## c3net
 importFrom("c3net", c3net)
 
+## bc3net
+importFrom("bc3net", bc3net)
+
 ## Compile Rcpp functions
 useDynLib(nettools)
 importFrom(Rcpp, evalCpp)
