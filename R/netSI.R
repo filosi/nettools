@@ -1,5 +1,5 @@
 netSI <- function(x,indicator="all", d='HIM', adj.method='cor', 
-                  method="montecarlo", k=3, h=20, n.cores=NULL,save=FALSE,
+                  resamp.method="montecarlo", k=3, h=20, n.cores=NULL,save=FALSE,
                   verbose=TRUE, ...){
 
   ## Get the function call parameters
@@ -8,7 +8,7 @@ netSI <- function(x,indicator="all", d='HIM', adj.method='cor',
   
   ##add a check so that an unexisting parameter cannot be passed
   id.Call <- match( names(Call),c("x", "indicator", "d", "adj.method" , 
-                                  "method","k","h","n.cores","save","verbose",
+                                  "resamp.method","k","h","n.cores","save","verbose",
                                   "FDR","P","measure","alpha","C","DP","var.thr",
                                   "components","n.nodes","ga","sseed","rho", "use"), nomatch=0)
   if(sum(id.Call[-1]==0)==1){
@@ -22,7 +22,7 @@ netSI <- function(x,indicator="all", d='HIM', adj.method='cor',
     warning(msg,call.=FALSE)
   }
   
-  id.Call <- match(c("x", "indicator", "d", "adj.method","method","k","h","n.cores"), 
+  id.Call <- match(c("x", "indicator", "d", "adj.method","resamp.method","k","h","n.cores"), 
                    names(Call), nomatch=0)
   if(id.Call[1]==0){
     stop("A dataset must be provided",call.=FALSE)
@@ -132,7 +132,7 @@ netSI <- function(x,indicator="all", d='HIM', adj.method='cor',
   
   ## Get the resampling indexes
   if(verbose==TRUE) cat("computing resampling...\n")
-  idxs <-  resamplingIDX(ddim,method=method, k=k, h=h)
+  idxs <-  resamplingIDX(ddim,resamp.method=resamp.method, k=k, h=h)
 
   ## length of the list for optimization purposes
   ADJcv <- vector("list",length=length(idxs))
@@ -141,22 +141,22 @@ netSI <- function(x,indicator="all", d='HIM', adj.method='cor',
   ## Compute the adjacency matrices for each resampling index
   if(!is.null(cl)){
     ## Parallel computation
-    ADJcv <- parLapply(cl=cl,X=idxs,fun=function(x,DAT,method,...){
+    ADJcv <- parLapply(cl=cl,X=idxs,fun=function(x,DAT,infer.method,...){
       ss <- DAT[x,]
-      tmp <- mat2adj(ss, method=method, ...)
+      tmp <- mat2adj(ss, infer.method=infer.method, ...)
       return(tmp)
-    },DAT=x,method=adj.method, ...)
+    },DAT=x,infer.method=adj.method, ...)
   } else {
     ## One core computation
-    ADJcv <- lapply(X=idxs,FUN=function(x,DAT,method, ...){
+    ADJcv <- lapply(X=idxs,FUN=function(x,DAT,infer.method, ...){
       ss <- DAT[x,]
-      tmp <- mat2adj(ss, method=method, ...)
+      tmp <- mat2adj(ss, infer.method=infer.method, ...)
       return(tmp)
-    },DAT=x,method=adj.method, ...)
+    },DAT=x,infer.method=adj.method, ...)
   }
   
   ##computing the adjacency matrix on the whole dataset
-  ADJall <- mat2adj(x=x,method=adj.method, ...)
+  ADJall <- mat2adj(x=x,infer.method=adj.method, ...)
   
   ## Compute the stability indicators
   netsi <- list()
@@ -287,24 +287,24 @@ netsiSw <- function(H,cl){
 }
 
 ## Function for the computation of resampling indexes
-resamplingIDX <- function(N,method="montecarlo", k=3, h=20){
+resamplingIDX <- function(N,resamp.method="montecarlo", k=3, h=20){
   
   ## Check of resampling methods
   METHODS <- c('montecarlo','LOO','kCV')
-  method <- pmatch(method, METHODS)
+  resamp.method <- pmatch(resamp.method, METHODS)
   
-  if(is.na(method))
+  if(is.na(resamp.method))
     stop("invalid resampling method")
-  if(method == -1)
+  if(resamp.method == -1)
     stop("ambiguous resampling method")
   
   ## Montecarlo
-  if (method==1L)
+  if (resamp.method==1L)
     take <- lapply(1:h,function(x){tmp <- sample(seq(N),floor(N*(1-(1/k)))) 
                                    return(tmp)})
   
   ## Leave One Out
-  if (method==2L){
+  if (resamp.method==2L){
     if (k!=1)
       warning("h is different than 1 but method is set to LOO (Leave One Out cross-validation schema).\nh will be ignored.")
     h <- N
@@ -312,7 +312,7 @@ resamplingIDX <- function(N,method="montecarlo", k=3, h=20){
   }
   
   ## K-fold cross-validation
-  if (method==3L){
+  if (resamp.method==3L){
     if (k>=N){
       stop("Number of fold bigger than samples in the dataset!!!")
     }else{

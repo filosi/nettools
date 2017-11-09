@@ -130,8 +130,8 @@ netdist(x,\dots)
 a <- matrix(rnorm(200), nrow=20)
 b <- matrix(rnorm(200), nrow=20)
 
-aa <- mat2adj(a, method="cor", n.cores=1)
-bb <- mat2adj(b, method="cor", n.cores=1)
+aa <- mat2adj(a, infer.method="cor", n.cores=1)
+bb <- mat2adj(b, infer.method="cor", n.cores=1)
 
 dd <- netdist(aa,bb, d="HIM", n.cores=1)
 print(dd)

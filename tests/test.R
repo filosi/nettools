@@ -2,7 +2,7 @@
 ## Testing nettools usage
 ##--------------------------------------------------
 
-# library(nettools)
+library(nettools)
 
 ## Create toy dataset
 a <- matrix(rnorm(1000),ncol=100)
