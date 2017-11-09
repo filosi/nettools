@@ -19,7 +19,7 @@
     Date: \tab \cr
     Depends: R (>= 2.14.1), methods
     Imports: WGCNA, minet, rootSolve, dtw, Matrix, parallel, minerva, Rcpp,
-    combinat, igraph
+    combinat, igraph, c3net, bc3net, R.utils
     License: CC BY-NC-SA 4.0
   }
 }
@@ -53,7 +53,7 @@
     D. Albanese, M.Filosi, R. Visintainer, S. Riccadonna, G. Jurman,
     C. Furlanello (2012). \emph{minerva and minepy: a C engine for the
     MINE suite and its R, Python and MATLAB wrappers, Bioinformatics 2012}.
-    \url{http://mpba.fbk.eu/cmine}\cr
+    \url{http://minepy.readthedocs.io/en/latest/}\cr
 
     D. Reshef, Y. Reshef, H. Finucane, S. Grossman, G. McVean, P.
     Turnbaugh, E. Lander, M. Mitzenmacher, P. Sabeti. (2011)
