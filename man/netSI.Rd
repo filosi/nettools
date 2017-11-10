@@ -46,7 +46,10 @@ resamp.method="montecarlo", k=3, h=20, n.cores, save=FALSE, verbose=TRUE, ...)
     a parallel computation using the maximum number of cores - 1 for the
     computation.}
   \item{save}{\code{FALSE} (default), logical. Should adjacency matrices
-    and indicator's raw value from resampling scheme be saved?} 
+    and indicator's raw value from resampling scheme be saved?}
+  \item{symm}{\code{TRUE} (default), logical. Are the graph directed? If
+    yes compute the edge stability for the upper triangular adjacency
+    matrix. Otherwise compute the indicator on the full matrix.}
   \item{verbose}{\code{TRUE} (default), logical. Print all the
     information about the computation. If \code{FALSE} messages will be suppressed.}
   \item{\dots}{Additional arguments to be passed to the downstream
