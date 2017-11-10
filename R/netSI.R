@@ -1,6 +1,6 @@
 netSI <- function(x,indicator="all", d='HIM', adj.method='cor', 
                   resamp.method="montecarlo", k=3, h=20, n.cores=NULL,save=FALSE,
-                  verbose=TRUE, ...){
+                  symm=TRUE, verbose=TRUE, ...){
 
   ## Get the function call parameters
   ## NB the parameters should be evaluated with eval()
@@ -10,7 +10,7 @@ netSI <- function(x,indicator="all", d='HIM', adj.method='cor',
   id.Call <- match( names(Call),c("x", "indicator", "d", "adj.method" , 
                                   "resamp.method","k","h","n.cores","save","verbose",
                                   "FDR","P","measure","alpha","C","DP","var.thr",
-                                  "components","n.nodes","ga","sseed","rho", "use"), nomatch=0)
+                                  "components","n.nodes","ga","sseed","rho", "use", "symm"), nomatch=0)
   if(sum(id.Call[-1]==0)==1){
     warning("The parameter '",names(Call)[which(id.Call==0)[2]],"' will be ignored",call.=FALSE)
   }
@@ -166,7 +166,7 @@ netSI <- function(x,indicator="all", d='HIM', adj.method='cor',
   }
   if(indicator==3L | indicator==5L){
     if(verbose==TRUE) cat("computing stability indicator Sw...\n")
-    netsi[["Sw"]] <- netsiSw(ADJcv, cl=cl)
+    netsi[["Sw"]] <- netsiSw(ADJcv, cl=cl, symm=symm)
   }
   if(indicator==4L | indicator==5L){
     if(verbose==TRUE) cat("computing stability indicator Sd...\n")
@@ -250,11 +250,16 @@ netsiSd <- function(H,cl){
 }
 
 ## Edge stability
-netsiSw <- function(H,cl){
+netsiSw <- function(H,cl, symm=TRUE, ...){
   if (length(H))
     n <- nrow(H[[1]]) else stop("List of adjacency matrices do not exist")
-  
-  com <- combn(1:n, 2)
+  if (symm){
+      com <- combn(1:n, 2)
+  } else {
+      tmpcom <- expand.grid(1:n, 1:n)
+      com <- t(tmpcom[tmpcom[,1] != tmpcom[,2],])
+      dimnames(com) <- list(NULL, NULL)
+  }
   
   if (!is.null(cl)){
     ## Parallel computation
