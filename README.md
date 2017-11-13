@@ -18,7 +18,7 @@ install.packages(c("infotheo", "rootSolve", "dtw", "minerva", "combinat", "WGCNA
 **From bioconductor**
 ```
 source("https://bioconductor.org/biocLite.R")
-biocLite("impute", "minet", "AnnotationDbi", "GO.db")
+biocLite(c("impute", "minet", "AnnotationDbi", "GO.db"))
 ```
 
 **Optional**
@@ -59,5 +59,5 @@ Directly from R with the devtools library (https://github.com/hadley/devtools) i
 ``` R
 install.packages("devtools")
 library(devtools)
-install_github("nettools","filosi")
+install_github("filosi/nettools")
 ```
