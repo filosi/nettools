@@ -143,14 +143,14 @@ netSI <- function(x,indicator="all", d='HIM', adj.method='cor',
     ## Parallel computation
     ADJcv <- parLapply(cl=cl,X=idxs,fun=function(x,DAT,infer.method,...){
       ss <- DAT[x,]
-      tmp <- mat2adj(ss, infer.method=infer.method, ...)
+      tmp <- mat2adj(x=ss, infer.method=infer.method, ...)
       return(tmp)
     },DAT=x,infer.method=adj.method, ...)
   } else {
     ## One core computation
     ADJcv <- lapply(X=idxs,FUN=function(x,DAT,infer.method, ...){
       ss <- DAT[x,]
-      tmp <- mat2adj(ss, infer.method=infer.method, ...)
+      tmp <- mat2adj(x=ss, infer.method=infer.method, ...)
       return(tmp)
     },DAT=x,infer.method=adj.method, ...)
   }

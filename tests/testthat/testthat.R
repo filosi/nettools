@@ -50,3 +50,9 @@ test_that("Test distance:", {
     d1 <- netdist(aadj,badj, d="HIM", components=FALSE, n.cores=1)
     d2 <- netdist(list(aadj,badj), d="HIM", components=FALSE, n.cores=1)
 })
+
+test_that("Test SI:", {
+    ssind1 <- netSI(a, adj.method="ARACNE", n.cores=1, use="pair", symm=TRUE)
+    ssind2 <- netSI(a, n.cores=1, adj.method="ARACNE", use="pair", symm=TRUE)
+    expect_equal(length(ssind1$Sw), length(ssind2$Sw))
+})

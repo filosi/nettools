@@ -133,7 +133,7 @@ AdjTOM <- function(x,P=6, ...){
 AdjARACNE <- function(x, use='all.obs', ...){
 
     ## mutual information estimation does not accept use paramter!
-    Adj <- doCall(minet, x=x, method="aracne",estimator="spearman", ...)
+    Adj <- doCall(minet, dataset=x, method="aracne",estimator="spearman", ...)
     diag(Adj) <- 0
 
     ## use argument, remove NA from Adj and set to 0
@@ -149,7 +149,7 @@ AdjARACNE <- function(x, use='all.obs', ...){
 AdjCLR <- function(x, use='all.obs', ...){
 
     ## mutual information estimation does not accept use paramter!
-  Adj <- doCall(minet ,x=x, method="clr", estimator="spearman", ...)
+  Adj <- doCall(minet ,dataset=x, method="clr", estimator="spearman", ...)
   diag(Adj) <- 0
 
   ## use argument, remove NA from Adj and set to 0
