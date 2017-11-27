@@ -231,22 +231,38 @@ netsiSI <- function(H, d, ...){
 
 ## Degree stability
 netsiSd <- function(H,cl){
-  if (length(H)){
-    n <- ncol(H[[1]])
-  } else {
-    stop("No adjacency matrix computed",call.=FALSE)
-  }
-  
-  if (!is.null(cl)){
-    ## Parallel computation
-    dd <- parLapply(cl=cl, X=H, rowSums)
-  } else {
-    ## One core computation
-    dd <- lapply(H, rowSums)
-  }
-  dd <- matrix(unlist(dd),ncol=n, byrow=TRUE)
-  colnames(dd) <- colnames(H[[1]])
-  return(dd)
+    if (length(H)){
+        n <- ncol(H[[1]])
+    } else {
+        stop("No adjacency matrix computed",call.=FALSE)
+    }
+
+    if (!is.null(cl)){
+        ## Parallel computation
+        ddin <- parLapply(cl=cl, X=H, rowSums)
+        ddout <- parLapply(cl=cl, X=H, colSums)
+    } else {
+        ## One core computation
+        ddin <- lapply(H, rowSums)
+        ddout <- lapply(H, colSums)
+    }
+    ck <- all(sapply(1:length(ddin),
+                     function(x, ddin, ddout){
+                         all((ddin[[x]] - ddout[[x]]) <= sqrt(.Machine$double.eps))
+                     }, ddin=ddin, ddout=ddout))
+    
+    ## Check if matrix is directed
+    if (ck){
+        dd <- matrix(unlist(ddin),ncol=n, byrow=TRUE)
+        colnames(dd) <- colnames(H[[1]])
+    } else {
+        ddinm <- matrix(unlist(ddin),ncol=n, byrow=TRUE)
+        colnames(ddinm) <- paste(colnames(H[[1]]), "-in", sep="")
+        ddoutm <- matrix(unlist(ddout),ncol=n, byrow=TRUE)
+        colnames(ddoutm) <- paste(colnames(H[[1]]), "-out", sep="")
+        dd <- cbind(ddinm, ddoutm)
+    }
+    return(dd)
 }
 
 ## Edge stability
