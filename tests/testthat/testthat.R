@@ -56,3 +56,5 @@ test_that("Test SI:", {
     ssind2 <- netSI(a, n.cores=1, adj.method="ARACNE", use="pair", symm=TRUE)
     expect_equal(length(ssind1$Sw), length(ssind2$Sw))
 })
+
+
