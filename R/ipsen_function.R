@@ -4,11 +4,11 @@
 ## ipsen <- function(object,...) UseMethod("ipsen")
 ipsen <- function(object, ga=NULL, ...){
   if (is.null(ga)){
-    if (object$tag == "undir"){
+      ## if (object$tag == "undir"){
       optgamma <- optimal_gamma(object$N)
-    } else {
-      optgamma <- optimal_gamma_dir(object$N)
-    }
+    ## } else {
+    ##   optgamma <- optimal_gamma_dir(object$N)
+    ## }
   } else {
     optgamma <- ga
   }
