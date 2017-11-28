@@ -272,6 +272,7 @@ transfmat <- function(x){
     tmp <- Matrix::rBind(Matrix::cBind(zero,t(Adj)),Matrix::cBind(Adj,zero))
     Adj <- tmp
     tag <- "dir"
+    n <- ncol(tmp)
   }
 
   ## Normalize the weights

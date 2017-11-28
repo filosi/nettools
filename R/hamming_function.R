@@ -5,11 +5,11 @@ hamming <- function(object,...){
   adjlist <- object$G
   
   ## for weighted networks, weights must be in [0,1]
-  if (object$tag == "undir"){
+  ## if (object$tag == "undir"){--
     dist <- ham.undir(adjlist, object$N, ...)
-  } else{
-    dist <- ham.dir(adjlist, object$N, ...)
-  }
+  ## } else{
+  ##   dist <- ham.dir(adjlist, object$N, ...)
+  ## }
   return(dist)
 }
 
