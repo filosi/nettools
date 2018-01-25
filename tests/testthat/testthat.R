@@ -52,12 +52,14 @@ test_that("Test distance:", {
 })
 
 test_that("Test SI:", {
+    skip("Do not test SI")
     ssind1 <- netSI(a, adj.method="ARACNE", n.cores=4, use="pair", symm=TRUE)
     ssind2 <- netSI(a,  adj.method="ARACNE", n.cores=4, use="pair", symm=TRUE)
     expect_equal(length(ssind1$Sw), length(ssind2$Sw))
 })
 
 test_that("Test SI 2:", {
+    skip("Do not test SI")
     ssind1 <- netSI(a, adj.method="ARACNE", n.cores=1, use="pair", symm=TRUE)
     ssind2 <- netSI(a, n.cores=1, adj.method="ARACNE", use="pair", symm=TRUE)
     expect_equal(length(ssind1$Sw), length(ssind2$Sw))
