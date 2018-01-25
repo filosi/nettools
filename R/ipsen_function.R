@@ -76,7 +76,7 @@ ipsen <- function(object, ga=NULL, ...){
       return(list(myomega,myk))
     }, mygamma=optgamma, laplist=laplist, ...)
   }
-  if (exists("cl")){
+  if (exists("cl") & nrow(showConnections()) > 0){
     clusterEvalQ(cl,{
       mydistfun <- function(a,b, optgamma){
         integrand <- function(omega, mygamma, given_omega_G, given_omega_H){
